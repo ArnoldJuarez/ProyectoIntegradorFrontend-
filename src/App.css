@@ -1,0 +1,509 @@
+/*
+ * Identidad "Concreto y Neon" heredada del proyecto anterior: fondo casi negro,
+ * chartreuse como acento (nace del color de una luz de emergencia) y magenta
+ * para lo que alerta.
+ */
+:root {
+  --negro: #080808;
+  --concreto: #111111;
+  --linea: #2a2a2a;
+  --linea-fuerte: #3d3d3d;
+  --chartreuse: #c9ff00;
+  --magenta: #ff2b6e;
+  --tinta: #f2f2f0;
+  --tinta-suave: #a0a09c;
+}
+
+body {
+  margin: 0;
+  background: var(--negro);
+  color: var(--tinta);
+  font-family: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app {
+  max-width: 68rem;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 4rem;
+}
+
+/* ── Cabecera ─────────────────────────────────────────────────── */
+
+.marca h1 {
+  margin: 0;
+  font-size: clamp(1.75rem, 5vw, 2.75rem);
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  color: var(--chartreuse);
+}
+
+.marca__fila {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.marca__pie {
+  margin: 0.35rem 0 2.5rem;
+  color: var(--tinta-suave);
+  font-size: 0.875rem;
+}
+
+/* ── Usuario en sesion ────────────────────────────────────────── */
+
+.usuario {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.85rem;
+}
+
+.usuario__nombre {
+  color: var(--tinta);
+}
+
+.usuario__rol {
+  border: 1px solid var(--linea-fuerte);
+  border-radius: 2px;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  color: var(--chartreuse);
+}
+
+.salir {
+  background: none;
+  border: 1px solid var(--linea-fuerte);
+  color: var(--tinta-suave);
+  padding: 0.3rem 0.8rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.salir:hover {
+  border-color: var(--magenta);
+  color: var(--magenta);
+}
+
+/* ── Login ────────────────────────────────────────────────────── */
+
+.login {
+  max-width: 24rem;
+  margin: 2rem auto;
+  border: 1px solid var(--linea);
+  padding: 2rem;
+}
+
+.login h2 {
+  margin: 0 0 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--chartreuse);
+}
+
+.login__nota {
+  margin: 0 0 1.75rem;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--tinta-suave);
+}
+
+.login label {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
+  margin-bottom: 0.4rem;
+}
+
+.login input {
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--negro);
+  border: 1px solid var(--linea-fuerte);
+  color: var(--tinta);
+  padding: 0.6rem 0.75rem;
+  font-size: 0.95rem;
+  margin-bottom: 1.1rem;
+  font-family: inherit;
+}
+
+.login input:focus {
+  outline: none;
+  border-color: var(--chartreuse);
+}
+
+.login input:disabled {
+  opacity: 0.5;
+}
+
+.login button {
+  width: 100%;
+  background: var(--chartreuse);
+  border: none;
+  color: var(--negro);
+  padding: 0.7rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.login button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.login__error {
+  margin: 0 0 1rem;
+  border-left: 2px solid var(--magenta);
+  padding-left: 0.75rem;
+  color: var(--magenta);
+  font-size: 0.85rem;
+}
+
+.login__pruebas {
+  margin-top: 2rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--linea);
+}
+
+.login__pruebas-titulo {
+  margin: 0 0 0.6rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
+}
+
+.login__pruebas ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.78rem;
+  line-height: 1.9;
+  color: var(--tinta-suave);
+}
+
+.login__pruebas span {
+  opacity: 0.65;
+}
+
+code {
+  background: var(--concreto);
+  border: 1px solid var(--linea);
+  border-radius: 3px;
+  padding: 0.1em 0.4em;
+  font-size: 0.9em;
+}
+
+/* ── Navegacion ───────────────────────────────────────────────── */
+
+.nav {
+  display: flex;
+  gap: 1.5rem;
+  margin: 1.5rem 0 2.5rem;
+  border-bottom: 1px solid var(--linea);
+}
+
+.nav a {
+  padding: 0 0 0.7rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
+  text-decoration: none;
+  /* Transparente y no ausente: si el borde apareciera solo al activarse, la
+     fila entera daria un salto de 2px al cambiar de pestaña. */
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+
+.nav a:hover {
+  color: var(--tinta);
+}
+
+.nav a.active {
+  color: var(--chartreuse);
+  border-bottom-color: var(--chartreuse);
+}
+
+/* ── Seccion ──────────────────────────────────────────────────── */
+
+.cabecera {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid var(--linea);
+  padding-bottom: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.cabecera h2 {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
+}
+
+.contador {
+  font-size: 0.8rem;
+  color: var(--chartreuse);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Tabla ────────────────────────────────────────────────────── */
+
+/* La tabla se desborda sola en movil en vez de estirar toda la pagina. */
+.tabla-scroll {
+  overflow-x: auto;
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.tabla th {
+  text-align: left;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
+  padding: 0.6rem 0.85rem;
+  border-bottom: 1px solid var(--linea-fuerte);
+}
+
+.tabla td {
+  padding: 0.75rem 0.85rem;
+  border-bottom: 1px solid var(--linea);
+}
+
+.tabla tbody tr:hover {
+  background: var(--concreto);
+}
+
+/* Cifras alineadas a la derecha y con ancho fijo por digito: sin esto las
+   columnas de dinero bailan y no se pueden comparar de un vistazo. */
+.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.sku {
+  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  font-size: 0.82rem;
+  color: var(--tinta-suave);
+}
+
+.precio {
+  color: var(--chartreuse);
+}
+
+.etiqueta {
+  display: inline-block;
+  border: 1px solid var(--linea-fuerte);
+  border-radius: 2px;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  color: var(--tinta-suave);
+}
+
+/* ── Enlaces y detalle de evento ──────────────────────────────── */
+
+.enlace {
+  color: var(--tinta);
+  text-decoration: none;
+  border-bottom: 1px solid var(--linea-fuerte);
+}
+
+.enlace:hover {
+  color: var(--chartreuse);
+  border-bottom-color: var(--chartreuse);
+}
+
+.migas {
+  margin: 0 0 1.5rem;
+  font-size: 0.8rem;
+}
+
+.descripcion {
+  max-width: 46rem;
+  margin: 0 0 2rem;
+  line-height: 1.65;
+  color: var(--tinta-suave);
+}
+
+.sutil {
+  color: var(--tinta-suave);
+  font-size: 0.85em;
+}
+
+.porcentaje {
+  color: var(--tinta-suave);
+  font-size: 0.82em;
+}
+
+/* Rejilla que se adapta sola sin puntos de ruptura: cada ficha pide 12rem y
+   caben las que quepan. */
+.fichas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 1.25rem 2rem;
+  margin: 0 0 2.5rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--linea);
+}
+
+.fichas dt {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
+  margin-bottom: 0.3rem;
+}
+
+.fichas dd {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+/* ── Estado de un evento ──────────────────────────────────────── */
+
+.estado {
+  display: inline-block;
+  border: 1px solid var(--linea-fuerte);
+  border-radius: 2px;
+  padding: 0.15rem 0.55rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
+  white-space: nowrap;
+}
+
+/* A la venta es lo que esta vivo, y por eso lleva el acento. */
+.estado--published {
+  border-color: var(--chartreuse);
+  color: var(--chartreuse);
+}
+
+.estado--sold_out {
+  border-color: var(--magenta);
+  color: var(--magenta);
+}
+
+.estado--cancelled {
+  border-color: var(--magenta);
+  color: var(--magenta);
+  text-decoration: line-through;
+}
+
+/* ── Buscador ─────────────────────────────────────────────────── */
+
+.buscador {
+  width: 100%;
+  max-width: 24rem;
+  box-sizing: border-box;
+  background: var(--negro);
+  border: 1px solid var(--linea-fuerte);
+  color: var(--tinta);
+  padding: 0.6rem 0.8rem;
+  font-size: 0.9rem;
+  font-family: inherit;
+  margin-bottom: 1.5rem;
+}
+
+.buscador:focus {
+  outline: none;
+  border-color: var(--chartreuse);
+}
+
+/* ── Historial de cliente ─────────────────────────────────────── */
+
+.historial {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.historial li {
+  border-left: 1px solid var(--linea-fuerte);
+  padding: 0 0 1.25rem 1.25rem;
+  position: relative;
+}
+
+/* El punto de la linea de tiempo, encajado sobre el borde izquierdo. */
+.historial li::before {
+  content: "";
+  position: absolute;
+  left: -4px;
+  top: 0.45rem;
+  width: 7px;
+  height: 7px;
+  background: var(--chartreuse);
+  border-radius: 50%;
+}
+
+.historial__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.75rem;
+}
+
+.historial__resumen {
+  margin: 0.4rem 0 0.2rem;
+  line-height: 1.5;
+}
+
+.historial__cuando {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--tinta-suave);
+}
+
+/* ── Avisos ───────────────────────────────────────────────────── */
+
+.aviso {
+  border: 1px solid var(--linea);
+  padding: 1.5rem;
+  color: var(--tinta-suave);
+}
+
+.aviso--error {
+  border-color: var(--magenta);
+}
+
+.aviso__titulo {
+  margin: 0 0 0.5rem;
+  color: var(--magenta);
+  font-weight: 700;
+}
+
+.aviso__pista {
+  margin-bottom: 0;
+  font-size: 0.85rem;
+}
