@@ -206,6 +206,66 @@ export function listarProveedores(): Promise<Proveedor[]> {
   return pedir<Proveedor[]>("/api/inventario/proveedores");
 }
 
+// ─────────────────────── Pedidos y entradas ───────────────────────
+
+export type EstadoDePedido = "PENDING" | "PAID" | "CANCELLED" | "REFUNDED";
+export type EstadoDeEntrada = "VALID" | "USED" | "VOID" | "REFUNDED";
+
+export type PedidoEnLista = {
+  /** El que ve el cliente: DSC-000123. No es el id interno. */
+  codigo: string;
+  cliente: string;
+  noche: string;
+  nocheSlug: string;
+  estado: EstadoDePedido;
+  estadoEtiqueta: string;
+  metodoDePago: MetodoDePago | null;
+  totalCentimos: number;
+  creadoEn: string;
+  pagadoEn: string | null;
+};
+
+export type LineaEnFicha = {
+  tipoDeEntrada: string;
+  cantidad: number;
+  precioUnitarioCentimos: number;
+  importeCentimos: number;
+};
+
+export type EntradaEnFicha = {
+  /**
+   * Los primeros caracteres del id, para identificarla al hablar.
+   *
+   * El código completo **no llega hasta aquí**: incluye la firma del QR, y una
+   * lista de códigos completos es una lista de entradas válidas.
+   */
+  referencia: string;
+  tipoDeEntrada: string;
+  titular: string | null;
+  estado: EstadoDeEntrada;
+  estadoEtiqueta: string;
+  yaSeUso: boolean;
+  escaneadaEn: string | null;
+};
+
+export type FichaDePedido = {
+  pedido: PedidoEnLista;
+  email: string;
+  telefono: string | null;
+  subtotalCentimos: number;
+  comisionCentimos: number;
+  lineas: LineaEnFicha[];
+  entradas: EntradaEnFicha[];
+};
+
+export function listarPedidos(): Promise<PedidoEnLista[]> {
+  return pedir<PedidoEnLista[]>("/api/pedidos");
+}
+
+export function verPedido(codigo: string): Promise<FichaDePedido> {
+  return pedir<FichaDePedido>(`/api/pedidos/${encodeURIComponent(codigo)}`);
+}
+
 // ─────────────────────── Caja y arqueos ───────────────────────
 
 export type MetodoDePago = "CASH" | "CARD" | "YAPE" | "PLIN" | "TRANSFER";

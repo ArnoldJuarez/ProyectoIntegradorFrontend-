@@ -42,6 +42,7 @@ export default function App() {
             <NavLink to="/panel/eventos" end>
               Eventos
             </NavLink>
+            <NavLink to="/panel/pedidos">Pedidos</NavLink>
             <NavLink to="/panel/clientes">Clientes</NavLink>
             <NavLink to="/panel/caja">Caja</NavLink>
             <NavLink to="/panel/inventario">Inventario</NavLink>
