@@ -421,6 +421,116 @@ code {
   text-decoration: line-through;
 }
 
+/* ── Pestanas ─────────────────────────────────────────────────── */
+
+.pestanas {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.75rem;
+}
+
+.pestana {
+  background: none;
+  border: 1px solid var(--linea);
+  color: var(--tinta-suave);
+  padding: 0.45rem 1rem;
+  font-family: inherit;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.pestana:hover {
+  color: var(--tinta);
+}
+
+.pestana--activa {
+  border-color: var(--chartreuse);
+  color: var(--negro);
+  background: var(--chartreuse);
+}
+
+/* ── Tarjetas de resumen ──────────────────────────────────────── */
+
+/* auto-fit reparte las tarjetas sin puntos de ruptura: caben las que quepan. */
+.tarjetas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.tarjeta {
+  border: 1px solid var(--linea);
+  padding: 1rem 1.1rem;
+}
+
+/* Solo se enciende cuando hay algo que hacer. Un cero en rojo acostumbra a
+   ignorar el rojo. */
+.tarjeta--alerta {
+  border-color: var(--magenta);
+}
+
+.tarjeta--alerta .tarjeta__cifra {
+  color: var(--magenta);
+}
+
+.tarjeta__cifra {
+  margin: 0;
+  font-size: 1.9rem;
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.tarjeta__cifra--dinero {
+  font-size: 1.25rem;
+  color: var(--chartreuse);
+}
+
+.tarjeta__pie {
+  margin: 0.45rem 0 0;
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
+}
+
+/* ── Alertas dentro de la tabla ───────────────────────────────── */
+
+/* Franja lateral en vez de fondo de color: se ve el aviso sin que la fila
+   deje de leerse. */
+.fila--alerta td:first-child {
+  box-shadow: inset 2px 0 0 var(--magenta);
+}
+
+.marca {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--magenta);
+  white-space: nowrap;
+}
+
+.marca--grave {
+  color: var(--negro);
+  background: var(--magenta);
+  padding: 0.1rem 0.4rem;
+}
+
+/* Entradas y salidas de mercancia. */
+.entrada {
+  color: var(--chartreuse);
+}
+
+.salida {
+  color: var(--tinta-suave);
+}
+
 /* ── Buscador ─────────────────────────────────────────────────── */
 
 .buscador {

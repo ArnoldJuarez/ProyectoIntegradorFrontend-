@@ -131,6 +131,81 @@ export function listarProductos(): Promise<Producto[]> {
   return pedir<Producto[]>("/api/inventario/productos");
 }
 
+// ───────────────────── Almacén: stock y movimientos ─────────────────────
+//
+// El catálogo dice qué productos existen; esto dice cuántos quedan. Son cosas
+// distintas: un producto puede estar en el catálogo con cero unidades.
+
+export type LineaDeStock = {
+  id: string;
+  productoId: string;
+  sku: string;
+  producto: string;
+  categoria: string;
+  sala: string;
+  unidad: UnidadDeProducto;
+  cantidad: number;
+  alertaDeStock: number;
+  necesitaReposicion: boolean;
+  faltanParaElUmbral: number;
+  valorACosteCentimos: number;
+  actualizadoEn: string;
+};
+
+export type ResumenDeAlmacen = {
+  referencias: number;
+  porDebajoDelUmbral: number;
+  sinExistencias: number;
+  valorTotalCentimos: number;
+};
+
+export type StockConResumen = {
+  resumen: ResumenDeAlmacen;
+  lineas: LineaDeStock[];
+};
+
+export type TipoDeMovimiento = "PURCHASE" | "SALE" | "WASTE" | "ADJUSTMENT" | "TRANSFER";
+
+export type LineaDeMovimiento = {
+  id: string;
+  producto: string;
+  sku: string;
+  sala: string;
+  tipo: TipoDeMovimiento;
+  tipoEtiqueta: string;
+  /** Con su signo: negativa cuando salió mercancía. */
+  cantidad: number;
+  /** Sin signo, para enseñar «3» en vez de «−3». */
+  unidades: number;
+  esEntrada: boolean;
+  costeUnitarioCentimos: number;
+  importeCentimos: number;
+  referencia: string | null;
+  cuando: string;
+};
+
+export type Proveedor = {
+  id: string;
+  nombre: string;
+  personaDeContacto: string | null;
+  email: string | null;
+  telefono: string | null;
+};
+
+export function verStock(): Promise<StockConResumen> {
+  return pedir<StockConResumen>("/api/inventario/stock");
+}
+
+/** @param productoId si se indica, solo el histórico de ese producto */
+export function verMovimientos(productoId = ""): Promise<LineaDeMovimiento[]> {
+  const query = productoId ? `?producto=${encodeURIComponent(productoId)}` : "";
+  return pedir<LineaDeMovimiento[]>(`/api/inventario/movimientos${query}`);
+}
+
+export function listarProveedores(): Promise<Proveedor[]> {
+  return pedir<Proveedor[]>("/api/inventario/proveedores");
+}
+
 // ─────────────────────────── Eventos ───────────────────────────
 
 export type EstadoDeEvento = "DRAFT" | "PUBLISHED" | "SOLD_OUT" | "CANCELLED" | "FINISHED";
