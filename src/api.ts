@@ -206,6 +206,68 @@ export function listarProveedores(): Promise<Proveedor[]> {
   return pedir<Proveedor[]>("/api/inventario/proveedores");
 }
 
+// ─────────────────────── Caja y arqueos ───────────────────────
+
+export type MetodoDePago = "CASH" | "CARD" | "YAPE" | "PLIN" | "TRANSFER";
+
+export type ArqueoEnLista = {
+  id: string;
+  sala: string;
+  responsable: string;
+  aperturaCentimos: number;
+  esperadoCentimos: number;
+  /** Nulo mientras la caja siga abierta: todavía no se ha contado. */
+  contadoCentimos: number | null;
+  /** Positivo = sobra dinero. Negativo = falta. Nulo si sigue abierta. */
+  diferenciaCentimos: number | null;
+  /**
+   * Solo el efectivo que entró al cajón durante el turno.
+   *
+   * **No es lo vendido**: los cobros con tarjeta no llegan al cajón y no cuentan
+   * aquí. Para el total facturado hay que sumar todos los métodos de pago, que
+   * es lo que trae la ficha del arqueo.
+   */
+  efectivoCobradoCentimos: number;
+  estaAbierta: boolean;
+  cuadro: boolean;
+  abiertaEn: string;
+  cerradaEn: string | null;
+};
+
+export type TotalPorMetodo = {
+  metodo: MetodoDePago;
+  etiqueta: string;
+  esEfectivo: boolean;
+  totalCentimos: number;
+};
+
+export type CobroEnLista = {
+  id: string;
+  metodo: MetodoDePago;
+  metodoEtiqueta: string;
+  totalCentimos: number;
+  unidades: number;
+  cuando: string;
+};
+
+export type FichaDeArqueo = {
+  arqueo: ArqueoEnLista;
+  porMetodoDePago: TotalPorMetodo[];
+  /** Lo único que llega al cajón, y por tanto lo único que explica un descuadre. */
+  efectivoCentimos: number;
+  otrosMediosCentimos: number;
+  cobros: number;
+  ultimosCobros: CobroEnLista[];
+};
+
+export function listarArqueos(): Promise<ArqueoEnLista[]> {
+  return pedir<ArqueoEnLista[]>("/api/caja/arqueos");
+}
+
+export function verArqueo(id: string): Promise<FichaDeArqueo> {
+  return pedir<FichaDeArqueo>(`/api/caja/arqueos/${encodeURIComponent(id)}`);
+}
+
 // ─────────────────────────── Eventos ───────────────────────────
 
 export type EstadoDeEvento = "DRAFT" | "PUBLISHED" | "SOLD_OUT" | "CANCELLED" | "FINISHED";

@@ -2,6 +2,8 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import App from "./App.tsx";
+import { ArqueoDetalle } from "./paginas/ArqueoDetalle.tsx";
+import { Caja } from "./paginas/Caja.tsx";
 import { ClienteDetalle } from "./paginas/ClienteDetalle.tsx";
 import { Clientes } from "./paginas/Clientes.tsx";
 import { EventoDetalle } from "./paginas/EventoDetalle.tsx";
@@ -40,6 +42,8 @@ createRoot(document.getElementById("root")!).render(
             <Route path="eventos/:slug" element={<EventoDetalle />} />
             <Route path="clientes" element={<Clientes />} />
             <Route path="clientes/:id" element={<ClienteDetalle />} />
+            <Route path="caja" element={<Caja />} />
+            <Route path="caja/:id" element={<ArqueoDetalle />} />
             <Route path="inventario" element={<Inventario />} />
           </Route>
 

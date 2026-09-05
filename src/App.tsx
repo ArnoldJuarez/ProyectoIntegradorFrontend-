@@ -43,6 +43,7 @@ export default function App() {
               Eventos
             </NavLink>
             <NavLink to="/panel/clientes">Clientes</NavLink>
+            <NavLink to="/panel/caja">Caja</NavLink>
             <NavLink to="/panel/inventario">Inventario</NavLink>
             <Link to="/" className="nav__salida">
               Ver la web ↗
