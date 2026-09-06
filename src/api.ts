@@ -716,3 +716,89 @@ export const NOMBRE_DE_RECHAZO: Record<MotivoDeRechazo, string> = {
   REPETIDA: "Ya entró",
   OTRA_FECHA: "Otra fecha",
 };
+
+// ─────────────────── Comprar entradas (web pública) ───────────────────
+//
+// Fíjate en lo que la petición NO lleva: ni precios, ni total. Solo qué se
+// quiere y cuánto. Los importes los calcula el servidor leyendo la base — un
+// total que viaja desde aquí es un total que se puede editar con las
+// herramientas del navegador.
+
+export type LineaPedida = { tipoDeEntradaId: string; cantidad: number };
+
+export type SolicitudDeCompra = {
+  slug: string;
+  nombre: string;
+  apellido: string;
+  email: string;
+  telefono: string;
+  lineas: LineaPedida[];
+};
+
+/** Lo que devuelve abrir un pedido: el código con el que se sigue. */
+export type Resguardo = {
+  codigo: string;
+  subtotalCentimos: number;
+  comisionCentimos: number;
+  totalCentimos: number;
+  entradas: number;
+  mensaje: string;
+};
+
+export type PagoHecho = {
+  codigo: string;
+  entradas: number;
+  yaEstabaPagado: boolean;
+  mensaje: string;
+};
+
+/**
+ * Una entrada con su código completo.
+ *
+ * Es el único sitio de la aplicación donde llega el código entero, firma
+ * incluida: es el QR que se enseña en la puerta, y solo se sirve a quien tiene
+ * el enlace de su propio pedido. En el panel llega recortado a propósito.
+ */
+export type EntradaConQr = {
+  codigo: string;
+  tipoDeEntrada: string;
+  titular: string | null;
+  consumicionesIncluidas: number;
+  yaSeUso: boolean;
+};
+
+export type MisEntradas = {
+  codigo: string;
+  pagado: boolean;
+  noche: string;
+  slug: string;
+  sala: string;
+  puertasA: string;
+  empiezaA: string;
+  totalCentimos: number;
+  entradas: EntradaConQr[];
+};
+
+export function comprarEntradas(solicitud: SolicitudDeCompra): Promise<Resguardo> {
+  return pedir<Resguardo>("/api/publico/pedidos", {
+    method: "POST",
+    body: JSON.stringify(solicitud),
+  });
+}
+
+/**
+ * Confirma el pago.
+ *
+ * **El cobro es simulado**: no hay pasarela conectada, así que esto emite las
+ * entradas sin cobrar nada. Está señalado aquí y en el backend porque es lo
+ * primero que hay que cambiar antes de que esto mueva dinero de verdad.
+ */
+export function pagarPedido(codigo: string): Promise<PagoHecho> {
+  return pedir<PagoHecho>(`/api/publico/pedidos/${encodeURIComponent(codigo)}/pagar`, {
+    method: "POST",
+  });
+}
+
+export function verMisEntradas(codigo: string): Promise<MisEntradas> {
+  return pedir<MisEntradas>(`/api/publico/pedidos/${encodeURIComponent(codigo)}`);
+}

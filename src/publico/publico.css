@@ -687,3 +687,302 @@
   margin-left: auto;
   opacity: 0.7;
 }
+
+/* ── Comprar entradas ─────────────────────────────────────────── */
+/*
+ * El carrito y el formulario. Se usa desde el movil casi siempre, asi que los
+ * botones de + y − son cuadrados de 2.75rem: por debajo de eso hay que apuntar,
+ * y apuntar con el pulgar en una parada de autobus no sale bien.
+ */
+
+.comprar {
+  margin: 1.5rem 0 0;
+}
+
+.comprar__tipos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--linea);
+}
+
+.comprar__tipo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 0;
+  border-bottom: 1px solid var(--linea);
+}
+
+.comprar__nombre {
+  margin: 0;
+  font-weight: 700;
+}
+
+.comprar__precio {
+  margin: 0.2rem 0 0;
+  font-size: 0.85rem;
+  color: var(--tinta-suave);
+}
+
+.contador {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.contador button {
+  width: 2.75rem;
+  height: 2.75rem;
+  background: var(--concreto);
+  border: 1px solid var(--linea-fuerte);
+  color: var(--tinta);
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.contador button:hover:not(:disabled) {
+  border-color: var(--chartreuse);
+  color: var(--chartreuse);
+}
+
+.contador button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.contador__cifra {
+  min-width: 2.25rem;
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 700;
+  /* Tabular para que el ancho no baile al pasar de 9 a 10. */
+  font-variant-numeric: tabular-nums;
+}
+
+.comprar__cuenta {
+  margin: 1.25rem 0 0;
+  padding: 1rem;
+  background: var(--concreto);
+  border: 1px solid var(--linea);
+}
+
+.comprar__cuenta p {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 0 0.5rem;
+  color: var(--tinta-suave);
+  font-variant-numeric: tabular-nums;
+}
+
+.comprar__cuenta p:last-child {
+  margin-bottom: 0;
+}
+
+.comprar__total {
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--linea);
+  font-size: 1.15rem;
+}
+
+.comprar__total strong {
+  color: var(--chartreuse);
+}
+
+.comprar__datos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 0.9rem;
+  margin-top: 1.25rem;
+}
+
+.comprar__datos label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
+}
+
+.comprar__datos input {
+  background: var(--concreto);
+  border: 1px solid var(--linea-fuerte);
+  color: var(--tinta);
+  /* 16px o mas: por debajo, Safari en iPhone hace zoom al enfocar el campo. */
+  font-size: 1rem;
+  font-family: inherit;
+  padding: 0.7rem 0.75rem;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.comprar__datos input:focus {
+  outline: 2px solid var(--chartreuse);
+  outline-offset: -2px;
+}
+
+.comprar__boton {
+  width: 100%;
+  margin-top: 1.25rem;
+  padding: 1.1rem;
+  background: var(--chartreuse);
+  color: var(--negro);
+  border: none;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+}
+
+.comprar__boton:hover:not(:disabled) {
+  filter: brightness(1.1);
+}
+
+.comprar__boton:disabled {
+  background: var(--linea-fuerte);
+  color: var(--tinta-suave);
+  cursor: default;
+}
+
+.comprar__letra {
+  margin: 0.75rem 0 0;
+  font-size: 0.8rem;
+  color: var(--tinta-suave);
+}
+
+/* ── Tus entradas ─────────────────────────────────────────────── */
+
+.seccion--estrecha {
+  max-width: 40rem;
+}
+
+.entradas__titulo {
+  margin: 0.35rem 0 0;
+  font-size: clamp(2rem, 7vw, 3rem);
+}
+
+.entradas__noche {
+  margin: 0.6rem 0 0;
+  color: var(--tinta-suave);
+}
+
+.entradas__aviso {
+  margin: 1.5rem 0 0;
+  font-size: 0.85rem;
+  color: var(--tinta-suave);
+}
+
+.pagar {
+  margin-top: 2rem;
+}
+
+.pagar__total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin: 0;
+  padding: 1.1rem;
+  background: var(--concreto);
+  border: 1px solid var(--linea);
+  font-variant-numeric: tabular-nums;
+}
+
+.pagar__total strong {
+  font-size: 1.6rem;
+  color: var(--chartreuse);
+}
+
+.pagar__aviso {
+  margin: 1rem 0 0;
+  padding: 0.8rem 0.9rem;
+  border-left: 2px solid var(--magenta);
+  font-size: 0.85rem;
+  color: var(--tinta-suave);
+}
+
+.qrs {
+  list-style: none;
+  margin: 1.5rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.qr {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  padding: 1rem;
+  background: var(--concreto);
+  border-left: 2px solid var(--chartreuse);
+}
+
+/* Una entrada ya escaneada se atenua: no sirve para volver a entrar. */
+.qr--usada {
+  border-left-color: var(--linea-fuerte);
+  opacity: 0.55;
+}
+
+/*
+ * El QR va sobre blanco puro y con su margen. No es un descuido de tema: un
+ * lector necesita el contraste maximo y una zona en blanco alrededor, y sobre
+ * el fondo casi negro de esta web un QR en gris no se lee.
+ */
+.qr__imagen {
+  flex-shrink: 0;
+  background: #ffffff;
+  padding: 0.4rem;
+  line-height: 0;
+}
+
+.qr__imagen img {
+  display: block;
+  width: 8rem;
+  height: 8rem;
+}
+
+.qr__texto {
+  display: block;
+  width: 8rem;
+  color: #000000;
+  font-size: 0.55rem;
+  line-height: 1.3;
+  word-break: break-all;
+}
+
+.qr__datos {
+  min-width: 0;
+}
+
+.qr__tipo {
+  margin: 0;
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.qr__titular {
+  margin: 0.25rem 0 0;
+  color: var(--tinta-suave);
+}
+
+.qr__extra {
+  margin: 0.4rem 0 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
+}
+
+.qr__usada {
+  margin: 0.4rem 0 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--magenta);
+}

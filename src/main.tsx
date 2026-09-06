@@ -13,6 +13,7 @@ import { PedidoDetalle } from "./paginas/PedidoDetalle.tsx";
 import { Pedidos } from "./paginas/Pedidos.tsx";
 import { Agenda } from "./publico/Agenda.tsx";
 import { FichaDeNoche } from "./publico/FichaDeNoche.tsx";
+import { MisEntradas } from "./publico/MisEntradas.tsx";
 import { Portada } from "./publico/Portada.tsx";
 import { SitioPublico } from "./publico/SitioPublico.tsx";
 import { Puerta } from "./puerta/Puerta.tsx";
@@ -37,6 +38,13 @@ createRoot(document.getElementById("root")!).render(
             <Route index element={<Portada />} />
             <Route path="agenda" element={<Agenda />} />
             <Route path="evento/:slug" element={<FichaDeNoche />} />
+            {/*
+              «Tus entradas». Va en la zona pública y sin sesión: quien compró
+              no tiene cuenta, y lo único que tiene es este enlace con su
+              código. La ruta es la misma que en el sistema anterior para que
+              los enlaces ya compartidos sigan funcionando.
+            */}
+            <Route path="entradas/:codigo" element={<MisEntradas />} />
           </Route>
 
           <Route path="panel" element={<App />}>

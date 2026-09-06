@@ -1,4 +1,5 @@
 import { Link, useParams } from "react-router-dom";
+import { Comprar } from "./Comprar";
 import { Reservados } from "./Reservados";
 import { AvisoDeError } from "../Aviso";
 import { horaDeSala, soles, verNoche } from "../api";
@@ -9,8 +10,9 @@ import { useCarga } from "../datos";
  * La ficha pública de una noche: qué hay, a qué hora, cuánto cuesta y qué hace
  * falta para entrar.
  *
- * La compra todavía no está migrada, así que las entradas se enseñan con sus
- * precios y su disponibilidad pero no se pueden comprar aún.
+ * Las entradas se listan con su precio y, debajo, el selector para comprarlas.
+ * El listado de arriba es informativo —se lee de un vistazo antes de decidir— y
+ * el selector es donde se elige.
  */
 export function FichaDeNoche() {
   const { slug = "" } = useParams();
@@ -116,14 +118,15 @@ export function FichaDeNoche() {
         </ul>
 
         {/*
-          La compra vive en el sistema anterior hasta que se migre: es lo
-          transaccional y va al final. Decirlo es mejor que un botón que no
-          hace nada.
+          Agotada quiere decir que no queda nada que vender: enseñar el
+          selector con todos los contadores a cero solo haría perder el
+          tiempo a quien llega tarde.
         */}
-        <p className="aviso">
-          La compra por internet todavía no está disponible en esta versión. Escríbenos por
-          WhatsApp para comprar tu entrada.
-        </p>
+        {agotada ? (
+          <p className="aviso">Esta noche está agotada.</p>
+        ) : (
+          <Comprar slug={n.slug} entradas={n.entradas} />
+        )}
 
         {/* Los reservados sí se pueden pedir: no cobran nada ni apartan la mesa. */}
         <Reservados slug={n.slug} />
