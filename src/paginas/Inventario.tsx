@@ -1,6 +1,14 @@
 import { useState } from "react";
+import { FichaDeProducto, MovimientoDeStock } from "./FormulariosDeAlmacen";
 import { AvisoDeError } from "../Aviso";
-import { horaDeSala, listarProveedores, soles, verMovimientos, verStock } from "../api";
+import {
+  horaDeSala,
+  listarProveedores,
+  soles,
+  verMovimientos,
+  verOpcionesDeAlmacen,
+  verStock,
+} from "../api";
 import { useCarga } from "../datos";
 
 /**
@@ -53,8 +61,27 @@ function Resumen({
   );
 }
 
+/**
+ * El stock, con lo que hace falta para cambiarlo.
+ *
+ * El alta y los movimientos se abren aquí y no en otra pantalla porque las dos
+ * decisiones se toman mirando esta tabla: se da de alta un producto cuando se ve
+ * que falta, y se registra una compra cuando se ve el aviso de reponer.
+ */
 function Stock() {
-  const carga = useCarga(verStock, []);
+  /*
+   * Un contador para volver a pedir el stock. `useCarga` no trae «recargar» a
+   * propósito, así que se le añade una dependencia que cambia a mano. Aquí hace
+   * falta porque el resumen de arriba —agotados, valor a coste— cambia con cada
+   * movimiento.
+   */
+  const [version, setVersion] = useState(0);
+  const carga = useCarga(verStock, [version]);
+  const opciones = useCarga(verOpcionesDeAlmacen, []);
+
+  /** Qué formulario está abierto: "nuevo", el id de un producto, o nada. */
+  const [abierto, setAbierto] = useState<string | null>(null);
+  const [aviso, setAviso] = useState<string | null>(null);
 
   if (carga.fase === "cargando") return <p className="aviso">Cargando el stock…</p>;
   if (carga.fase === "error") {
@@ -63,9 +90,34 @@ function Stock() {
 
   const { resumen, lineas } = carga.datos;
 
+  function refrescar(mensaje: string | null) {
+    setAbierto(null);
+    setAviso(mensaje);
+    setVersion((v) => v + 1);
+  }
+
   return (
     <>
       <Resumen {...resumen} />
+
+      {aviso && <p className="aviso">{aviso}</p>}
+
+      {/* Las opciones tardan lo mismo que el stock, pero si fallaran solas no
+          se puede escribir: se dice y se deja la tabla, que sí sirve. */}
+      {opciones.fase === "error" && (
+        <p className="aviso aviso--error">
+          No se pudieron cargar las categorías y salas, así que no se puede dar de alta ni
+          mover nada: {opciones.mensaje}
+        </p>
+      )}
+
+      {opciones.fase === "listo" && abierto === "nuevo" && (
+        <FichaDeProducto
+          opciones={opciones.datos}
+          alGuardar={refrescar}
+          alCancelar={() => setAbierto(null)}
+        />
+      )}
 
       <div className="tabla-scroll">
         <table className="tabla">
@@ -79,43 +131,98 @@ function Stock() {
               <th className="num">Quedan</th>
               <th className="num">Umbral</th>
               <th className="num">Valor</th>
+              <th />
             </tr>
           </thead>
           <tbody>
-            {lineas.map((l) => (
-              <tr
-                key={l.productoId}
-                className={l.necesitaReposicion ? "fila--alerta" : undefined}
-              >
-                <td className="sku">{l.sku}</td>
-                <td>
-                  {l.producto}
-                  {/* El aviso va pegado al producto, no en una columna aparte:
-                      así se lee sin cruzar la tabla entera con la vista.
+            {lineas.map((l) =>
+              abierto === l.productoId && opciones.fase === "listo" ? (
+                <tr key={l.productoId}>
+                  <td colSpan={7}>
+                    <p className="campo__pista">
+                      {l.producto} · quedan {l.cantidad}
+                    </p>
+                    <MovimientoDeStock
+                      linea={l}
+                      opciones={opciones.datos}
+                      alMover={refrescar}
+                      alCancelar={() => setAbierto(null)}
+                    />
+                  </td>
+                </tr>
+              ) : abierto === "ficha-" + l.productoId && opciones.fase === "listo" ? (
+                <tr key={l.productoId}>
+                  <td colSpan={7}>
+                    <FichaDeProducto
+                      inicial={l}
+                      opciones={opciones.datos}
+                      alGuardar={refrescar}
+                      alCancelar={() => setAbierto(null)}
+                    />
+                  </td>
+                </tr>
+              ) : (
+                <tr
+                  key={l.productoId}
+                  className={l.necesitaReposicion ? "fila--alerta" : undefined}
+                >
+                  <td className="sku">{l.sku}</td>
+                  <td>
+                    {l.producto}
+                    {/* El aviso va pegado al producto, no en una columna aparte:
+                        así se lee sin cruzar la tabla entera con la vista.
 
-                      Los tres casos son distintos y el texto lo dice: no queda
-                      nada, se está justo en el umbral, o ya se bajó de él.
-                      «Faltan 0» —que es lo que salía al estar en el límite— no
-                      significa nada para quien tiene que decidir si pide. */}
-                  {l.cantidad === 0 ? (
-                    <span className="marca marca--grave"> Agotado</span>
-                  ) : l.faltanParaElUmbral > 0 ? (
-                    <span className="marca"> Faltan {l.faltanParaElUmbral}</span>
-                  ) : l.necesitaReposicion ? (
-                    <span className="marca"> En el límite</span>
-                  ) : null}
-                </td>
-                <td>{l.categoria}</td>
-                <td className="num">
-                  {l.cantidad} <span className="sutil">{l.unidad.toLowerCase()}</span>
-                </td>
-                <td className="num sutil">{l.alertaDeStock}</td>
-                <td className="num precio">{soles(l.valorACosteCentimos)}</td>
-              </tr>
-            ))}
+                        Los tres casos son distintos y el texto lo dice: no queda
+                        nada, se está justo en el umbral, o ya se bajó de él.
+                        «Faltan 0» —que es lo que salía al estar en el límite— no
+                        significa nada para quien tiene que decidir si pide. */}
+                    {l.cantidad === 0 ? (
+                      <span className="marca marca--grave"> Agotado</span>
+                    ) : l.faltanParaElUmbral > 0 ? (
+                      <span className="marca"> Faltan {l.faltanParaElUmbral}</span>
+                    ) : l.necesitaReposicion ? (
+                      <span className="marca"> En el límite</span>
+                    ) : null}
+                  </td>
+                  <td>{l.categoria}</td>
+                  <td className="num">
+                    {l.cantidad} <span className="sutil">{l.unidad.toLowerCase()}</span>
+                  </td>
+                  <td className="num sutil">{l.alertaDeStock}</td>
+                  <td className="num precio">{soles(l.valorACosteCentimos)}</td>
+                  <td className="acciones">
+                    <button
+                      type="button"
+                      onClick={() => setAbierto(l.productoId)}
+                      disabled={opciones.fase !== "listo"}
+                    >
+                      Mover
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setAbierto("ficha-" + l.productoId)}
+                      disabled={opciones.fase !== "listo"}
+                    >
+                      Ficha
+                    </button>
+                  </td>
+                </tr>
+              ),
+            )}
           </tbody>
         </table>
       </div>
+
+      {abierto === null && (
+        <button
+          type="button"
+          className="boton-secundario"
+          onClick={() => setAbierto("nuevo")}
+          disabled={opciones.fase !== "listo"}
+        >
+          Nuevo producto
+        </button>
+      )}
     </>
   );
 }

@@ -153,6 +153,8 @@ export type LineaDeStock = {
   necesitaReposicion: boolean;
   faltanParaElUmbral: number;
   valorACosteCentimos: number;
+  costeCentimos: number;
+  precioCentimos: number;
 };
 
 export type ResumenDeAlmacen = {
@@ -1038,3 +1040,117 @@ export function aHoraDeSala(iso: string): string {
   // `toISOString` da «...T20:00:00.000Z»; el campo quiere «...T20:00».
   return enLima.toISOString().slice(0, 16);
 }
+
+// ──────────────── Almacén: altas y movimientos ────────────────
+//
+// Es la otra mitad de la barra. El punto de venta hace bajar el stock solo, pero
+// nada lo subía: sin esto, a la tercera noche el inventario está en negativo y
+// deja de servir para decidir qué pedir.
+
+export type CategoriaParaElegir = { id: string; nombre: string };
+export type SalaParaElegirEnAlmacen = { id: string; nombre: string };
+
+export type OpcionesDeAlmacen = {
+  categorias: CategoriaParaElegir[];
+  salas: SalaParaElegirEnAlmacen[];
+  unidades: UnidadDeProducto[];
+  /** Solo los que se registran a mano. La venta no está, y es a propósito. */
+  tiposDeMovimiento: TipoDeMovimiento[];
+};
+
+/**
+ * La ficha de un producto.
+ *
+ * No lleva SKU: lo genera el servidor. Es un campo único que nadie quiere
+ * teclear a las once de la noche, y pedirlo garantizaba que se escribiera mal y
+ * que chocara.
+ */
+export type FormularioDeProducto = {
+  nombre: string;
+  categoriaId: string;
+  unidad: UnidadDeProducto;
+  costeCentimos: number;
+  precioCentimos: number;
+  alertaDeStock: number;
+  activo: boolean;
+};
+
+/**
+ * Un movimiento a mano.
+ *
+ * `unidades` va sin signo en compra y merma —la persona escribe «12» pensando en
+ * doce botellas— y con signo en ajuste. Quien resuelve el sentido es el
+ * servidor: que una compra sume y una merma reste es una regla del negocio, no
+ * algo que deba recordar quien rellena el formulario.
+ */
+export type FormularioDeMovimiento = {
+  tipo: TipoDeMovimiento;
+  salaId: string;
+  unidades: number;
+  /** Lo pagado por unidad, en céntimos. Solo significa algo en una compra. */
+  costeUnitarioCentimos: number | null;
+  nota: string;
+};
+
+export type ProductoGuardado = {
+  id: string;
+  sku: string;
+  nombre: string;
+  precioCentimos: number;
+  activo: boolean;
+};
+
+export type MovimientoHecho = {
+  movimientoId: string;
+  producto: string;
+  cantidad: number;
+  stockResultante: number;
+};
+
+export function verOpcionesDeAlmacen(): Promise<OpcionesDeAlmacen> {
+  return pedir<OpcionesDeAlmacen>("/api/inventario/opciones");
+}
+
+export function crearProducto(datos: FormularioDeProducto): Promise<ProductoGuardado> {
+  return pedir<ProductoGuardado>("/api/inventario/productos", {
+    method: "POST",
+    body: JSON.stringify(datos),
+  });
+}
+
+export function editarProducto(
+  id: string,
+  datos: FormularioDeProducto,
+): Promise<ProductoGuardado> {
+  return pedir<ProductoGuardado>(`/api/inventario/productos/${encodeURIComponent(id)}`, {
+    method: "PUT",
+    body: JSON.stringify(datos),
+  });
+}
+
+export function moverStock(
+  productoId: string,
+  datos: FormularioDeMovimiento,
+): Promise<MovimientoHecho> {
+  return pedir<MovimientoHecho>(
+    `/api/inventario/productos/${encodeURIComponent(productoId)}/movimientos`,
+    { method: "POST", body: JSON.stringify(datos) },
+  );
+}
+
+/** Cómo se llama cada unidad en la pantalla. */
+export const NOMBRE_DE_UNIDAD: Record<UnidadDeProducto, string> = {
+  UNIDAD: "Unidad",
+  BOTELLA: "Botella",
+  CAJA: "Caja",
+  LITRO: "Litro",
+};
+
+/** Cómo se llama cada tipo de movimiento. */
+export const NOMBRE_DE_MOVIMIENTO: Record<TipoDeMovimiento, string> = {
+  COMPRA: "Compra",
+  VENTA: "Venta",
+  MERMA: "Merma",
+  AJUSTE: "Ajuste",
+  TRANSFERENCIA: "Traspaso",
+};
