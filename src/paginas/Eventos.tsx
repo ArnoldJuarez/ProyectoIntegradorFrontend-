@@ -22,9 +22,14 @@ export function Eventos() {
     <section>
       <header className="cabecera">
         <h2>Eventos</h2>
-        <span className="contador">
-          {eventos.length} {eventos.length === 1 ? "noche" : "noches"}
-        </span>
+        <div className="cabecera__acciones">
+          <span className="contador">
+            {eventos.length} {eventos.length === 1 ? "noche" : "noches"}
+          </span>
+          <Link to="/panel/eventos/nueva" className="boton-secundario">
+            Nueva noche
+          </Link>
+        </div>
       </header>
 
       {eventos.length === 0 ? (

@@ -8,6 +8,7 @@ import { Caja } from "./paginas/Caja.tsx";
 import { ClienteDetalle } from "./paginas/ClienteDetalle.tsx";
 import { Clientes } from "./paginas/Clientes.tsx";
 import { EventoDetalle } from "./paginas/EventoDetalle.tsx";
+import { EventoForm } from "./paginas/EventoForm.tsx";
 import { Eventos } from "./paginas/Eventos.tsx";
 import { Inventario } from "./paginas/Inventario.tsx";
 import { PedidoDetalle } from "./paginas/PedidoDetalle.tsx";
@@ -51,6 +52,14 @@ createRoot(document.getElementById("root")!).render(
           <Route path="panel" element={<App />}>
             <Route index element={<Navigate to="/panel/eventos" replace />} />
             <Route path="eventos" element={<Eventos />} />
+            {/*
+              "nueva" va ANTES que ":slug". React Router elige la ruta más
+              específica, pero dejarlo al azar del orden es de las cosas que se
+              rompen al reordenar el archivo: una noche con el slug "nueva"
+              sería inalcanzable.
+            */}
+            <Route path="eventos/nueva" element={<EventoForm />} />
+            <Route path="eventos/:slug/editar" element={<EventoForm />} />
             <Route path="eventos/:slug" element={<EventoDetalle />} />
             <Route path="clientes" element={<Clientes />} />
             <Route path="clientes/:id" element={<ClienteDetalle />} />

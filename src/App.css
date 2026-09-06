@@ -617,3 +617,266 @@ code {
   margin-bottom: 0;
   font-size: 0.85rem;
 }
+
+/* ── Formularios del panel ────────────────────────────────────── */
+/*
+ * A diferencia de la barra o la puerta, esto se rellena sentado y con tiempo:
+ * los campos pueden ser densos y caben varios por fila. Lo que no cambia es que
+ * el texto de ayuda va debajo del campo al que se refiere y no en un icono, que
+ * es donde nadie lo lee.
+ */
+
+.cabecera__acciones {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.boton-secundario {
+  display: inline-block;
+  padding: 0.45rem 0.9rem;
+  background: none;
+  border: 1px solid var(--linea-fuerte);
+  color: var(--tinta);
+  font: inherit;
+  font-size: 0.85rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.boton-secundario:hover {
+  border-color: var(--chartreuse);
+  color: var(--chartreuse);
+}
+
+.formulario {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
+}
+
+.campo--ancho {
+  grid-column: 1 / -1;
+}
+
+.campo input,
+.campo select,
+.campo textarea {
+  background: var(--concreto);
+  border: 1px solid var(--linea-fuerte);
+  color: var(--tinta);
+  /* 16px o más: por debajo, Safari hace zoom al enfocar el campo. */
+  font-size: 1rem;
+  font-family: inherit;
+  padding: 0.6rem 0.7rem;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.campo textarea {
+  resize: vertical;
+}
+
+.campo input:focus,
+.campo select:focus,
+.campo textarea:focus {
+  outline: 2px solid var(--chartreuse);
+  outline-offset: -2px;
+}
+
+.campo__pista {
+  font-size: 0.75rem;
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--tinta-suave);
+}
+
+.campo__pista code {
+  color: var(--chartreuse);
+}
+
+.formulario__acciones {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.formulario__acciones button {
+  padding: 0.8rem 1.6rem;
+  background: var(--chartreuse);
+  color: var(--negro);
+  border: none;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.formulario__acciones button:disabled {
+  background: var(--linea-fuerte);
+  color: var(--tinta-suave);
+  cursor: default;
+}
+
+/* ── El cartel ────────────────────────────────────────────────── */
+
+.cartel {
+  border: 1px solid var(--linea);
+  padding: 0.9rem;
+}
+
+.cartel legend {
+  padding: 0 0.4rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
+}
+
+.cartel__opciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.6rem;
+}
+
+.artista {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.7rem;
+  background: var(--concreto);
+  border: 1px solid var(--linea-fuerte);
+  color: var(--tinta);
+  font: inherit;
+  font-size: 0.85rem;
+  text-transform: none;
+  letter-spacing: normal;
+  cursor: pointer;
+}
+
+.artista--elegido {
+  border-color: var(--chartreuse);
+}
+
+/* El número dice el orden, y el orden decide quién es cabeza de cartel. */
+.artista__puesto {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  background: var(--chartreuse);
+  color: var(--negro);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.artista__genero {
+  color: var(--tinta-suave);
+  font-size: 0.75rem;
+}
+
+/* ── Tipos de entrada, en línea en la tabla ───────────────────── */
+
+.tipo-form {
+  padding: 0.9rem 0;
+}
+
+.tipo-form__campos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 0.75rem;
+}
+
+.tipo-form__campos label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
+}
+
+.tipo-form__campos input[type="text"],
+.tipo-form__campos input[type="number"],
+.tipo-form__campos input:not([type]) {
+  background: var(--negro);
+  border: 1px solid var(--linea-fuerte);
+  color: var(--tinta);
+  font-size: 1rem;
+  font-family: inherit;
+  padding: 0.5rem 0.6rem;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.tipo-form__ancho {
+  grid-column: 1 / -1;
+}
+
+.tipo-form__casilla {
+  flex-direction: row !important;
+  align-items: center;
+  gap: 0.5rem !important;
+}
+
+.tipo-form__acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.9rem;
+}
+
+.tipo-form__acciones button {
+  padding: 0.55rem 1.1rem;
+  background: var(--concreto);
+  border: 1px solid var(--linea-fuerte);
+  color: var(--tinta);
+  font: inherit;
+  cursor: pointer;
+}
+
+.tipo-form__acciones button[type="submit"] {
+  background: var(--chartreuse);
+  border-color: var(--chartreuse);
+  color: var(--negro);
+  font-weight: 700;
+}
+
+.acciones {
+  display: flex;
+  gap: 0.4rem;
+  white-space: nowrap;
+}
+
+.acciones button {
+  padding: 0.3rem 0.6rem;
+  background: none;
+  border: 1px solid var(--linea-fuerte);
+  color: var(--tinta-suave);
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.acciones button:hover {
+  color: var(--tinta);
+  border-color: var(--tinta-suave);
+}
+
+.contador--alerta {
+  color: var(--magenta);
+}

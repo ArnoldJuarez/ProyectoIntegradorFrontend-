@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { TiposDeEntrada } from "./TiposDeEntrada";
 import { AvisoDeError } from "../Aviso";
 import { NOMBRE_DE_ESTADO, horaDeSala, soles, verEvento } from "../api";
 import { useCarga } from "../datos";
@@ -6,7 +8,18 @@ import { useCarga } from "../datos";
 /** La ficha de una noche: horario, condiciones y cómo va la venta por tipo. */
 export function EventoDetalle() {
   const { slug = "" } = useParams();
-  const carga = useCarga(() => verEvento(slug), [slug]);
+
+  /*
+   * Un contador para volver a pedir la ficha.
+   *
+   * `useCarga` no trae un «recargar» a propósito: no es una librería de caché,
+   * es el patrón de carga escrito una vez. Aquí se le añade una dependencia que
+   * cambia a mano, que hace falta porque tocar las entradas cambia también los
+   * totales de arriba —lo recaudado y lo vendido— y dejarlos viejos sería peor
+   * que no enseñarlos.
+   */
+  const [version, setVersion] = useState(0);
+  const carga = useCarga(() => verEvento(slug), [slug, version]);
 
   if (carga.fase === "cargando") return <p className="aviso">Cargando la noche…</p>;
   if (carga.fase === "error") {
@@ -25,9 +38,14 @@ export function EventoDetalle() {
 
       <header className="cabecera">
         <h2>{e.titulo}</h2>
-        <span className={`estado estado--${e.estado.toLowerCase()}`}>
-          {NOMBRE_DE_ESTADO[e.estado]}
-        </span>
+        <div className="cabecera__acciones">
+          <span className={`estado estado--${e.estado.toLowerCase()}`}>
+            {NOMBRE_DE_ESTADO[e.estado]}
+          </span>
+          <Link to={`/panel/eventos/${e.slug}/editar`} className="boton-secundario">
+            Editar
+          </Link>
+        </div>
       </header>
 
       {e.descripcion && <p className="descripcion">{e.descripcion}</p>}
@@ -55,6 +73,10 @@ export function EventoDetalle() {
           <dt>Edad mínima</dt>
           <dd>{e.edadMinima} años</dd>
         </div>
+        <div>
+          <dt>Recaudado</dt>
+          <dd className="precio">{soles(e.recaudadoCentimos)}</dd>
+        </div>
         {e.vestimenta && (
           <div>
             <dt>Vestimenta</dt>
@@ -63,42 +85,12 @@ export function EventoDetalle() {
         )}
       </dl>
 
-      <header className="cabecera">
-        <h2>Entradas</h2>
-        <span className="contador">{soles(e.recaudadoCentimos)} recaudado</span>
-      </header>
-
-      <div className="tabla-scroll">
-        <table className="tabla">
-          <thead>
-            <tr>
-              <th>Tipo</th>
-              <th className="num">Precio</th>
-              <th className="num">Vendidas</th>
-              <th className="num">Quedan</th>
-              <th>Venta</th>
-            </tr>
-          </thead>
-          <tbody>
-            {e.tiposDeEntrada.map((t) => (
-              <tr key={t.id}>
-                <td>
-                  {t.nombre}
-                  {t.descripcion && <span className="sutil"> · {t.descripcion}</span>}
-                </td>
-                <td className="num precio">{soles(t.precioCentimos)}</td>
-                <td className="num">
-                  {t.vendidas} / {t.cantidad}
-                </td>
-                <td className="num">{t.disponibles}</td>
-                <td>
-                  <span className="etiqueta">{t.activo ? "Abierta" : "Cerrada"}</span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <TiposDeEntrada
+        slug={e.slug}
+        tipos={e.tiposDeEntrada}
+        aforoDeSala={e.aforoDeSala}
+        alCambiar={() => setVersion((v) => v + 1)}
+      />
     </section>
   );
 }

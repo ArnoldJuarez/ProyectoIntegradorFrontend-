@@ -361,6 +361,8 @@ export type TipoDeEntrada = {
   cantidad: number;
   vendidas: number;
   disponibles: number;
+  maxPorPedido: number;
+  consumicionesIncluidas: number;
   activo: boolean;
 };
 
@@ -904,3 +906,135 @@ export const NOMBRE_DE_PAGO: Record<MetodoDePago, string> = {
   PLIN: "Plin",
   TRANSFERENCIA: "Transferencia",
 };
+
+// ──────────────── Programar noches (panel) ────────────────
+//
+// Lo que hasta ahora solo se leía. Va bajo el mismo prefijo `/api/eventos` que
+// el listado, porque es la misma sección vista por la misma gente: lo que cambia
+// es el verbo.
+
+export type SalaParaElegir = { id: string; nombre: string; aforo: number };
+export type ArtistaParaElegir = { id: string; nombre: string; genero: string | null };
+
+export type OpcionesDeProgramacion = {
+  salas: SalaParaElegir[];
+  artistas: ArtistaParaElegir[];
+};
+
+/**
+ * Lo que se manda al crear o editar una noche.
+ *
+ * Las fechas van como instante ISO en UTC, no como texto de hora local: la
+ * conversión se hace aquí, donde se sabe en qué zona está la sala. Ver
+ * `deHoraDeSala`.
+ */
+export type FormularioDeNoche = {
+  titulo: string;
+  descripcion: string;
+  salaId: string;
+  puertasA: string;
+  terminaA: string;
+  edadMinima: number;
+  vestimenta: string;
+  estado: EstadoDeEvento;
+  portada: string;
+  /** En orden. El primero es cabeza de cartel. */
+  artistaIds: string[];
+};
+
+export type FormularioDeTipo = {
+  nombre: string;
+  descripcion: string;
+  precioCentimos: number;
+  cantidad: number;
+  maximoPorPedido: number;
+  consumicionesIncluidas: number;
+  activo: boolean;
+};
+
+export type NocheGuardada = { id: string; slug: string; titulo: string };
+export type TipoGuardado = { id: string; nombre: string; cantidad: number; activo: boolean };
+export type TipoQuitado = { retirado: boolean; mensaje: string };
+
+export function verOpcionesDeProgramacion(): Promise<OpcionesDeProgramacion> {
+  return pedir<OpcionesDeProgramacion>("/api/eventos/opciones");
+}
+
+export function crearNoche(datos: FormularioDeNoche): Promise<NocheGuardada> {
+  return pedir<NocheGuardada>("/api/eventos", {
+    method: "POST",
+    body: JSON.stringify(datos),
+  });
+}
+
+/** Edita una noche. La dirección (`slug`) no cambia aunque cambie el título. */
+export function editarNoche(slug: string, datos: FormularioDeNoche): Promise<NocheGuardada> {
+  return pedir<NocheGuardada>(`/api/eventos/${encodeURIComponent(slug)}`, {
+    method: "PUT",
+    body: JSON.stringify(datos),
+  });
+}
+
+export function anadirTipoDeEntrada(slug: string, datos: FormularioDeTipo): Promise<TipoGuardado> {
+  return pedir<TipoGuardado>(`/api/eventos/${encodeURIComponent(slug)}/entradas`, {
+    method: "POST",
+    body: JSON.stringify(datos),
+  });
+}
+
+export function editarTipoDeEntrada(id: string, datos: FormularioDeTipo): Promise<TipoGuardado> {
+  return pedir<TipoGuardado>(`/api/eventos/entradas/${encodeURIComponent(id)}`, {
+    method: "PUT",
+    body: JSON.stringify(datos),
+  });
+}
+
+/**
+ * Quita un tipo de entrada.
+ *
+ * Si tiene ventas **no se borra**: se retira de la venta, y la respuesta lo dice
+ * en `retirado`. Hay que enseñarlo, o parecerá que el botón no funcionó.
+ */
+export function quitarTipoDeEntrada(id: string): Promise<TipoQuitado> {
+  return pedir<TipoQuitado>(`/api/eventos/entradas/${encodeURIComponent(id)}`, {
+    method: "DELETE",
+  });
+}
+
+/**
+ * Cuántas horas va Lima por detrás de UTC.
+ *
+ * Perú no tiene horario de verano, así que el desfase es siempre el mismo y se
+ * puede escribir como una constante. En un país con cambio de hora esto tendría
+ * que salir de `Intl`, y aun así sería una fuente de errores dos veces al año.
+ */
+const HORAS_DE_DESFASE = 5;
+
+const MS_POR_HORA = 3_600_000;
+
+/**
+ * Convierte lo que se teclea en un `datetime-local` a un instante UTC.
+ *
+ * Un `<input type="datetime-local">` da «2027-04-02T20:00» sin zona, y
+ * `new Date()` lo interpretaría en la zona **del navegador**. Un promotor
+ * planificando desde otro país programaría la noche a una hora distinta de la
+ * que escribió, sin ningún aviso.
+ *
+ * Por eso se fija a mano: lo tecleado es hora de sala, y la sala está en Lima.
+ */
+export function deHoraDeSala(local: string): string {
+  if (!local) return "";
+  // Al leerlo como si fuera UTC y sumarle el desfase se obtiene el instante
+  // real: las 20:00 de Lima son las 01:00 UTC del día siguiente.
+  const comoSiFueraUtc = Date.parse(`${local}:00Z`);
+  if (Number.isNaN(comoSiFueraUtc)) return "";
+  return new Date(comoSiFueraUtc + HORAS_DE_DESFASE * MS_POR_HORA).toISOString();
+}
+
+/** El camino de vuelta: un instante ISO al texto que espera el campo del formulario. */
+export function aHoraDeSala(iso: string): string {
+  if (!iso) return "";
+  const enLima = new Date(Date.parse(iso) - HORAS_DE_DESFASE * MS_POR_HORA);
+  // `toISOString` da «...T20:00:00.000Z»; el campo quiere «...T20:00».
+  return enLima.toISOString().slice(0, 16);
+}
