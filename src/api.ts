@@ -802,3 +802,105 @@ export function pagarPedido(codigo: string): Promise<PagoHecho> {
 export function verMisEntradas(codigo: string): Promise<MisEntradas> {
   return pedir<MisEntradas>(`/api/publico/pedidos/${encodeURIComponent(codigo)}`);
 }
+
+// ─────────────────────────── Barra ───────────────────────────
+//
+// El punto de venta. Como la puerta, va fuera del panel: quien sirve copas no
+// tiene permiso sobre ninguna ruta del panel, y el arqueo histórico se mira en
+// /panel/caja, que es donde se sienta quien cuadra al cerrar.
+
+export type BotonDeProducto = {
+  id: string;
+  nombre: string;
+  sku: string;
+  unidad: UnidadDeProducto;
+  precioCentimos: number;
+  /** Puede ser negativo. No se oculta: es la señal de que hay que reponer. */
+  stock: number;
+};
+
+export type GrupoDeCatalogo = { categoria: string; productos: BotonDeProducto[] };
+
+export type TurnoAbierto = {
+  id: string;
+  sala: string;
+  responsable: string;
+  fondoCentimos: number;
+  /**
+   * Lo que debería haber en el cajón: el fondo más lo cobrado **en efectivo**.
+   * La tarjeta y el Yape van al banco y no cuentan aquí.
+   */
+  esperadoCentimos: number;
+  abiertaEn: string;
+};
+
+export type PantallaDeBarra = {
+  /** Nulo si esta persona no tiene caja abierta. */
+  turno: TurnoAbierto | null;
+  noche: string | null;
+  nocheSlug: string | null;
+  catalogo: GrupoDeCatalogo[];
+};
+
+export type VentaHecha = {
+  id: string;
+  totalCentimos: number;
+  unidades: number;
+  esperadoEnCajon: number;
+};
+
+export type TurnoCerrado = {
+  id: string;
+  fondoCentimos: number;
+  esperadoCentimos: number;
+  contadoCentimos: number;
+  diferenciaCentimos: number;
+  cuadro: boolean;
+  cerradaEn: string;
+};
+
+export function verBarra(): Promise<PantallaDeBarra> {
+  return pedir<PantallaDeBarra>("/api/barra");
+}
+
+/**
+ * Abre el turno, o devuelve el que ya estaba.
+ *
+ * Volver a entrar es **continuar** el turno, no empezar otro: si no, cerrar la
+ * pestaña y volver abriría una segunda caja y las ventas se repartirían entre
+ * las dos.
+ */
+export function abrirTurno(fondoCentimos: number): Promise<TurnoAbierto> {
+  return pedir<TurnoAbierto>("/api/barra/turno", {
+    method: "POST",
+    body: JSON.stringify({ fondoCentimos }),
+  });
+}
+
+export function cobrarEnBarra(
+  arqueoId: string,
+  metodoDePago: MetodoDePago,
+  eventoSlug: string | null,
+  lineas: { productoId: string; cantidad: number }[],
+): Promise<VentaHecha> {
+  return pedir<VentaHecha>("/api/barra/ventas", {
+    method: "POST",
+    body: JSON.stringify({ arqueoId, metodoDePago, eventoSlug, lineas }),
+  });
+}
+
+export function cerrarTurno(arqueoId: string, contadoCentimos: number): Promise<TurnoCerrado> {
+  return pedir<TurnoCerrado>("/api/barra/cierre", {
+    method: "POST",
+    body: JSON.stringify({ arqueoId, contadoCentimos }),
+  });
+}
+
+/** Cómo se llama cada método de pago en la pantalla. */
+export const NOMBRE_DE_PAGO: Record<MetodoDePago, string> = {
+  EFECTIVO: "Efectivo",
+  TARJETA: "Tarjeta",
+  YAPE: "Yape",
+  PLIN: "Plin",
+  TRANSFERENCIA: "Transferencia",
+};

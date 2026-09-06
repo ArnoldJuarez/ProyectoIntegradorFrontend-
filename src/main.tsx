@@ -2,6 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import App from "./App.tsx";
+import { Barra } from "./barra/Barra.tsx";
 import { ArqueoDetalle } from "./paginas/ArqueoDetalle.tsx";
 import { Caja } from "./paginas/Caja.tsx";
 import { ClienteDetalle } from "./paginas/ClienteDetalle.tsx";
@@ -66,6 +67,12 @@ createRoot(document.getElementById("root")!).render(
             le enseñaría una navegación entera que le responde 403.
           */}
           <Route path="puerta" element={<Puerta />} />
+
+          {/*
+            La barra, por lo mismo que la puerta: un rol que no ve el panel y
+            una pantalla que se usa de pie con una tablet.
+          */}
+          <Route path="barra" element={<Barra />} />
 
           {/*
             Cualquier otra dirección va a la portada. `replace` para no dejarla
