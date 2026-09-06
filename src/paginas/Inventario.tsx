@@ -74,7 +74,8 @@ function Stock() {
               <th>SKU</th>
               <th>Producto</th>
               <th>Categoría</th>
-              <th>Sala</th>
+              {/* Ya no hay columna «Sala»: el saldo dejó de estar desglosado
+                  por local y ahora hay una única cifra por producto. */}
               <th className="num">Quedan</th>
               <th className="num">Umbral</th>
               <th className="num">Valor</th>
@@ -82,7 +83,10 @@ function Stock() {
           </thead>
           <tbody>
             {lineas.map((l) => (
-              <tr key={l.id} className={l.necesitaReposicion ? "fila--alerta" : undefined}>
+              <tr
+                key={l.productoId}
+                className={l.necesitaReposicion ? "fila--alerta" : undefined}
+              >
                 <td className="sku">{l.sku}</td>
                 <td>
                   {l.producto}
@@ -102,7 +106,6 @@ function Stock() {
                   ) : null}
                 </td>
                 <td>{l.categoria}</td>
-                <td>{l.sala}</td>
                 <td className="num">
                   {l.cantidad} <span className="sutil">{l.unidad.toLowerCase()}</span>
                 </td>

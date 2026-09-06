@@ -34,7 +34,7 @@ export function PedidoDetalle() {
 
       <header className="cabecera">
         <h2>{p.codigo}</h2>
-        <span className={p.estado === "PAID" ? "estado estado--published" : "estado"}>
+        <span className={p.estado === "PAGADO" ? "estado estado--publicado" : "estado"}>
           {p.estadoEtiqueta}
         </span>
       </header>
@@ -153,7 +153,7 @@ export function PedidoDetalle() {
                   <td>
                     <span
                       className={
-                        e.estado === "VALID" ? "estado estado--published" : "estado"
+                        e.estado === "VALIDA" ? "estado estado--publicado" : "estado"
                       }
                     >
                       {e.estadoEtiqueta}

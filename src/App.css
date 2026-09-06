@@ -405,17 +405,17 @@ code {
 }
 
 /* A la venta es lo que esta vivo, y por eso lleva el acento. */
-.estado--published {
+.estado--publicado {
   border-color: var(--chartreuse);
   color: var(--chartreuse);
 }
 
-.estado--sold_out {
+.estado--agotado {
   border-color: var(--magenta);
   color: var(--magenta);
 }
 
-.estado--cancelled {
+.estado--cancelado {
   border-color: var(--magenta);
   color: var(--magenta);
   text-decoration: line-through;

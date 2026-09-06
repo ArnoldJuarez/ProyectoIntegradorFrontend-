@@ -22,7 +22,7 @@ export function FichaDeNoche() {
   }
 
   const n = carga.datos;
-  const agotada = n.estado === "SOLD_OUT";
+  const agotada = n.estado === "AGOTADO";
 
   return (
     <div className="publico">

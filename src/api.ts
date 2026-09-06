@@ -76,7 +76,7 @@ async function pedir<T>(ruta: string, opciones: RequestInit = {}): Promise<T> {
 
 // ─────────────────────────── Sesión ───────────────────────────
 
-export type Rol = "ADMIN" | "MANAGER" | "PROMOTER" | "DOOR" | "BAR" | "STAFF" | "CUSTOMER";
+export type Rol = "DIRECCION" | "GERENCIA" | "PROMOTOR" | "PUERTA" | "BARRA" | "PERSONAL";
 
 export type Sesion = {
   id: string;
@@ -135,21 +135,24 @@ export function listarProductos(): Promise<Producto[]> {
 //
 // El catálogo dice qué productos existen; esto dice cuántos quedan. Son cosas
 // distintas: un producto puede estar en el catálogo con cero unidades.
+//
+// El saldo dejó de estar desglosado por sala: antes vivía en una tabla aparte
+// con una fila por producto y sala, y ahora es una sola columna del producto.
+// Por eso esta línea ya no trae ni `id` propio ni `sala`: la identifica el
+// producto, y la cifra es una sola. Los movimientos sí siguen diciendo de qué
+// sala salieron.
 
 export type LineaDeStock = {
-  id: string;
   productoId: string;
   sku: string;
   producto: string;
   categoria: string;
-  sala: string;
   unidad: UnidadDeProducto;
   cantidad: number;
   alertaDeStock: number;
   necesitaReposicion: boolean;
   faltanParaElUmbral: number;
   valorACosteCentimos: number;
-  actualizadoEn: string;
 };
 
 export type ResumenDeAlmacen = {
@@ -164,7 +167,7 @@ export type StockConResumen = {
   lineas: LineaDeStock[];
 };
 
-export type TipoDeMovimiento = "PURCHASE" | "SALE" | "WASTE" | "ADJUSTMENT" | "TRANSFER";
+export type TipoDeMovimiento = "COMPRA" | "VENTA" | "MERMA" | "AJUSTE" | "TRANSFERENCIA";
 
 export type LineaDeMovimiento = {
   id: string;
@@ -208,8 +211,8 @@ export function listarProveedores(): Promise<Proveedor[]> {
 
 // ─────────────────────── Pedidos y entradas ───────────────────────
 
-export type EstadoDePedido = "PENDING" | "PAID" | "CANCELLED" | "REFUNDED";
-export type EstadoDeEntrada = "VALID" | "USED" | "VOID" | "REFUNDED";
+export type EstadoDePedido = "PENDIENTE" | "PAGADO" | "CANCELADO" | "DEVUELTO";
+export type EstadoDeEntrada = "VALIDA" | "USADA" | "ANULADA" | "DEVUELTO";
 
 export type PedidoEnLista = {
   /** El que ve el cliente: DSC-000123. No es el id interno. */
@@ -268,7 +271,7 @@ export function verPedido(codigo: string): Promise<FichaDePedido> {
 
 // ─────────────────────── Caja y arqueos ───────────────────────
 
-export type MetodoDePago = "CASH" | "CARD" | "YAPE" | "PLIN" | "TRANSFER";
+export type MetodoDePago = "EFECTIVO" | "TARJETA" | "YAPE" | "PLIN" | "TRANSFERENCIA";
 
 export type ArqueoEnLista = {
   id: string;
@@ -330,7 +333,7 @@ export function verArqueo(id: string): Promise<FichaDeArqueo> {
 
 // ─────────────────────────── Eventos ───────────────────────────
 
-export type EstadoDeEvento = "DRAFT" | "PUBLISHED" | "SOLD_OUT" | "CANCELLED" | "FINISHED";
+export type EstadoDeEvento = "BORRADOR" | "PUBLICADO" | "AGOTADO" | "CANCELADO" | "CERRADO";
 
 /**
  * Las fechas llegan como texto ISO-8601 en UTC (`2026-09-12T04:30:00Z`), no como
@@ -389,21 +392,21 @@ export function listarEventos(): Promise<Evento[]> {
 // Datos personales de gente real. Solo los sirve el panel, detrás de rol.
 
 export type TipoDeInteraccion =
-  | "PURCHASE"
-  | "VISIT"
-  | "RESERVATION"
-  | "CAMPAIGN"
+  | "COMPRA"
+  | "VISITA"
+  | "RESERVA"
+  | "CAMPANIA"
   | "CHAT"
-  | "COMPLAINT"
-  | "NOTE";
+  | "QUEJA"
+  | "NOTA";
 
 export type CanalDeInteraccion =
   | "WEB"
   | "WHATSAPP"
-  | "EMAIL"
-  | "PHONE"
+  | "CORREO"
+  | "TELEFONO"
   | "INSTAGRAM"
-  | "IN_PERSON";
+  | "EN_PERSONA";
 
 export type ClienteEnLista = {
   id: string;
@@ -452,22 +455,22 @@ export function verCliente(id: string): Promise<FichaDeCliente> {
 
 /** Cómo se llama cada tipo de interacción en la pantalla. */
 export const NOMBRE_DE_INTERACCION: Record<TipoDeInteraccion, string> = {
-  PURCHASE: "Compra",
-  VISIT: "Visita",
-  RESERVATION: "Reserva",
-  CAMPAIGN: "Campaña",
+  COMPRA: "Compra",
+  VISITA: "Visita",
+  RESERVA: "Reserva",
+  CAMPANIA: "Campaña",
   CHAT: "Chat",
-  COMPLAINT: "Queja",
-  NOTE: "Nota",
+  QUEJA: "Queja",
+  NOTA: "Nota",
 };
 
 export const NOMBRE_DE_CANAL: Record<CanalDeInteraccion, string> = {
   WEB: "Web",
   WHATSAPP: "WhatsApp",
-  EMAIL: "Correo",
-  PHONE: "Teléfono",
+  CORREO: "Correo",
+  TELEFONO: "Teléfono",
   INSTAGRAM: "Instagram",
-  IN_PERSON: "En el local",
+  EN_PERSONA: "En el local",
 };
 
 // ─────────────────────── Cartelera pública ───────────────────────
@@ -593,11 +596,11 @@ export function verEvento(slug: string): Promise<EventoDetalle> {
 
 /** Cómo se llama cada estado en la pantalla. */
 export const NOMBRE_DE_ESTADO: Record<EstadoDeEvento, string> = {
-  DRAFT: "Borrador",
-  PUBLISHED: "A la venta",
-  SOLD_OUT: "Agotado",
-  CANCELLED: "Cancelado",
-  FINISHED: "Terminado",
+  BORRADOR: "Borrador",
+  PUBLICADO: "A la venta",
+  AGOTADO: "Agotado",
+  CANCELADO: "Cancelado",
+  CERRADO: "Terminado",
 };
 
 /** Zona de la sala. Todo lo que se enseña a una persona va en esta hora. */

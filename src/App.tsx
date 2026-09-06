@@ -21,7 +21,7 @@ export default function App() {
           <div>
             <h1>SSIOMAMA</h1>
             <p className="marca__pie">
-              React + Spring Boot · datos reales de <code>discoteca</code>
+              React + Spring Boot · datos reales de <code>teca</code>
             </p>
           </div>
 

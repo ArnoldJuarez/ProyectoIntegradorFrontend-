@@ -50,7 +50,7 @@ export function Agenda() {
                       </span>
                       <span className="fila-noche__titulo">{n.titulo}</span>
                       <span className="fila-noche__precio">
-                        {n.estado === "SOLD_OUT"
+                        {n.estado === "AGOTADO"
                           ? "Agotado"
                           : `desde ${soles(n.precioDesdeCentimos)}`}
                       </span>

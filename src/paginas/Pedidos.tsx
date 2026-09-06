@@ -14,11 +14,11 @@ import { useCarga } from "../datos";
 /** El color del estado, reutilizando el mismo lenguaje visual que los eventos. */
 function claseDeEstado(estado: EstadoDePedido): string {
   switch (estado) {
-    case "PAID":
-      return "estado estado--published";
-    case "CANCELLED":
-    case "REFUNDED":
-      return "estado estado--sold_out";
+    case "PAGADO":
+      return "estado estado--publicado";
+    case "CANCELADO":
+    case "DEVUELTO":
+      return "estado estado--agotado";
     default:
       return "estado";
   }
@@ -33,7 +33,7 @@ export function Pedidos() {
   }
 
   const pedidos = carga.datos;
-  const pagados = pedidos.filter((p) => p.estado === "PAID");
+  const pagados = pedidos.filter((p) => p.estado === "PAGADO");
   const facturado = pagados.reduce((suma, p) => suma + p.totalCentimos, 0);
 
   return (

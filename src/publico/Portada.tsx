@@ -43,7 +43,7 @@ function Cabecera({ proxima }: { proxima?: NocheEnCartelera }) {
 
 function TarjetaDeNoche({ noche }: { noche: NocheEnCartelera }) {
   const cabeza = noche.cartel.find((a) => a.cabezaDeCartel) ?? noche.cartel[0];
-  const agotada = noche.estado === "SOLD_OUT";
+  const agotada = noche.estado === "AGOTADO";
 
   return (
     <article className="noche">
