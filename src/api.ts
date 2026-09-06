@@ -634,3 +634,85 @@ export function soles(centimos: number): string {
     currency: "PEN",
   }).format(centimos / 100);
 }
+
+// ─────────────────────────── Puerta ───────────────────────────
+//
+// La pantalla del portero. Es la única del sistema que usa alguien de pie, con
+// frío y con cola delante, y eso se nota en la forma de la API: un rechazo llega
+// como respuesta correcta (`ok: false`) y no como error HTTP, porque una entrada
+// de otra noche no es un fallo de la aplicación.
+
+/** Por qué no pasa. La pantalla decide color y sonido con esto, no con el texto. */
+export type MotivoDeRechazo = "FALSA" | "NO_EXISTE" | "ANULADA" | "REPETIDA" | "OTRA_FECHA";
+
+export type ResultadoDeEscaneo = {
+  ok: boolean;
+  /** Nulo cuando pasa. */
+  motivo: MotivoDeRechazo | null;
+  /** Lo que el portero lee en voz alta. */
+  mensaje: string;
+  /** Va también en los rechazos que la tienen: es lo primero que se pregunta. */
+  titular: string | null;
+  tipoDeEntrada: string | null;
+  consumicionesIncluidas: number;
+  evento: string | null;
+  escaneadoEn: string | null;
+};
+
+export type RepartoPorPuerta = { puerta: string; personas: number };
+
+export type AccesoReciente = {
+  titular: string | null;
+  tipoDeEntrada: string;
+  /** Nulo si la sala no tiene puertas registradas. */
+  puerta: string | null;
+  portero: string;
+  cuando: string;
+};
+
+export type EstadoDeLaNoche = {
+  hayNoche: boolean;
+  /** En falso, lo que se enseña es la próxima noche y el escáner aún rechazaría. */
+  enCurso: boolean;
+  slug: string | null;
+  titulo: string | null;
+  sala: string | null;
+  puertasA: string | null;
+  empiezaA: string | null;
+  terminaA: string | null;
+  aforoDeLaSala: number;
+  /** Las que existen y podrían presentarse: válidas más usadas. */
+  emitidas: number;
+  /** Cuántas han pasado ya. Es el aforo en vivo. */
+  dentro: number;
+  porPuerta: RepartoPorPuerta[];
+  ultimos: AccesoReciente[];
+};
+
+export function verNocheDePuerta(): Promise<EstadoDeLaNoche> {
+  return pedir<EstadoDeLaNoche>("/api/puerta/noche");
+}
+
+/**
+ * Lee un código de QR.
+ *
+ * Un rechazo **no lanza**: llega como `ok: false` con su motivo. Solo lanzan los
+ * fallos de verdad —sin sesión, sin permiso, backend caído—, que es justo la
+ * distinción que la pantalla necesita para no pintar igual «entrada de otra
+ * noche» y «se cayó el servidor».
+ */
+export function escanearEntrada(codigo: string): Promise<ResultadoDeEscaneo> {
+  return pedir<ResultadoDeEscaneo>("/api/puerta/escanear", {
+    method: "POST",
+    body: JSON.stringify({ codigo }),
+  });
+}
+
+/** Cómo se llama cada rechazo en la pantalla. */
+export const NOMBRE_DE_RECHAZO: Record<MotivoDeRechazo, string> = {
+  FALSA: "Falsa",
+  NO_EXISTE: "No existe",
+  ANULADA: "Anulada",
+  REPETIDA: "Ya entró",
+  OTRA_FECHA: "Otra fecha",
+};

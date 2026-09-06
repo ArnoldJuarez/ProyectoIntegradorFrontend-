@@ -1,0 +1,356 @@
+/*
+ * La pantalla de la puerta.
+ *
+ * Se usa entre las 23:00 y las 06:00, de pie, con una mano y con alguien
+ * esperando delante. De ahí todo lo que sigue: ancho de móvil, tipografía
+ * grande, el veredicto ocupando media pantalla y objetivos táctiles anchos.
+ *
+ * Hereda la paleta de App.css, que ya es oscura. No hay variante clara a
+ * propósito: una pantalla blanca a las tres de la mañana ciega al portero y al
+ * cliente que tiene delante.
+ */
+
+.puerta {
+  max-width: 34rem;
+  margin: 0 auto;
+  padding: 1.25rem 1rem 4rem;
+}
+
+.puerta--login {
+  padding-top: 4rem;
+}
+
+/* ── Cabecera ─────────────────────────────────────────────────── */
+
+.puerta__cabecera {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid var(--linea);
+  padding-bottom: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.puerta__marca {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.35rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--chartreuse);
+}
+
+/* El punto que late: dice de un vistazo que la pantalla sigue viva. */
+.puerta__latido {
+  width: 0.4rem;
+  height: 0.4rem;
+  background: var(--chartreuse);
+  animation: latir 1.6s ease-in-out infinite;
+}
+
+@keyframes latir {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+
+/* Quien tenga activado "reducir movimiento" no necesita el parpadeo. */
+@media (prefers-reduced-motion: reduce) {
+  .puerta__latido {
+    animation: none;
+  }
+}
+
+.puerta__cabecera h1 {
+  margin: 0;
+  font-size: 1.6rem;
+  line-height: 1.15;
+}
+
+.puerta__sala {
+  margin: 0.35rem 0 0;
+  font-size: 0.9rem;
+  color: var(--tinta-suave);
+}
+
+.puerta__proxima {
+  color: var(--magenta);
+}
+
+.puerta__quien {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--tinta-suave);
+  white-space: nowrap;
+}
+
+.puerta__quien button {
+  background: none;
+  border: 1px solid var(--linea-fuerte);
+  color: var(--tinta-suave);
+  padding: 0.3rem 0.7rem;
+  font: inherit;
+  cursor: pointer;
+}
+
+.puerta__quien button:hover {
+  color: var(--tinta);
+  border-color: var(--tinta-suave);
+}
+
+/* ── Avisos ───────────────────────────────────────────────────── */
+
+.puerta__aviso {
+  margin: 1rem auto;
+  max-width: 34rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--linea);
+  color: var(--tinta-suave);
+  font-size: 0.9rem;
+}
+
+.puerta__aviso--mal {
+  border-color: var(--magenta);
+  color: var(--tinta);
+}
+
+.puerta__pista {
+  margin: 0.4rem 0 0;
+  font-size: 0.85rem;
+  color: var(--tinta-suave);
+}
+
+/* ── Aforo ────────────────────────────────────────────────────── */
+
+.aforo {
+  margin-bottom: 1.25rem;
+}
+
+.aforo__cifras {
+  display: flex;
+  gap: 1.75rem;
+  align-items: baseline;
+}
+
+.aforo__numero {
+  margin: 0;
+  font-size: 2.4rem;
+  font-weight: 900;
+  line-height: 1;
+  color: var(--chartreuse);
+  /* Tabular para que la cifra no baile de ancho al pasar de 99 a 100. */
+  font-variant-numeric: tabular-nums;
+}
+
+.aforo__numero--suave {
+  font-size: 1.5rem;
+  color: var(--tinta-suave);
+}
+
+.aforo__pie {
+  margin: 0.15rem 0 0;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
+}
+
+.aforo__barra {
+  margin-top: 0.9rem;
+  height: 0.35rem;
+  background: var(--concreto);
+  border: 1px solid var(--linea);
+}
+
+.aforo__barra span {
+  display: block;
+  height: 100%;
+  background: var(--chartreuse);
+}
+
+.aforo__puertas {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.85rem 0 0;
+  padding: 0;
+}
+
+.aforo__puertas li {
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+  border: 1px solid var(--linea);
+  padding: 0.3rem 0.6rem;
+  font-size: 0.8rem;
+  color: var(--tinta-suave);
+}
+
+.aforo__puertas strong {
+  color: var(--tinta);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── El lector ────────────────────────────────────────────────── */
+
+.puerta__lector {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.puerta__lector input {
+  flex: 1;
+  min-width: 0;
+  background: var(--concreto);
+  border: 1px solid var(--linea-fuerte);
+  color: var(--tinta);
+  /* 16px o más: por debajo, Safari en iPhone hace zoom al enfocar el campo y
+     descoloca la pantalla en mitad de una cola. */
+  font-size: 1.05rem;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  padding: 0.85rem 0.9rem;
+}
+
+.puerta__lector input:focus {
+  outline: 2px solid var(--chartreuse);
+  outline-offset: -2px;
+}
+
+.puerta__lector button {
+  background: var(--chartreuse);
+  color: var(--negro);
+  border: none;
+  font: inherit;
+  font-weight: 700;
+  padding: 0 1.2rem;
+  cursor: pointer;
+}
+
+.puerta__lector button:disabled {
+  background: var(--linea-fuerte);
+  color: var(--tinta-suave);
+  cursor: default;
+}
+
+/* ── El veredicto ─────────────────────────────────────────────── */
+
+.veredicto {
+  margin-top: 1.25rem;
+  padding: 1.25rem 1.1rem;
+  border: 2px solid;
+}
+
+.veredicto--bien {
+  border-color: var(--chartreuse);
+  background: color-mix(in srgb, var(--chartreuse) 10%, transparent);
+}
+
+.veredicto--ojo {
+  border-color: #ffb020;
+  background: color-mix(in srgb, #ffb020 10%, transparent);
+}
+
+.veredicto--mal {
+  border-color: var(--magenta);
+  background: color-mix(in srgb, var(--magenta) 10%, transparent);
+}
+
+.veredicto__titulo {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+
+.veredicto--bien .veredicto__titulo {
+  color: var(--chartreuse);
+}
+
+.veredicto--ojo .veredicto__titulo {
+  color: #ffb020;
+}
+
+.veredicto--mal .veredicto__titulo {
+  color: var(--magenta);
+}
+
+.veredicto__titular {
+  margin: 0.6rem 0 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.veredicto__mensaje {
+  margin: 0.4rem 0 0;
+  color: var(--tinta-suave);
+}
+
+.veredicto__extra {
+  margin: 0.5rem 0 0;
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
+}
+
+/* ── Últimos accesos ──────────────────────────────────────────── */
+
+.ultimos {
+  margin-top: 2rem;
+}
+
+.ultimos h2 {
+  margin: 0 0 0.6rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
+}
+
+.ultimos ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ultimos li {
+  display: flex;
+  gap: 0.7rem;
+  align-items: baseline;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--linea);
+  font-size: 0.85rem;
+}
+
+.ultimos__hora {
+  color: var(--chartreuse);
+  font-variant-numeric: tabular-nums;
+}
+
+.ultimos__quien {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ultimos__tipo,
+.ultimos__puerta {
+  color: var(--tinta-suave);
+  font-size: 0.75rem;
+  white-space: nowrap;
+}

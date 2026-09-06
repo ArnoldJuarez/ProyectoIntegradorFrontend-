@@ -15,6 +15,7 @@ import { Agenda } from "./publico/Agenda.tsx";
 import { FichaDeNoche } from "./publico/FichaDeNoche.tsx";
 import { Portada } from "./publico/Portada.tsx";
 import { SitioPublico } from "./publico/SitioPublico.tsx";
+import { Puerta } from "./puerta/Puerta.tsx";
 import { ProveedorDeSesion } from "./sesion.tsx";
 
 /**
@@ -50,6 +51,13 @@ createRoot(document.getElementById("root")!).render(
             <Route path="caja/:id" element={<ArqueoDetalle />} />
             <Route path="inventario" element={<Inventario />} />
           </Route>
+
+          {/*
+            La puerta va suelta y no bajo /panel a propósito: un portero no
+            tiene permiso sobre ninguna ruta del panel, así que colgarla de ahí
+            le enseñaría una navegación entera que le responde 403.
+          */}
+          <Route path="puerta" element={<Puerta />} />
 
           {/*
             Cualquier otra dirección va a la portada. `replace` para no dejarla
