@@ -522,12 +522,19 @@ code {
   padding: 0.1rem 0.4rem;
 }
 
-/* Entradas y salidas de mercancia. */
-.entrada {
+/*
+ * Entradas y salidas de mercancia, en la tabla de movimientos.
+ *
+ * Se llaman `movimiento--*` y no `entrada`/`salida` a secas porque el sitio
+ * publico ya tiene una `.entrada` —la fila de un tipo de entrada a la venta— con
+ * `display: flex`. Como Vite junta todas las hojas en un solo paquete, esa regla
+ * se colaba en estas celdas y las sacaba del layout de la tabla.
+ */
+.movimiento--entra {
   color: var(--chartreuse);
 }
 
-.salida {
+.movimiento--sale {
   color: var(--tinta-suave);
 }
 
@@ -731,12 +738,12 @@ code {
 
 /* ── El cartel ────────────────────────────────────────────────── */
 
-.cartel {
+.elegir-cartel {
   border: 1px solid var(--linea);
   padding: 0.9rem;
 }
 
-.cartel legend {
+.elegir-cartel legend {
   padding: 0 0.4rem;
   font-size: 0.72rem;
   letter-spacing: 0.12em;
@@ -744,7 +751,7 @@ code {
   color: var(--tinta-suave);
 }
 
-.cartel__opciones {
+.elegir-cartel__opciones {
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;

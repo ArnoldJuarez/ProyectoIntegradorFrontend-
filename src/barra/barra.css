@@ -10,21 +10,21 @@
  * mismas horas y la misma pantalla en la cara del cliente.
  */
 
-.barra {
+.tpv {
   max-width: 76rem;
   margin: 0 auto;
   padding: 1.25rem 1rem 3rem;
 }
 
-.barra--login,
-.barra--apertura {
+.tpv--login,
+.tpv--apertura {
   max-width: 34rem;
   padding-top: 3rem;
 }
 
 /* ── Cabecera ─────────────────────────────────────────────────── */
 
-.barra__cabecera {
+.tpv__cabecera {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -34,7 +34,7 @@
   margin-bottom: 1.25rem;
 }
 
-.barra__marca {
+.tpv__marca {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -46,7 +46,7 @@
   color: var(--chartreuse);
 }
 
-.barra__latido {
+.tpv__latido {
   width: 0.4rem;
   height: 0.4rem;
   background: var(--chartreuse);
@@ -54,29 +54,29 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .barra__latido {
+  .tpv__latido {
     animation: none;
   }
 }
 
-.barra h1 {
+.tpv h1 {
   margin: 0;
   font-size: 1.6rem;
   line-height: 1.15;
 }
 
-.barra__sala {
+.tpv__sala {
   margin: 0.35rem 0 0;
   font-size: 0.9rem;
   color: var(--tinta-suave);
 }
 
-.barra__cajon {
+.tpv__cajon {
   text-align: right;
   flex-shrink: 0;
 }
 
-.barra__cifra {
+.tpv__cifra {
   margin: 0;
   font-size: 1.6rem;
   font-weight: 900;
@@ -85,7 +85,7 @@
   font-variant-numeric: tabular-nums;
 }
 
-.barra__pie {
+.tpv__pie {
   margin: 0.2rem 0 0.5rem;
   font-size: 0.65rem;
   letter-spacing: 0.12em;
@@ -93,8 +93,8 @@
   color: var(--tinta-suave);
 }
 
-.barra__cajon button,
-.barra__salir {
+.tpv__cajon button,
+.tpv__salir {
   background: none;
   border: 1px solid var(--linea-fuerte);
   color: var(--tinta-suave);
@@ -104,19 +104,19 @@
   cursor: pointer;
 }
 
-.barra__salir {
+.tpv__salir {
   margin-top: 2rem;
 }
 
-.barra__cajon button:hover,
-.barra__salir:hover {
+.tpv__cajon button:hover,
+.tpv__salir:hover {
   color: var(--tinta);
   border-color: var(--tinta-suave);
 }
 
 /* ── Avisos ───────────────────────────────────────────────────── */
 
-.barra__aviso {
+.tpv__aviso {
   margin: 1rem auto;
   max-width: 76rem;
   padding: 0.9rem 1rem;
@@ -125,12 +125,12 @@
   font-size: 0.9rem;
 }
 
-.barra__aviso--mal {
+.tpv__aviso--mal {
   border-color: var(--magenta);
   color: var(--tinta);
 }
 
-.barra__pista {
+.tpv__pista {
   margin: 0.4rem 0 0;
   font-size: 0.85rem;
   color: var(--tinta-suave);
@@ -261,7 +261,7 @@
 
 /* ── Catálogo y ticket ────────────────────────────────────────── */
 
-.barra__cuerpo {
+.tpv__cuerpo {
   display: grid;
   gap: 1.25rem;
   /* En pantalla ancha, catálogo y ticket a la vez: cambiar de vista para ver
@@ -270,7 +270,7 @@
 }
 
 @media (min-width: 60rem) {
-  .barra__cuerpo {
+  .tpv__cuerpo {
     grid-template-columns: 1fr 20rem;
     align-items: start;
   }

@@ -269,7 +269,7 @@ function Movimientos() {
               </td>
               {/* El sentido se enseña con flecha y color, no solo con el número:
                   un «−3» y un «3» se confunden de un vistazo en una columna. */}
-              <td className={m.esEntrada ? "num entrada" : "num salida"}>
+              <td className={m.esEntrada ? "num movimiento--entra" : "num movimiento--sale"}>
                 {m.esEntrada ? "▲" : "▼"} {m.unidades}
               </td>
               <td className="num">

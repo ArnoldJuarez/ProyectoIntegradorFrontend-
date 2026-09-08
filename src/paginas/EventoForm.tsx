@@ -263,12 +263,12 @@ export function EventoForm() {
           </span>
         </label>
 
-        <fieldset className="campo campo--ancho cartel">
+        <fieldset className="campo campo--ancho elegir-cartel">
           <legend>Cartel</legend>
           <p className="campo__pista">
             El primero que marques es el cabeza de cartel.
           </p>
-          <div className="cartel__opciones">
+          <div className="elegir-cartel__opciones">
             {artistas.map((a: ArtistaParaElegir) => {
               const puesto = artistaIds.indexOf(a.id);
               return (

@@ -34,21 +34,21 @@ export function Barra() {
   const { estado, entrar, salir } = useSesion();
 
   if (estado.fase === "comprobando") {
-    return <p className="barra__aviso">Comprobando la sesión…</p>;
+    return <p className="tpv__aviso">Comprobando la sesión…</p>;
   }
 
   if (estado.fase === "error") {
     return (
-      <div className="barra__aviso barra__aviso--mal">
+      <div className="tpv__aviso tpv__aviso--mal">
         <p>No se pudo hablar con el backend.</p>
-        <p className="barra__pista">{estado.mensaje}</p>
+        <p className="tpv__pista">{estado.mensaje}</p>
       </div>
     );
   }
 
   if (estado.fase === "fuera") {
     return (
-      <div className="barra barra--login">
+      <div className="tpv tpv--login">
         <Login alEntrar={entrar} />
       </div>
     );
@@ -56,9 +56,9 @@ export function Barra() {
 
   if (!ROLES_DE_BARRA.includes(estado.usuario.rol)) {
     return (
-      <div className="barra__aviso barra__aviso--mal">
+      <div className="tpv__aviso tpv__aviso--mal">
         <p>La barra es para dirección, gerencia y personal de barra.</p>
-        <p className="barra__pista">
+        <p className="tpv__pista">
           Tu cuenta es de {estado.usuario.rol.toLowerCase()}. <Link to="/panel">Ir al panel</Link>
         </p>
       </div>
@@ -158,38 +158,38 @@ function Tpv({ alSalir }: { alSalir: () => Promise<void> }) {
 
   if (cerrado) return <Cierre cerrado={cerrado} alSalir={alSalir} />;
 
-  if (!pantalla) return <p className="barra__aviso">Cargando la barra…</p>;
+  if (!pantalla) return <p className="tpv__aviso">Cargando la barra…</p>;
 
   if (!pantalla.turno) {
     return <Apertura alAbrir={cargar} fallo={fallo} setFallo={setFallo} alSalir={alSalir} />;
   }
 
   return (
-    <div className="barra">
-      <header className="barra__cabecera">
+    <div className="tpv">
+      <header className="tpv__cabecera">
         <div>
-          <p className="barra__marca">
-            <span className="barra__latido" /> Barra
+          <p className="tpv__marca">
+            <span className="tpv__latido" /> Barra
           </p>
           <h1>{pantalla.noche ?? "Sin evento"}</h1>
-          <p className="barra__sala">
+          <p className="tpv__sala">
             {pantalla.turno.sala} · {pantalla.turno.responsable}
           </p>
         </div>
 
-        <div className="barra__cajon">
-          <p className="barra__cifra">{soles(pantalla.turno.esperadoCentimos)}</p>
+        <div className="tpv__cajon">
+          <p className="tpv__cifra">{soles(pantalla.turno.esperadoCentimos)}</p>
           {/* «En el cajón» y no «vendido»: la tarjeta no pasa por aquí. */}
-          <p className="barra__pie">en el cajón</p>
+          <p className="tpv__pie">en el cajón</p>
           <button type="button" onClick={() => void alSalir()}>
             Salir
           </button>
         </div>
       </header>
 
-      {fallo && <p className="barra__aviso barra__aviso--mal">{fallo}</p>}
+      {fallo && <p className="tpv__aviso tpv__aviso--mal">{fallo}</p>}
 
-      <div className="barra__cuerpo">
+      <div className="tpv__cuerpo">
         <div className="catalogo">
           {pantalla.catalogo.map((grupo) => (
             <section key={grupo.categoria} className="catalogo__grupo">
@@ -323,17 +323,17 @@ function Apertura({
   }
 
   return (
-    <div className="barra barra--apertura">
-      <p className="barra__marca">
-        <span className="barra__latido" /> Barra
+    <div className="tpv tpv--apertura">
+      <p className="tpv__marca">
+        <span className="tpv__latido" /> Barra
       </p>
       <h1>Abrir caja</h1>
-      <p className="barra__sala">
+      <p className="tpv__sala">
         Cuenta lo que hay en el cajón antes de empezar. Es contra eso contra lo que se cuadra
         al cerrar.
       </p>
 
-      {fallo && <p className="barra__aviso barra__aviso--mal">{fallo}</p>}
+      {fallo && <p className="tpv__aviso tpv__aviso--mal">{fallo}</p>}
 
       <form onSubmit={(e) => void abrir(e)} className="apertura">
         <label>
@@ -353,7 +353,7 @@ function Apertura({
         </button>
       </form>
 
-      <button type="button" className="barra__salir" onClick={() => void alSalir()}>
+      <button type="button" className="tpv__salir" onClick={() => void alSalir()}>
         Salir
       </button>
     </div>
@@ -440,8 +440,8 @@ function Cierre({
   const falta = cerrado.diferenciaCentimos < 0;
 
   return (
-    <div className="barra barra--apertura">
-      <p className="barra__marca">Caja cerrada</p>
+    <div className="tpv tpv--apertura">
+      <p className="tpv__marca">Caja cerrada</p>
       <h1>{cerrado.cuadro ? "Cuadra" : falta ? "Falta dinero" : "Sobra dinero"}</h1>
 
       <dl className="arqueo">
@@ -463,12 +463,12 @@ function Cierre({
         </div>
       </dl>
 
-      <p className="barra__sala">
+      <p className="tpv__sala">
         El detalle queda en el panel, en Caja. Este arqueo ya no cambia aunque se corrija una
         venta después: es la foto del momento del cierre.
       </p>
 
-      <button type="button" className="barra__salir" onClick={() => void alSalir()}>
+      <button type="button" className="tpv__salir" onClick={() => void alSalir()}>
         Salir
       </button>
     </div>

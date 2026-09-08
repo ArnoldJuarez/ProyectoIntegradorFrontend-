@@ -726,13 +726,13 @@
   color: var(--tinta-suave);
 }
 
-.contador {
+.contador-compra {
   display: flex;
   align-items: center;
   gap: 0.25rem;
 }
 
-.contador button {
+.contador-compra button {
   width: 2.75rem;
   height: 2.75rem;
   background: var(--concreto);
@@ -743,17 +743,17 @@
   cursor: pointer;
 }
 
-.contador button:hover:not(:disabled) {
+.contador-compra button:hover:not(:disabled) {
   border-color: var(--chartreuse);
   color: var(--chartreuse);
 }
 
-.contador button:disabled {
+.contador-compra button:disabled {
   opacity: 0.35;
   cursor: default;
 }
 
-.contador__cifra {
+.contador-compra__cifra {
   min-width: 2.25rem;
   text-align: center;
   font-size: 1.1rem;

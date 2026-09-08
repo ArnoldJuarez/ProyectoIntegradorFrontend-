@@ -122,7 +122,7 @@ export function Comprar({ slug, entradas }: { slug: string; entradas: EntradaALa
                 </p>
               </div>
 
-              <div className="contador">
+              <div className="contador-compra">
                 <button
                   type="button"
                   onClick={() => cambiar(e, -1)}
@@ -131,7 +131,7 @@ export function Comprar({ slug, entradas }: { slug: string; entradas: EntradaALa
                 >
                   −
                 </button>
-                <span className="contador__cifra">{cuantas}</span>
+                <span className="contador-compra__cifra">{cuantas}</span>
                 <button
                   type="button"
                   onClick={() => cambiar(e, 1)}
