@@ -44,6 +44,7 @@ export default function App() {
             </NavLink>
             <NavLink to="/panel/pedidos">Pedidos</NavLink>
             <NavLink to="/panel/clientes">Clientes</NavLink>
+            <NavLink to="/panel/crm">CRM</NavLink>
             <NavLink to="/panel/caja">Caja</NavLink>
             <NavLink to="/panel/inventario">Inventario</NavLink>
             <Link to="/" className="nav__salida">

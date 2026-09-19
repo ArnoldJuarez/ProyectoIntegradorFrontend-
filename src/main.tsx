@@ -13,6 +13,7 @@ import { Eventos } from "./paginas/Eventos.tsx";
 import { Inventario } from "./paginas/Inventario.tsx";
 import { PedidoDetalle } from "./paginas/PedidoDetalle.tsx";
 import { Pedidos } from "./paginas/Pedidos.tsx";
+import { Segmentos } from "./paginas/Segmentos.tsx";
 import { Agenda } from "./publico/Agenda.tsx";
 import { FichaDeNoche } from "./publico/FichaDeNoche.tsx";
 import { MisEntradas } from "./publico/MisEntradas.tsx";
@@ -63,6 +64,7 @@ createRoot(document.getElementById("root")!).render(
             <Route path="eventos/:slug" element={<EventoDetalle />} />
             <Route path="clientes" element={<Clientes />} />
             <Route path="clientes/:id" element={<ClienteDetalle />} />
+            <Route path="crm" element={<Segmentos />} />
             <Route path="pedidos" element={<Pedidos />} />
             <Route path="pedidos/:codigo" element={<PedidoDetalle />} />
             <Route path="caja" element={<Caja />} />

@@ -1154,3 +1154,120 @@ export const NOMBRE_DE_MOVIMIENTO: Record<TipoDeMovimiento, string> = {
   AJUSTE: "Ajuste",
   TRANSFERENCIA: "Traspaso",
 };
+
+// ──────────────── CRM: segmentos y campañas ────────────────
+//
+// Un segmento no es una lista de clientes: es una regla que se vuelve a evaluar
+// en cada petición. Por eso no hay ningún «actualizar segmentos» — no existe
+// nada que actualizar, la lista se deduce de la regla cada vez que se pregunta.
+
+export type SegmentoEnLista = {
+  id: string;
+  nombre: string;
+  descripcion: string | null;
+  /** La condición en castellano, generada al vuelo desde la regla guardada. */
+  regla: string;
+  /** Falso si el JSON guardado tiene un tipo que el sistema no sabe evaluar. */
+  reglaReconocida: boolean;
+  miembros: number;
+  /**
+   * Cuántos de ellos dieron permiso para escribirles.
+   *
+   * No es lo mismo que `miembros`: «VIP» incluye a quien gastó mucho y nunca dio
+   * su consentimiento. Enseñar solo el total promete un alcance que no existe.
+   */
+  contactables: number;
+  valorCentimos: number;
+  actualizadoEn: string;
+};
+
+export type MiembroDeSegmento = {
+  id: string;
+  nombre: string;
+  email: string;
+  aceptaMarketing: boolean;
+  visitas: number;
+  gastadoCentimos: number;
+  ultimaVisita: string | null;
+};
+
+export type FichaDeSegmento = {
+  segmento: SegmentoEnLista;
+  miembros: MiembroDeSegmento[];
+};
+
+export type CanalDeCampania = "CORREO" | "SMS" | "WHATSAPP" | "PUSH";
+export type EstadoDeCampania = "BORRADOR" | "PROGRAMADO" | "ENVIADO" | "CANCELADO";
+
+export type CampaniaEnLista = {
+  id: string;
+  nombre: string;
+  canal: CanalDeCampania;
+  canalEtiqueta: string;
+  segmento: string;
+  segmentoId: string;
+  asunto: string | null;
+  cuerpo: string;
+  estado: EstadoDeCampania;
+  estadoEtiqueta: string;
+  sePuedeTocar: boolean;
+  enviados: number;
+  creadoEn: string;
+};
+
+export type FormularioDeCampania = {
+  nombre: string;
+  canal: CanalDeCampania;
+  segmentoId: string;
+  asunto: string;
+  cuerpo: string;
+};
+
+export function verSegmentos(): Promise<SegmentoEnLista[]> {
+  return pedir<SegmentoEnLista[]>("/api/clientes/segmentos");
+}
+
+export function verSegmento(id: string): Promise<FichaDeSegmento> {
+  return pedir<FichaDeSegmento>(`/api/clientes/segmentos/${encodeURIComponent(id)}`);
+}
+
+export function verCampanias(): Promise<CampaniaEnLista[]> {
+  return pedir<CampaniaEnLista[]>("/api/clientes/campanias");
+}
+
+/**
+ * Redacta una campaña.
+ *
+ * Queda en **borrador**: el sistema no manda nada, no hay proveedor de correo ni
+ * de SMS conectado. Es lo mismo que hacía el sistema anterior.
+ */
+export function redactarCampania(datos: FormularioDeCampania): Promise<CampaniaEnLista> {
+  return pedir<CampaniaEnLista>("/api/clientes/campanias", {
+    method: "POST",
+    body: JSON.stringify(datos),
+  });
+}
+
+export function reescribirCampania(
+  id: string,
+  datos: FormularioDeCampania,
+): Promise<CampaniaEnLista> {
+  return pedir<CampaniaEnLista>(`/api/clientes/campanias/${encodeURIComponent(id)}`, {
+    method: "PUT",
+    body: JSON.stringify(datos),
+  });
+}
+
+/** La descarta. Se marca como cancelada, no se borra. */
+export function cancelarCampania(id: string): Promise<CampaniaEnLista> {
+  return pedir<CampaniaEnLista>(`/api/clientes/campanias/${encodeURIComponent(id)}`, {
+    method: "DELETE",
+  });
+}
+
+export const NOMBRE_DE_CANAL_DE_CAMPANIA: Record<CanalDeCampania, string> = {
+  CORREO: "Correo",
+  SMS: "SMS",
+  WHATSAPP: "WhatsApp",
+  PUSH: "Notificación",
+};

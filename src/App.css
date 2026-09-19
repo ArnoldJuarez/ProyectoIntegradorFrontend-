@@ -887,3 +887,90 @@ code {
 .contador--alerta {
   color: var(--magenta);
 }
+
+/* ── CRM: tarjetas de segmento ────────────────────────────────── */
+/*
+ * Tarjetas y no filas de tabla: cada segmento lleva su regla en texto, dos
+ * cifras y un desplegable con su gente dentro. Eso no cabe en una fila sin
+ * volverse ilegible.
+ */
+
+.segmentos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr));
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+
+.segmento {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  padding: 1.1rem;
+  background: var(--concreto);
+  border: 1px solid var(--linea);
+}
+
+/* Una regla que el sistema no entiende se marca: el segmento sale vacío y eso
+   hay que arreglarlo, no esconderlo. */
+.segmento--roto {
+  border-color: var(--magenta);
+}
+
+.segmento__cabecera {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.segmento__cabecera h3 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.segmento__desc {
+  margin: 0.3rem 0 0;
+  font-size: 0.88rem;
+  color: var(--tinta-suave);
+}
+
+/* La regla en texto, en monoespaciada: es una condición, no prosa. */
+.segmento__regla {
+  margin: 0.45rem 0 0;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.78rem;
+  color: var(--chartreuse);
+}
+
+.segmento__cifra {
+  margin: 0;
+  flex-shrink: 0;
+  font-size: 2.2rem;
+  font-weight: 900;
+  line-height: 1;
+  color: var(--tinta);
+  font-variant-numeric: tabular-nums;
+}
+
+.segmento__datos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 2rem;
+  margin: 0;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--linea);
+}
+
+.segmento__datos dt {
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
+}
+
+.segmento__datos dd {
+  margin: 0.2rem 0 0;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
