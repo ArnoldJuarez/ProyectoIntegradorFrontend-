@@ -1,0 +1,337 @@
+/*
+ * Las dos pantallas que resumen: la portada y la torre de control.
+ *
+ * Todas las clases van prefijadas —`portada__`, `torre__`, `medidor`,
+ * `bloque`—. No es manía: App.css es global, y una clase con un nombre
+ * genérico como `.reserva` o `.tarjeta` ya existe en otro archivo. Dos reglas
+ * con el mismo nombre no dan error, dan una pantalla que se descoloca y una
+ * tarde buscando por qué.
+ *
+ * Los colores salen de las variables de App.css. Volver a escribir el
+ * chartreuse aquí dejaría dos sitios donde cambiar el color de la marca.
+ */
+
+/* ── El medidor ───────────────────────────────────────────────── */
+
+.medidor {
+  height: 6px;
+  background: var(--concreto);
+  border: 1px solid var(--linea);
+  overflow: hidden;
+}
+
+.medidor__relleno {
+  height: 100%;
+  background: var(--chartreuse);
+  transition: width 0.3s ease;
+}
+
+/* Lleno es bueno vendiendo entradas y malo con el aforo: el tono lo decide
+   quien lo usa, no el medidor. */
+.medidor__relleno--alerta {
+  background: var(--magenta);
+}
+
+/* ── El marco de un apartado ──────────────────────────────────── */
+
+.bloque {
+  border: 1px solid var(--linea);
+  margin-bottom: 1.5rem;
+}
+
+.bloque--ancho {
+  grid-column: 1 / -1;
+}
+
+.bloque__cabecera {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid var(--linea);
+  padding: 0.7rem 1.1rem;
+}
+
+.bloque__titulo {
+  margin: 0;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--tinta);
+}
+
+.bloque__pista {
+  font-size: 0.7rem;
+  color: var(--tinta-suave);
+  font-variant-numeric: tabular-nums;
+}
+
+.bloque__vacio {
+  margin: 0;
+  padding: 1.75rem 1.1rem;
+  color: var(--tinta-suave);
+  font-size: 0.9rem;
+}
+
+.bloque__nota {
+  margin: 0;
+  border-top: 1px solid var(--linea);
+  padding: 0.7rem 1.1rem;
+  font-size: 0.8rem;
+  color: var(--tinta-suave);
+}
+
+/* ── Portada ──────────────────────────────────────────────────── */
+
+/* Dos columnas cuando caben y una cuando no, sin punto de ruptura a mano. El
+   mínimo de 20rem es el ancho al que la barra del aforo deja de leerse. */
+.portada__rejilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  gap: 0 1.5rem;
+}
+
+.portada__columna {
+  display: flex;
+  flex-direction: column;
+}
+
+.portada__cuerpo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 1.1rem;
+}
+
+.portada__par {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.portada__par--separado {
+  border-top: 1px solid var(--linea);
+  padding-top: 0.85rem;
+}
+
+.portada__medida {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.portada__noche-titulo {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.portada__enlace {
+  color: var(--tinta);
+  text-decoration: none;
+}
+
+.portada__enlace:hover {
+  color: var(--chartreuse);
+}
+
+.portada__asistencia {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin: 0;
+}
+
+.portada__asistencia-cifra {
+  font-size: 2.4rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--chartreuse);
+  font-variant-numeric: tabular-nums;
+}
+
+/* El pie de una ficha: el dato de contexto, no la cifra. */
+.portada__pista {
+  margin: 0.3rem 0 0;
+  font-size: 0.74rem;
+  color: var(--tinta-suave);
+}
+
+/* ── Torre de control ─────────────────────────────────────────── */
+
+.torre__en-vivo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgb(201 255 0 / 12%);
+  padding: 0.3rem 0.8rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--chartreuse);
+}
+
+.torre__latido {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--chartreuse);
+  animation: torre-latido 1.6s ease-in-out infinite;
+}
+
+/* Quien prefiere no ver cosas moverse ve el punto quieto: la información —que
+   la noche está abierta— ya la da el color y el texto. */
+@media (prefers-reduced-motion: reduce) {
+  .torre__latido {
+    animation: none;
+  }
+}
+
+@keyframes torre-latido {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+
+.torre__noche {
+  margin: 0 0 1.25rem;
+  font-size: 1.1rem;
+}
+
+.torre__aforo {
+  border: 1px solid var(--linea);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.torre__aforo--limite {
+  border-color: var(--magenta);
+}
+
+.torre__aforo-fila {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+/* El número que se lee desde el otro lado de la sala. Todo lo demás de esta
+   pantalla está dimensionado en relación a él. */
+.torre__aforo-cifra {
+  margin: 0.35rem 0 0;
+  font-size: 4rem;
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.torre__aforo-total {
+  font-size: 1.6rem;
+  color: var(--tinta-suave);
+}
+
+.torre__aforo-lado {
+  text-align: right;
+}
+
+.torre__aforo-secundaria {
+  margin: 0.35rem 0 0;
+  font-size: 1.9rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--tinta-suave);
+  font-variant-numeric: tabular-nums;
+}
+
+.torre__alerta {
+  margin: 0.9rem 0 0;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--magenta);
+}
+
+/* ── La curva de entrada ──────────────────────────────────────── */
+
+/* `align-items: flex-end` para que las barras crezcan hacia arriba desde una
+   base común, que es como se lee una curva de afluencia. */
+.torre__curva {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 7rem;
+}
+
+.torre__barra {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  min-width: 2px;
+}
+
+/* El mínimo de 2px es para que un tramo con una sola persona se vea. Sin él,
+   un cuarto de hora flojo al lado del pico se pinta invisible y parece que no
+   entró nadie. */
+.torre__barra-relleno {
+  width: 100%;
+  min-height: 2px;
+  background: var(--chartreuse);
+}
+
+.torre__barra:hover .torre__barra-relleno {
+  background: var(--tinta);
+}
+
+.torre__curva-pie {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.72rem;
+  color: var(--tinta-suave);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Reservados ───────────────────────────────────────────────── */
+
+.torre__reservas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 0.85rem;
+  padding: 1.1rem;
+}
+
+.torre__reserva {
+  border: 1px solid var(--linea);
+  background: var(--concreto);
+  padding: 0.9rem;
+}
+
+.torre__reserva-cabecera {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-bottom: 0.6rem;
+}
+
+.torre__reserva-mesa {
+  margin: 0.15rem 0 0;
+  font-weight: 800;
+}
+
+.torre__reserva p {
+  margin: 0;
+  font-size: 0.88rem;
+}

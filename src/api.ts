@@ -1271,3 +1271,136 @@ export const NOMBRE_DE_CANAL_DE_CAMPANIA: Record<CanalDeCampania, string> = {
   WHATSAPP: "WhatsApp",
   PUSH: "Notificación",
 };
+
+// ─────────────────────────── Panel ───────────────────────────
+//
+// Las dos pantallas que resumen: la portada y la noche en curso. No añaden
+// capacidad —los ingresos están en pedidos, el stock bajo en almacén y el aforo
+// en la puerta— sino que ahorran sumar a mano a las dos de la mañana, que es
+// cuando la suma sale mal.
+
+/**
+ * Cómo pintar una cifra.
+ *
+ * Lo decide el backend y no esta capa: si siete referencias bajo mínimo es malo
+ * o normal es una regla de negocio, y repetirla aquí significa que un día las
+ * dos copias dejan de decir lo mismo.
+ */
+export type TonoDeCifra = "acento" | "neutro" | "bien" | "mal";
+
+export type Cifra = {
+  etiqueta: string;
+  valor: string;
+  pie: string;
+  tono: TonoDeCifra;
+};
+
+export type NocheEnPortada = {
+  slug: string;
+  titulo: string;
+  puertasA: string;
+  vendidas: number;
+  aforoALaVenta: number;
+  porcentajeVendido: number;
+  recaudadoCentimos: number;
+};
+
+export type ArqueoEnPortada = {
+  id: string;
+  sala: string;
+  responsable: string;
+  /** Nulo mientras la caja sigue abierta: nadie ha contado todavía. */
+  diferenciaCentimos: number | null;
+  estaAbierta: boolean;
+  abiertaEn: string;
+};
+
+export type ReposicionEnPortada = {
+  productoId: string;
+  producto: string;
+  quedan: number;
+  umbral: number;
+  faltan: number;
+};
+
+export type PedidoEnPortada = {
+  codigo: string;
+  cliente: string;
+  noche: string;
+  totalCentimos: number;
+  creadoEn: string;
+};
+
+export type ResumenDelPanel = {
+  cifras: Cifra[];
+  /** Nulo si no queda ninguna fecha publicada por delante. */
+  proxima: NocheEnPortada | null;
+  ultima: NocheEnPortada | null;
+  asistenciaDeLaUltima: number;
+  ultimoArqueo: ArqueoEnPortada | null;
+  hayQueReponer: ReposicionEnPortada[];
+  /** Cuántas hay en total: la lista viene recortada para la portada. */
+  totalPorReponer: number;
+  ultimosPedidos: PedidoEnPortada[];
+};
+
+/** Un tramo de cuarto de hora del ritmo de entrada. */
+export type TramoDeEntrada = {
+  desde: string;
+  personas: number;
+};
+
+export type EstadoDeReserva = "SOLICITADA" | "CONFIRMADA" | "SENTADA" | "NO_VINO" | "CANCELADO";
+
+export type ReservaEnLaNoche = {
+  mesa: string;
+  zona: string | null;
+  cliente: string;
+  personas: number;
+  estado: EstadoDeReserva;
+};
+
+export type AccesoPorPuerta = {
+  puerta: string;
+  personas: number;
+  /** Cuánta gente admite por minuto. Cero cuando no está registrado. */
+  caudalPorMinuto: number;
+};
+
+export type TorreDeControl = {
+  hayNoche: boolean;
+  /** En falso, lo que se enseña es la próxima: los números son de antes de abrir. */
+  enCurso: boolean;
+  slug: string | null;
+  titulo: string | null;
+  sala: string | null;
+  puertasA: string | null;
+  terminaA: string | null;
+  aforoDeSala: number;
+  vendidas: number;
+  dentro: number;
+  taquillaCentimos: number;
+  barraCentimos: number;
+  consumiciones: number;
+  /** Lo que deja en barra cada persona que entró, no cada una que compró. */
+  gastoPorAsistenteCentimos: number;
+  ritmoDeEntrada: TramoDeEntrada[];
+  reservados: ReservaEnLaNoche[];
+  porPuerta: AccesoPorPuerta[];
+};
+
+export function verResumenDelPanel(): Promise<ResumenDelPanel> {
+  return pedir<ResumenDelPanel>("/api/panel/resumen");
+}
+
+export function verLaNoche(): Promise<TorreDeControl> {
+  return pedir<TorreDeControl>("/api/panel/noche");
+}
+
+export const NOMBRE_DE_ESTADO_DE_RESERVA: Record<EstadoDeReserva, string> = {
+  SOLICITADA: "Solicitada",
+  CONFIRMADA: "Confirmada",
+  SENTADA: "Sentados",
+  NO_VINO: "No vino",
+  CANCELADO: "Cancelada",
+};

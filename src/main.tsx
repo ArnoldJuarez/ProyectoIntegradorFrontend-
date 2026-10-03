@@ -14,6 +14,8 @@ import { Inventario } from "./paginas/Inventario.tsx";
 import { PedidoDetalle } from "./paginas/PedidoDetalle.tsx";
 import { Pedidos } from "./paginas/Pedidos.tsx";
 import { Segmentos } from "./paginas/Segmentos.tsx";
+import { Resumen } from "./panel/Resumen.tsx";
+import { Torre } from "./panel/Torre.tsx";
 import { Agenda } from "./publico/Agenda.tsx";
 import { FichaDeNoche } from "./publico/FichaDeNoche.tsx";
 import { MisEntradas } from "./publico/MisEntradas.tsx";
@@ -51,7 +53,12 @@ createRoot(document.getElementById("root")!).render(
           </Route>
 
           <Route path="panel" element={<App />}>
-            <Route index element={<Navigate to="/panel/eventos" replace />} />
+            {/*
+              El resumen es la portada del panel. Antes esto redirigía a
+              eventos porque el resumen no estaba migrado todavía.
+            */}
+            <Route index element={<Resumen />} />
+            <Route path="noche" element={<Torre />} />
             <Route path="eventos" element={<Eventos />} />
             {/*
               "nueva" va ANTES que ":slug". React Router elige la ruta más
