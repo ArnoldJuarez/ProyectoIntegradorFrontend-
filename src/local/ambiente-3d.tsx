@@ -36,8 +36,9 @@ const CONCRETO = "#1e1e1e";
 const CONCRETO_CLARO = "#272727";
 const METAL = "#3a3a3a";
 const MADERA = "#241c14";
-const CHARTREUSE = "#c9ff00";
-const MAGENTA = "#ff2b6e";
+/** Las dos luces de la marca: magenta y violeta de neón. */
+const CHARTREUSE = "#ff3d9a";
+const MAGENTA = "#a374ff";
 const CIAN = "#22d3ee";
 
 /** Alto libre de la sala. Manda la zona más alta y, si no hay ninguna, 5,5 m. */

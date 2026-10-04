@@ -54,7 +54,7 @@ export function ChatConserje() {
         <button
           type="button"
           onClick={() => setAbierto(true)}
-          className="glow-acento eyebrow fixed right-5 bottom-5 z-50 bg-acento px-5 py-3.5 text-on-acento transition hover:brightness-110"
+          className="glow-acento fixed right-5 bottom-5 z-50 flex items-center gap-2 rounded-full bg-acento px-5 py-3.5 text-sm font-semibold text-on-acento transition-[transform,filter] duration-150 ease-out hover:brightness-110"
         >
           ¿Dudas? Pregunta
         </button>
@@ -64,17 +64,17 @@ export function ChatConserje() {
 
   return (
     <div className="tw">
-      <div className="fixed right-5 bottom-5 z-50 flex h-[28rem] w-[min(22rem,calc(100vw-2.5rem))] flex-col overflow-hidden border border-line-strong bg-surface text-ink shadow-2xl">
+      <div className="chat-panel fixed right-5 bottom-5 z-50 flex h-[30rem] max-h-[calc(100dvh-2.5rem)] w-[min(23rem,calc(100vw-2.5rem))] flex-col overflow-hidden rounded-2xl border border-line bg-surface text-ink shadow-2xl">
         <header className="flex items-center justify-between gap-3 border-b border-line px-4 py-3">
           <div>
-            <p className="font-display text-xl font-black uppercase">Conserje</p>
+            <p className="font-display text-lg font-bold">Conserje</p>
             <p className="eyebrow text-muted">Cartel, precios y horarios</p>
           </div>
           <button
             type="button"
             onClick={() => setAbierto(false)}
             aria-label="Cerrar el chat"
-            className="text-muted transition hover:text-ink"
+            className="grid size-8 place-items-center rounded-full text-muted transition-colors duration-150 hover:bg-raised hover:text-ink"
           >
             ✕
           </button>
@@ -90,10 +90,10 @@ export function ChatConserje() {
           {turnos.map((t, i) => (
             <div
               key={i}
-              className={`max-w-[85%] px-3 py-2 text-sm whitespace-pre-wrap ${
+              className={`max-w-[85%] px-3.5 py-2 text-sm whitespace-pre-wrap ${
                 t.rol === "usuario"
-                  ? "self-end bg-acento text-on-acento"
-                  : "self-start border border-line bg-raised text-ink-soft"
+                  ? "self-end rounded-2xl rounded-br-md bg-acento text-on-acento"
+                  : "self-start rounded-2xl rounded-bl-md border border-line bg-raised text-ink-soft"
               }`}
             >
               {t.contenido}
@@ -101,7 +101,7 @@ export function ChatConserje() {
           ))}
 
           {ocupado && (
-            <div className="self-start border border-line bg-raised px-3 py-2 text-sm text-muted">
+            <div className="self-start rounded-2xl rounded-bl-md border border-line bg-raised px-3.5 py-2 text-sm text-muted">
               Mirando el cartel…
             </div>
           )}
@@ -114,12 +114,12 @@ export function ChatConserje() {
             placeholder="Escribe tu pregunta"
             aria-label="Tu pregunta"
             maxLength={1000}
-            className="min-w-0 flex-1 border border-line-strong bg-ground px-3 py-2 text-sm outline-none transition focus:border-acento"
+            className="min-w-0 flex-1 rounded-full border border-line bg-ground px-4 py-2 text-base outline-none transition-colors duration-150 focus:border-acento-text"
           />
           <button
             type="submit"
             disabled={ocupado || borrador.trim().length === 0}
-            className="eyebrow bg-acento px-4 py-2.5 text-on-acento transition hover:brightness-110 disabled:opacity-40"
+            className="rounded-full bg-acento px-4 py-2.5 text-sm font-semibold text-on-acento transition-[transform,filter,opacity] duration-150 hover:brightness-110 disabled:opacity-40"
           >
             Enviar
           </button>

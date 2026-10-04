@@ -518,6 +518,8 @@ export type NocheEnCartelera = {
   edadMinima: number;
   vestimenta: string | null;
   precioDesdeCentimos: number;
+  /** Hay una lista de entrada gratuita a la venta (p. ej. «lista mujeres»). */
+  conListaGratis: boolean;
   porcentajeVendido: number;
   cartel: ArtistaEnCartel[];
 };
@@ -619,6 +621,21 @@ export const NOMBRE_DE_ESTADO: Record<EstadoDeEvento, string> = {
   CANCELADO: "Cancelado",
   CERRADO: "Terminado",
 };
+
+/**
+ * Cómo se enseña el estado de una noche, teniendo en cuenta la fecha.
+ *
+ * Una noche publicada cuya fecha ya pasó no está «a la venta» aunque nadie la
+ * haya cerrado en el panel: decirlo así confunde. Se enseña como «Pasada», con
+ * el estilo de las cerradas, sin tocar el estado guardado.
+ */
+export function estadoVisible(estado: EstadoDeEvento, empiezaA: string): { clase: string; texto: string } {
+  const pasada = new Date(empiezaA).getTime() < Date.now();
+  if (pasada && (estado === "PUBLICADO" || estado === "AGOTADO")) {
+    return { clase: "estado estado--cerrado", texto: "Pasada" };
+  }
+  return { clase: `estado estado--${estado.toLowerCase()}`, texto: NOMBRE_DE_ESTADO[estado] };
+}
 
 /** Zona de la sala. Todo lo que se enseña a una persona va en esta hora. */
 const ZONA_DE_LA_SALA = "America/Lima";
@@ -1645,4 +1662,20 @@ export type ExtrasDePortada = {
 /** Boxes, el local, artistas y noches pasadas: lo que la portada enseña además de la agenda. */
 export function verExtrasDePortada(): Promise<ExtrasDePortada> {
   return pedir<ExtrasDePortada>("/api/publico/portada");
+}
+
+// ─────────────────────── Historial de noches (gráficas) ───────────────────────
+
+export type NocheCelebrada = {
+  slug: string;
+  titulo: string;
+  empiezaA: string;
+  /** Quien pasó por la puerta, no quien compró. */
+  asistentes: number;
+  taquillaCentimos: number;
+  barraCentimos: number;
+};
+
+export function verHistorialDeNoches(noches = 12): Promise<NocheCelebrada[]> {
+  return pedir<NocheCelebrada[]>(`/api/panel/historial?noches=${noches}`);
 }

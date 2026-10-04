@@ -24,10 +24,10 @@ export function Encabezado({
   href?: string;
 }) {
   return (
-    <div className="mb-10 flex items-end justify-between gap-6 border-b border-line pb-5">
+    <div className="mb-8 flex items-end justify-between gap-6">
       <div className="flex flex-col gap-2">
         <span className="eyebrow text-acento-text">{rotulo}</span>
-        <h2 className="text-5xl">{titulo}</h2>
+        <h2 className="text-3xl sm:text-4xl">{titulo}</h2>
       </div>
 
       {accion && href && (

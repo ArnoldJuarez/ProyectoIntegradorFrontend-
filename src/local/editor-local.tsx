@@ -1,4 +1,5 @@
 import { Suspense, lazy, useMemo, useState } from "react";
+import { toast } from "sonner";
 import { ErrorDeApi, guardarLocal } from "../api";
 import { Plano2D } from "./plano-2d";
 import {
@@ -65,7 +66,7 @@ export function EditorLocal({
 
   if (!sala) {
     return (
-      <div className="border border-dashed border-line-strong p-6">
+      <div className="rounded-xl border border-dashed border-line-strong p-6">
         <p className="text-sm text-ink-soft">No hay ninguna sala creada todavía.</p>
       </div>
     );
@@ -94,6 +95,7 @@ export function EditorLocal({
         zonas: sala.zonas,
         puertas: sala.puertas,
       });
+      toast.success(`Plano de ${sala.nombre} guardado`);
       alGuardar();
     } catch (e) {
       setError(e instanceof ErrorDeApi ? e.message : "No se pudo guardar.");
@@ -117,7 +119,7 @@ export function EditorLocal({
             const nueva = borrador.find((s) => s.id === e.target.value);
             if (nueva) setOcupacion(nueva.aforo);
           }}
-          className="eyebrow border border-line bg-surface px-3 py-2.5"
+          className="h-10 rounded-lg border border-line bg-surface px-3 text-sm font-medium"
         >
           {borrador.map((s) => (
             <option key={s.id} value={s.id}>
@@ -126,14 +128,14 @@ export function EditorLocal({
           ))}
         </select>
 
-        <div className="flex border border-line bg-raised p-[3px]">
+        <div className="flex rounded-xl border border-line bg-ground p-1">
           {(["plano", "3d"] as const).map((v) => (
             <button
               key={v}
               type="button"
               onClick={() => setVista(v)}
-              className={` px-4 py-1 text-xs font-semibold transition ${
- vista === v ? "bg-surface text-ink" : "text-muted hover:text-ink-soft"
+              className={`rounded-lg px-4 py-1.5 text-sm font-medium transition-colors duration-150 ${
+ vista === v ? "bg-raised text-ink shadow-sm" : "text-muted hover:text-ink-soft"
               }`}
             >
               {v === "plano" ? "Plano" : "3D"}
@@ -144,7 +146,7 @@ export function EditorLocal({
         <div className="ml-auto flex items-center gap-3">
           {cambiado && (
             <span className="eyebrow flex items-center gap-2 text-acento-text">
-              <span className="latir inline-block h-1.5 w-1.5 bg-acento" />
+              <span className="latir inline-block size-1.5 rounded-full bg-acento-text" />
               Cambios sin guardar
             </span>
           )}
@@ -152,14 +154,14 @@ export function EditorLocal({
             type="button"
             onClick={guardar}
             disabled={guardando || !cambiado}
-            className="eyebrow bg-acento px-5 py-2.5 text-on-acento transition hover:brightness-110 disabled:opacity-40"
+            className="h-10 rounded-lg bg-acento px-5 text-sm font-semibold text-on-acento transition-[transform,filter,opacity] duration-150 hover:brightness-110 disabled:opacity-40"
           >
             {guardando ? "Guardando…" : "Guardar el local"}
           </button>
         </div>
       </div>
 
-      {error && <p className="border border-bad bg-bad-wash px-4 py-2 text-sm text-bad">{error}</p>}
+      {error && <p className="rounded-xl border border-alarma-dim bg-bad-wash px-4 py-2.5 text-sm text-bad">{error}</p>}
 
       <div className="grid gap-5 xl:grid-cols-[1fr_20rem]">
         <div className="min-h-[26rem]">
@@ -194,7 +196,7 @@ export function EditorLocal({
 
         {/* ---- panel lateral: medidas y edición ---- */}
         <aside className="flex flex-col gap-4">
-          <section className="border border-line bg-surface p-4">
+          <section className="rounded-2xl border border-line bg-surface p-4">
             <h3 className="eyebrow mb-3 text-acento-text">Medidas de la sala</h3>
             <div className="grid grid-cols-2 gap-3">
               <Campo
@@ -210,7 +212,7 @@ export function EditorLocal({
             </div>
           </section>
 
-          <section className="border border-line bg-surface p-4">
+          <section className="rounded-2xl border border-line bg-surface p-4">
             <h3 className="eyebrow mb-3 text-acento-text">
               {zonaActiva ? `Zona · ${zonaActiva.nombre}` : `Zonas (${sala.zonas.length})`}{" "}
             </h3>
@@ -230,7 +232,7 @@ export function EditorLocal({
                     onChange={(e) =>
                       actualizarZona(zonaActiva.id, { tipo: e.target.value as TipoZona })
                     }
-                    className="border border-line-strong bg-ground px-2 py-1.5 text-sm text-ink outline-none focus:border-acento"
+                    className="h-9 rounded-lg border border-line bg-ground px-2 text-sm text-ink outline-none transition-colors duration-150 focus:border-acento-text"
                   >
                     <option value="PISTA">Pista de baile</option>
                     <option value="VIP">Reservados / VIP</option>
@@ -293,7 +295,7 @@ export function EditorLocal({
                     <button
                       type="button"
                       onClick={() => setSeleccion(z.id)}
-                      className="flex w-full items-baseline justify-between gap-2 px-2 py-1.5 text-left text-sm transition hover:bg-raised"
+                      className="flex w-full items-baseline justify-between gap-2 rounded-lg px-2.5 py-2 text-left text-sm transition-colors duration-150 hover:bg-raised"
                     >
                       <span>{z.nombre}</span>
                       <span className="tnum text-xs text-muted">
@@ -306,7 +308,7 @@ export function EditorLocal({
             )}
           </section>
 
-          <section className="border border-line bg-surface p-4">
+          <section className="rounded-2xl border border-line bg-surface p-4">
             <h3 className="eyebrow mb-3 text-acento-text">Puertas y salidas</h3>
             <ul className="flex flex-col gap-3">
               {sala.puertas.map((p) => (
@@ -356,9 +358,9 @@ export function EditorLocal({
       </div>
 
       {/* ---- simulación ---- */}
-      <section className="border border-line bg-surface">
+      <section className="overflow-hidden rounded-2xl border border-line bg-surface">
         <div className="flex flex-wrap items-center justify-between gap-4 border-b border-line px-5 py-3.5">
-          <h2 className="font-display text-xl font-black uppercase">Simulación de evacuación</h2>
+          <h2 className="text-xl">Simulación de evacuación</h2>
           <label className="flex items-center gap-3 text-sm">
             <span className="eyebrow text-muted">Personas dentro</span>
             <input
@@ -379,7 +381,7 @@ export function EditorLocal({
             <div className="mb-5 flex flex-wrap items-end gap-6">
               <div>
                 <p className="eyebrow text-muted">Tiempo de evacuación</p>
-                <p className="tnum font-display text-6xl leading-none font-black text-acento-text">
+                <p className="tnum mt-1 text-5xl leading-none font-semibold tracking-tight text-ink">
                   {formatearTiempo(evacuacion.segundos)}
                 </p>
               </div>
@@ -395,7 +397,7 @@ export function EditorLocal({
                 return (
                   <div
                     key={p.puerta.id}
-                    className={` border p-4 ${critica ? "border-bad bg-bad-wash" : "border-line bg-raised"}`}
+                    className={`rounded-xl border p-4 ${critica ? "border-alarma-dim bg-bad-wash" : "border-line bg-raised"}`}
                   >
                     <div className="flex items-baseline justify-between gap-2">
                       <span className="text-sm font-semibold">{p.puerta.nombre}</span>
@@ -422,7 +424,7 @@ export function EditorLocal({
             )}
           </div>
         ) : (
-          <div className="m-5 border border-dashed border-line-strong p-6">
+          <div className="m-5 rounded-xl border border-dashed border-line-strong p-6">
             <p className="text-sm text-ink-soft">
               {evacuacion?.avisos[0] ?? "No se puede calcular la evacuación todavía."}
             </p>
@@ -456,7 +458,7 @@ function Campo({
           const v = Number(e.target.value);
           onChange(Number.isFinite(v) && v >= 0 ? (entero ? Math.round(v) : v) : 0);
         }}
-        className="tnum w-full border border-line bg-ground px-2 py-1.5 text-sm outline-none transition focus:border-acento"
+        className="tnum h-9 w-full rounded-lg border border-line bg-ground px-2.5 text-base outline-none transition-colors duration-150 focus:border-acento-text"
       />
     </label>
   );

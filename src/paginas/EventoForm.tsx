@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { toast } from "sonner";
 import { AvisoDeError } from "../Aviso";
 import {
   ErrorDeApi,
@@ -125,6 +126,7 @@ export function EventoForm() {
       const r = await subirPortada(slug, archivo);
       setPortada(r.portada);
       setAvisoDePortada(`Flyer subido (${r.pesoKb} KB tras optimizarlo).`);
+      toast.success("Flyer subido");
     } catch (err) {
       setAvisoDePortada(err instanceof ErrorDeApi ? err.message : "No se pudo subir el flyer.");
     } finally {
@@ -169,6 +171,7 @@ export function EventoForm() {
 
     try {
       const guardada = slug ? await editarNoche(slug, datos) : await crearNoche(datos);
+      toast.success(slug ? "Cambios guardados" : "Noche creada");
       navegar(`/panel/eventos/${guardada.slug}`);
     } catch (e) {
       setFallo(e instanceof ErrorDeApi ? e.message : "No se pudo guardar la noche.");

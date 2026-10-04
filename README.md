@@ -125,17 +125,41 @@ sesión de un administrador.
 formatearlo, en `soles()`. Operar con el valor ya dividido es como salen los
 totales con decimales imposibles.
 
-## Dos sistemas de estilos, a propósito
+## El sistema de diseño
 
-Las pantallas hechas desde cero usan CSS propio con clases en castellano
-(`App.css`, `publico.css`...). Las piezas que se trajeron del sistema anterior
-—la portada, el editor del local, la vista 3D, el conserje y la bandeja de la
-IA— venían escritas con utilidades de Tailwind, y se trajeron tal cual.
+Todo sale de `src/estilos/sistema.css`: colores, tipografía, radios, sombras y
+curvas de animación. La paleta es la de los flyers de la casa —magenta y
+violeta de neón sobre un negro que tira a morado, verde para lo que sale bien—
+y la letra, **Unbounded** para la marca y los titulares e **Inter** para todo
+lo demás (empaquetadas con `@fontsource`, sin depender de Google).
 
-Para que no se pisen, Tailwind entra **sin su reset global** y solo dentro de un
-contenedor con la clase `tw`. Todo Tailwind va en `@layer`, así que si alguna
-vez chocan, gana el CSS propio. Ninguna utilidad generada coincide hoy con una
-clase de las pantallas propias.
+Las pantallas propias usan CSS con clases en castellano (`App.css`,
+`publico.css`, `panel.css`, `barra.css`, `puerta.css`). Las piezas que vinieron
+del sistema anterior —la portada, el editor del local, la vista 3D, el conserje
+y la bandeja de la IA— usan Tailwind, cuyos colores (`bg-surface`,
+`text-acento-text`…) apuntan a los mismos tokens. Tailwind entra **sin su reset
+global**, solo dentro de un contenedor `.tw`, y todo él va en `@layer`: si
+alguna vez chocan, gana el CSS propio.
+
+### Movimiento
+
+Sigue los criterios de Emil Kowalski (`emil-design-eng`):
+
+- Todo lo que se pulsa se hunde un poco (`scale(0.97)`) en 100-160 ms.
+- Solo se anima `transform` y `opacity`; nunca `transition: all`.
+- Curvas propias (`--ease-out`), nada de `ease-in`, y nada por encima de 300 ms.
+- Los `:hover` van dentro de `@media (hover: hover) and (pointer: fine)`: en el
+  móvil no se quedan pegados.
+- Lo que se usa decenas de veces por noche (las teclas de la barra, las filas
+  de las tablas) casi no se mueve.
+- `prefers-reduced-motion` cambia los desplazamientos por fundidos.
+
+### Librerías
+
+- **Sonner** para los avisos de «guardado», «aprobada», «no se pudo».
+- **recharts** para las gráficas del resumen, con paleta validada contra la
+  superficie oscura (magenta y violeta, distinguibles con daltonismo).
+- **lucide-react** para los iconos del menú.
 
 ## Estado
 

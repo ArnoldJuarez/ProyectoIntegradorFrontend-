@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "sonner";
 import {
   ErrorDeApi,
   anadirTipoDeEntrada,
@@ -46,6 +47,7 @@ export function TiposDeEntrada({
       // El mensaje importa: si tenía ventas no se borró, se retiró. Sin decirlo,
       // parece que el botón no funcionó.
       setAviso(hecho.mensaje);
+      toast(hecho.mensaje);
       alCambiar();
     } catch (e) {
       setFallo(e instanceof ErrorDeApi ? e.message : "No se pudo quitar el tipo de entrada.");
@@ -102,6 +104,7 @@ export function TiposDeEntrada({
                       vendidas={t.vendidas}
                       alGuardar={async (datos) => {
                         await editarTipoDeEntrada(t.id, datos);
+                        toast.success(`«${datos.nombre}» actualizada`);
                         setEditando(null);
                         alCambiar();
                       }}
@@ -145,6 +148,7 @@ export function TiposDeEntrada({
                     vendidas={0}
                     alGuardar={async (datos) => {
                       await anadirTipoDeEntrada(slug, datos);
+                      toast.success(`«${datos.nombre}» a la venta`);
                       setEditando(null);
                       alCambiar();
                     }}

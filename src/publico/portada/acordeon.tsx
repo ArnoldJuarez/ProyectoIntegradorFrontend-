@@ -14,21 +14,21 @@
  */
 export function Acordeon({ apartados }: { apartados: { titulo: string; texto: string }[] }) {
   return (
-    <div className="border-t border-line">
+    <div className="overflow-hidden rounded-2xl border border-line bg-surface">
       {apartados.map((apartado) => (
-        <details key={apartado.titulo} className="group border-b border-line">
-          <summary className="flex cursor-pointer list-none items-center justify-between gap-6 py-5 transition hover:text-acento-text [&::-webkit-details-marker]:hidden">
-            <span className="font-display text-2xl font-black uppercase leading-none">
+        <details key={apartado.titulo} className="group border-b border-line last:border-0">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-6 px-5 py-4 transition-colors duration-150 hover:text-acento-text [&::-webkit-details-marker]:hidden">
+            <span className="text-base font-semibold sm:text-lg">
               {apartado.titulo}
             </span>
             <span
               aria-hidden
-              className="shrink-0 font-mono text-2xl leading-none text-acento-text transition duration-300 group-open:rotate-45"
+              className="grid size-8 shrink-0 place-items-center rounded-full bg-raised text-lg leading-none text-acento-text transition-transform duration-200 ease-out group-open:rotate-45"
             >
               +
             </span>
           </summary>
-          <p className="max-w-2xl pb-6 text-ink-soft">{apartado.texto}</p>
+          <p className="max-w-2xl px-5 pb-5 text-ink-soft">{apartado.texto}</p>
         </details>
       ))}
     </div>

@@ -17,14 +17,14 @@ export const CLUB = {
   tagline: "Cuatro noches por semana en Av. Dolores, hasta las dos de la mañana.",
   city: "Arequipa",
   address: "Av. Dolores 119, José Luis Bustamante y Rivero, Arequipa",
-  phone: "+51 951 866 748",
+  phone: "+51 986 678 040",
   email: "«correo de contacto»",
   /**
    * Usuario de Instagram, sin la arroba. Vacío = en el pie se enseña la palabra
    * «Instagram» sin enlazar, que es mejor que un enlace a un perfil inventado.
    */
   instagram: "ssiomama",
-  hours: "Jueves, viernes, sábado y domingo, de 8:00 p. m. a 2:00 a. m.",
+  hours: "Jueves, viernes, sábado y domingo, de 9:00 p. m. a 2:00 a. m.",
   /** Perú: el ingreso a discotecas es para mayores de edad. */
   minAge: 18,
 
@@ -64,7 +64,7 @@ export const CLUB = {
    * derivar uno del otro con un `replace` se rompe el día que alguien escriba
    * el teléfono con un prefijo distinto.
    */
-  whatsapp: "51951866748",
+  whatsapp: "51986678040",
 
   /**
    * Lo que se sirve en barra, en una frase. Vacío = no se pinta la línea.

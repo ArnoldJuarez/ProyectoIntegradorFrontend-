@@ -51,8 +51,9 @@ const NEGRO = "#080808";
 const CONCRETO = "#111111";
 const LINEA = "#2a2a2a";
 const LINEA_FUERTE = "#3d3d3d";
-const CHARTREUSE = "#c9ff00";
-const MAGENTA = "#ff2b6e";
+/** Las dos luces de la marca: magenta y violeta de neón. */
+const CHARTREUSE = "#ff3d9a";
+const MAGENTA = "#a374ff";
 const TINTA = "#f2f2f0";
 
 function colorZona(zona: ZonaPlano, resaltada: boolean): THREE.Color {
@@ -215,7 +216,8 @@ function Puerta({
    * nace de "el color de una luz de emergencia". Aquí el color hace literalmente
    * ese trabajo. La puerta de entrada va en tinta, que es lo neutro.
    */
-  const color = puerta.esSalidaEmergencia ? CHARTREUSE : TINTA;
+  // Las salidas de emergencia, en verde como su cartel de verdad.
+  const color = puerta.esSalidaEmergencia ? "#3ee6a0" : TINTA;
 
   return (
     <group position={[puerta.x - centroPlano.x, 0, puerta.y - centroPlano.z]}>
@@ -419,7 +421,7 @@ export function Escena3D({
   return (
     <div
       ref={contenedor}
-      className="relative h-full w-full overflow-hidden border border-line bg-ground"
+      className="relative h-full w-full overflow-hidden rounded-2xl border border-line bg-ground"
     >
       <div className="absolute left-3 top-3 z-10 flex flex-wrap gap-2">
         <div className="flex gap-1 border border-line bg-ground/85 p-[3px] backdrop-blur">

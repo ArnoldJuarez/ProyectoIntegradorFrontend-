@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { TablaDeListas } from "./Promotores";
 import { TiposDeEntrada } from "./TiposDeEntrada";
 import { AvisoDeError } from "../Aviso";
-import { NOMBRE_DE_ESTADO, horaDeSala, listasDeLaNoche, soles, verEvento } from "../api";
+import { estadoVisible, horaDeSala, listasDeLaNoche, soles, verEvento } from "../api";
 import { useCarga } from "../datos";
 
 /** La ficha de una noche: horario, condiciones y cómo va la venta por tipo. */
@@ -41,8 +41,8 @@ export function EventoDetalle() {
       <header className="cabecera">
         <h2>{e.titulo}</h2>
         <div className="cabecera__acciones">
-          <span className={`estado estado--${e.estado.toLowerCase()}`}>
-            {NOMBRE_DE_ESTADO[e.estado]}
+          <span className={estadoVisible(e.estado, e.empiezaA).clase}>
+            {estadoVisible(e.estado, e.empiezaA).texto}
           </span>
           <Link to={`/panel/eventos/${e.slug}/editar`} className="boton-secundario">
             Editar

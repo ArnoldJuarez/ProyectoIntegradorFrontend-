@@ -134,9 +134,11 @@ function Velo() {
            * lea depende de la foto que toque — y con un vídeo, del fotograma.
            * Protege solo esa banda; la derecha se queda con todo su color.
            */
-          "linear-gradient(90deg, rgb(8 8 8 / 0.82) 0%, rgb(8 8 8 / 0.45) 45%, transparent 78%)",
+          "radial-gradient(60% 70% at 90% 0%, rgb(163 116 255 / 0.35), transparent 60%)",
+          "radial-gradient(55% 60% at 0% 100%, rgb(255 61 154 / 0.38), transparent 60%)",
+          "linear-gradient(90deg, rgb(11 7 16 / 0.85) 0%, rgb(11 7 16 / 0.45) 45%, transparent 78%)",
           /* Y el vertical, que sostiene los datos y el botón de abajo. */
-          "linear-gradient(180deg, rgb(8 8 8 / 0.3) 0%, rgb(8 8 8 / 0.1) 32%, rgb(8 8 8 / 0.7) 74%, rgb(8 8 8 / 0.94) 100%)",
+          "linear-gradient(180deg, rgb(11 7 16 / 0.35) 0%, rgb(11 7 16 / 0.1) 32%, rgb(11 7 16 / 0.72) 74%, rgb(11 7 16) 100%)",
         ].join(", "),
       }}
     />
@@ -154,9 +156,9 @@ function Velo() {
  */
 function Haces() {
   const haces = [
-    { desde: "-22deg", hasta: "14deg", izquierda: "22%", color: "rgb(201 255 0 / 0.55)", dur: "11s", retardo: "0s" },
-    { desde: "16deg", hasta: "-12deg", izquierda: "52%", color: "rgb(255 43 110 / 0.4)", dur: "13s", retardo: "-3s" },
-    { desde: "-8deg", hasta: "24deg", izquierda: "78%", color: "rgb(201 255 0 / 0.42)", dur: "17s", retardo: "-7s" },
+    { desde: "-22deg", hasta: "14deg", izquierda: "18%", color: "rgb(255 61 154 / 0.55)", dur: "11s", retardo: "0s" },
+    { desde: "16deg", hasta: "-12deg", izquierda: "52%", color: "rgb(163 116 255 / 0.45)", dur: "13s", retardo: "-3s" },
+    { desde: "-8deg", hasta: "24deg", izquierda: "80%", color: "rgb(255 61 154 / 0.4)", dur: "17s", retardo: "-7s" },
   ];
 
   return (

@@ -1,4 +1,5 @@
-import { Link } from "react-router-dom";
+import { useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { Boletin } from "./Boletin";
 import { Acordeon } from "./portada/acordeon";
 import { BarraMovil } from "./portada/barra-movil";
@@ -65,6 +66,8 @@ function Cabecera({ proxima, hayMas }: { proxima?: NocheEnCartelera; hayMas: boo
     <section className="relative flex min-h-[88vh] flex-col justify-end overflow-hidden border-b border-line">
       {/* Vídeo, foto o haces de luz: lo que haya, en ese orden. */}
       <PortadaMedia portada={CLUB.portada} foto={proxima?.portada} />
+      {/* La rejilla en perspectiva de los flyers, en el suelo de la portada. */}
+      <div aria-hidden className="suelo-neon pointer-events-none absolute inset-x-[-25%] bottom-0 h-[38%]" />
 
       {/*
         El hueco de abajo en móvil es para el botón flotante del chat: sin
@@ -73,19 +76,31 @@ function Cabecera({ proxima, hayMas }: { proxima?: NocheEnCartelera; hayMas: boo
       <div className="relative mx-auto w-full max-w-6xl px-5 pt-28 pb-28 sm:pt-36 sm:pb-20">
         {proxima ? (
           <div className="flex max-w-4xl flex-col gap-6">
-            {/* El género antes que el nombre: es el primer filtro de quien duda. */}
-            <span className="eyebrow encender flex w-fit items-center gap-3 border border-acento-dim px-3 py-2 text-acento-text">
-              <span className="latir inline-block h-2 w-2 bg-acento" />
-              {generos[0] ?? "Próxima noche"}
-            </span>
+            <div className="flex flex-wrap items-center gap-4">
+              {/* La fecha apilada, como en la esquina de los flyers. */}
+              <p className="hero__fecha surgir" aria-label={horaDeSala(proxima.empiezaA, { dateStyle: "full" })}>
+                <span className="hero__fecha-dia">
+                  {horaDeSala(proxima.empiezaA, { weekday: "short" }).replace(".", "")}
+                </span>
+                <span className="hero__fecha-numero">{horaDeSala(proxima.empiezaA, { day: "numeric" })}</span>
+                <span className="hero__fecha-mes">
+                  {horaDeSala(proxima.empiezaA, { month: "short" }).replace(".", "")}
+                </span>
+              </p>
+              {/* El género antes que el nombre: es el primer filtro de quien duda. */}
+              <span className="eyebrow encender flex w-fit items-center gap-2.5 rounded-full border border-acento-dim bg-ground/40 px-3.5 py-2 text-acento-text backdrop-blur">
+                <span className="latir inline-block size-2 rounded-full bg-acento-text" />
+                {generos[0] ?? "Próxima noche"}
+              </span>
+            </div>
 
-            <h1 className="surgir text-[clamp(3rem,13vw,8.5rem)]">
+            <h1 className="surgir text-[clamp(2.4rem,7.5vw,5.8rem)]">
               {tituloSinCabeza(proxima.titulo, cabeza)}
             </h1>
 
             {cabeza && (
               <div className="surgir flex flex-wrap items-baseline gap-x-5 gap-y-1" style={{ animationDelay: "80ms" }}>
-                <span className="font-display text-4xl font-black text-acento-text uppercase">{cabeza}</span>
+                <span className="font-display text-2xl font-bold text-acento-text sm:text-3xl">{cabeza}</span>
                 {teloneros.length > 0 && (
                   <span className="text-ink-soft">
                     {teloneros.join(" · ")} {teloneros.length === 1 ? "abre" : "abren"} la noche
@@ -106,7 +121,7 @@ function Cabecera({ proxima, hayMas }: { proxima?: NocheEnCartelera; hayMas: boo
                 .map((dato) => (
                   <span
                     key={dato as string}
-                    className="eyebrow border border-line bg-surface/70 px-3 py-1.5 text-ink-soft backdrop-blur"
+                    className="rounded-full border border-white/15 bg-ground/50 px-3.5 py-1.5 text-sm text-ink-soft backdrop-blur"
                   >
                     {dato}
                   </span>
@@ -130,7 +145,7 @@ function Cabecera({ proxima, hayMas }: { proxima?: NocheEnCartelera; hayMas: boo
                 )}
               </div>
               {vendido >= UMBRAL_AFORO && (
-                <div aria-hidden className="h-[3px] bg-white/12">
+                <div aria-hidden className="h-1 overflow-hidden rounded-full bg-white/12">
                   <div
                     className={`subir h-full ${vendido >= UMBRAL_ULTIMAS ? "bg-alarma" : "bg-acento"}`}
                     style={{ width: `${vendido}%` }}
@@ -142,14 +157,14 @@ function Cabecera({ proxima, hayMas }: { proxima?: NocheEnCartelera; hayMas: boo
             <div className="surgir mt-2 flex flex-wrap items-center gap-6" style={{ animationDelay: "280ms" }}>
               <Link
                 to={`/evento/${proxima.slug}`}
-                className="glow-acento group flex items-center gap-3 bg-acento px-8 py-4 font-display text-2xl font-black text-on-acento uppercase transition duration-300 hover:brightness-110"
+                className="pulsable glow-acento group flex items-center gap-3 rounded-full bg-acento px-7 py-4 text-lg font-semibold text-on-acento transition-[transform,filter] duration-150 ease-out hover:brightness-110"
               >
                 Comprar entrada
-                <span className="transition duration-300 group-hover:translate-x-1">→</span>
+                <span className="transition-transform duration-200 ease-out group-hover:translate-x-1">→</span>
               </Link>
               <div className="flex flex-col">
                 <span className="eyebrow text-muted">desde</span>
-                <span className="tnum font-display text-4xl font-black">{soles(proxima.precioDesdeCentimos)}</span>
+                <span className="tnum font-display text-3xl font-bold">{soles(proxima.precioDesdeCentimos)}</span>
                 {/* El aviso que evita la discusión en la puerta. */}
                 <span className="text-xs text-muted">el precio en puerta es mayor</span>
               </div>
@@ -181,6 +196,15 @@ function Cabecera({ proxima, hayMas }: { proxima?: NocheEnCartelera; hayMas: boo
 export function Portada() {
   const agenda = useCarga(verAgenda, []);
   const extras = useCarga(verExtrasDePortada, []);
+  const { hash } = useLocation();
+
+  // La barra enlaza a «Boxes» y «Cómo llegar» de esta página, pero esas
+  // secciones aparecen al llegar los datos: hay que llevar hasta ellas a mano.
+  useEffect(() => {
+    if (hash && extras.fase === "listo") {
+      document.getElementById(hash.slice(1))?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [hash, extras.fase]);
 
   const noches = agenda.fase === "listo" ? agenda.datos : [];
   const [proxima, ...resto] = noches;
@@ -236,7 +260,7 @@ export function Portada() {
           <div className="relative mx-auto flex max-w-6xl flex-col gap-5 px-5 py-12 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-3xl sm:text-4xl">{CLUB.cumple.titulo}</h2>
-              <p className="mt-1 font-display text-2xl font-black text-acento-text uppercase">{CLUB.cumple.texto}</p>
+              <p className="mt-2 font-display text-xl font-bold text-acento-text sm:text-2xl">{CLUB.cumple.texto}</p>
               <p className="mt-2 max-w-md text-sm text-ink-soft">{CLUB.cumple.letraPequena}</p>
             </div>
             {whatsapp && (
@@ -244,7 +268,7 @@ export function Portada() {
                 href={`https://wa.me/${whatsapp}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="glow-acento eyebrow shrink-0 self-start bg-acento px-6 py-4 text-on-acento transition hover:brightness-110 sm:self-auto"
+                className="pulsable glow-acento shrink-0 self-start rounded-full bg-acento px-6 py-3.5 font-semibold text-on-acento transition-[transform,filter] duration-150 ease-out hover:brightness-110 sm:self-auto"
               >
                 Pedirlo por WhatsApp
               </a>
@@ -287,16 +311,16 @@ export function Portada() {
                 <div
                   key={`${b.zona}|${b.plazas}|${b.consumoMinimoCentimos}`}
                   style={{ animationDelay: `${i * 90}ms` }}
-                  className="surgir group relative overflow-hidden border border-line bg-ground p-6 transition duration-300 hover:border-acento"
+                  className="surgir group relative overflow-hidden rounded-2xl border border-line bg-ground p-6 transition-colors duration-200 hover:border-acento-dim"
                 >
                   <div className="relative mb-4 flex items-start justify-between gap-4">
-                    <p className="font-display text-3xl leading-none font-black uppercase">{b.zona ?? "Box"}</p>
-                    <span className="eyebrow tnum shrink-0 border border-acento-dim px-2.5 py-1.5 text-acento-text">
+                    <p className="font-display text-2xl leading-none font-bold">{b.zona ?? "Box"}</p>
+                    <span className="eyebrow tnum shrink-0 rounded-full border border-acento-dim px-2.5 py-1.5 text-acento-text">
                       {b.cuantos} {b.cuantos === 1 ? "box" : "boxes"}
                     </span>
                   </div>
                   <p className="relative text-sm text-ink-soft">Hasta {b.plazas} personas</p>
-                  <p className="tnum relative mt-4 font-display text-4xl font-black text-acento-text">
+                  <p className="tnum relative mt-4 font-display text-3xl font-bold text-ink">
                     {soles(b.consumoMinimoCentimos)}
                   </p>
                   <p className="eyebrow relative text-muted">consumo mínimo</p>
@@ -309,7 +333,7 @@ export function Portada() {
               {proxima && (
                 <Link
                   to={`/evento/${proxima.slug}#reservados`}
-                  className="glow-acento eyebrow bg-acento px-6 py-4 text-on-acento transition hover:brightness-110"
+                  className="pulsable glow-acento rounded-full bg-acento px-6 py-3.5 font-semibold text-on-acento transition-[transform,filter] duration-150 ease-out hover:brightness-110"
                 >
                   Pedir box para {proxima.titulo}
                 </Link>
@@ -319,7 +343,7 @@ export function Portada() {
                   href={`https://wa.me/${whatsapp}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="eyebrow border border-line px-5 py-3 text-ink-soft transition hover:border-acento hover:text-acento-text"
+                  className="pulsable rounded-full border border-line px-5 py-3.5 font-medium text-ink-soft transition-colors duration-150 hover:border-acento-dim hover:text-ink"
                 >
                   Consultar por WhatsApp
                 </a>
@@ -341,15 +365,15 @@ export function Portada() {
       {x && x.artistas.length > 0 && (
         <section id="artistas" className="mx-auto max-w-6xl px-5 py-20">
           <Encabezado rotulo={`Cartel ${new Date().getFullYear()}`} titulo="Artistas" />
-          <div className="grid gap-px bg-line sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {x.artistas.map((a, i) => (
               <div
                 key={a.nombre}
                 style={{ animationDelay: `${i * 70}ms` }}
-                className="surgir group flex flex-col gap-1 bg-ground p-6 transition duration-300 hover:bg-surface"
+                className="surgir group flex flex-col gap-1.5 rounded-2xl border border-line bg-surface p-6 transition-colors duration-200 hover:border-acento-dim"
               >
                 <span className="eyebrow text-acento-text">{a.genero}</span>
-                <p className="font-display text-3xl font-black uppercase transition group-hover:text-acento-text">
+                <p className="font-display text-2xl font-bold transition-colors duration-150 group-hover:text-acento-text">
                   {a.nombre}
                 </p>
                 {a.instagram && <span className="eyebrow text-muted">@{a.instagram}</span>}
@@ -375,7 +399,7 @@ export function Portada() {
               <div
                 key={n.slug}
                 style={{ animationDelay: `${i * 70}ms` }}
-                className="surgir group relative flex aspect-square flex-col justify-end overflow-hidden border border-line p-4"
+                className="surgir group relative flex aspect-square flex-col justify-end overflow-hidden rounded-2xl border border-line p-4"
               >
                 {n.portada ? (
                   <img
@@ -395,7 +419,7 @@ export function Portada() {
                 <p className="eyebrow relative text-muted">
                   {horaDeSala(n.empiezaA, { weekday: "long", day: "numeric", month: "long" })}
                 </p>
-                <p className="relative font-display text-xl leading-tight font-black uppercase">{n.titulo}</p>
+                <p className="relative font-display text-lg leading-tight font-bold">{n.titulo}</p>
               </div>
             ))}
           </div>
@@ -447,7 +471,7 @@ export function Portada() {
 
         {/* Con `loading="lazy"`: es un marco de terceros al final de la página. */}
         {mapa && (
-          <div className="mt-10 border border-line bg-raised">
+          <div className="mt-10 overflow-hidden rounded-2xl border border-line bg-raised">
             <iframe
               src={mapa}
               title={`Mapa de ${CLUB.name} en ${CLUB.address}`}
@@ -463,7 +487,7 @@ export function Portada() {
             href={CLUB.mapsUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="eyebrow mt-4 inline-flex items-center gap-2 border border-line px-5 py-3 text-ink-soft transition hover:border-acento hover:text-acento-text"
+            className="pulsable mt-4 inline-flex items-center gap-2 rounded-full border border-line px-5 py-3 font-medium text-ink-soft transition-colors duration-150 hover:border-acento-dim hover:text-ink"
           >
             Cómo llegar en Google Maps <span aria-hidden>→</span>
           </a>

@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { AvisoDeError } from "../Aviso";
-import { NOMBRE_DE_ESTADO, horaDeSala, listarEventos, soles } from "../api";
+import { estadoVisible, horaDeSala, listarEventos, soles } from "../api";
 import { useCarga } from "../datos";
 
 /**
@@ -64,9 +64,9 @@ export function Eventos() {
                     <td>{horaDeSala(e.puertasA)}</td>
                     <td>{e.sala}</td>
                     <td>
-                      <span className={`estado estado--${e.estado.toLowerCase()}`}>
-                        {NOMBRE_DE_ESTADO[e.estado]}
-                      </span>
+                      <span className={estadoVisible(e.estado, e.empiezaA).clase}>
+            {estadoVisible(e.estado, e.empiezaA).texto}
+          </span>
                     </td>
                     <td className="num">
                       {e.vendidas} / {e.aforoALaVenta}

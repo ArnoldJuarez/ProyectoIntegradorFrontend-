@@ -38,7 +38,7 @@ export function Plano2D({
 }) {
   if (planoAncho <= 0 || planoFondo <= 0) {
     return (
-      <div className="flex h-64 items-center justify-center border border-dashed border-line-strong p-6 text-center">
+      <div className="flex h-64 items-center justify-center rounded-2xl border border-dashed border-line-strong p-6 text-center">
         <p className="text-sm text-ink-soft">
           Pon el ancho y el fondo de la sala en metros y aquí aparecerá su planta.
         </p>
@@ -54,7 +54,7 @@ export function Plano2D({
   return (
     <svg
       viewBox={`0 0 ${ancho} ${alto}`}
-      className="h-auto w-full border border-line bg-ground"
+      className="h-auto w-full rounded-2xl border border-line bg-ground"
       role="img"
       aria-label={`Planta de ${planoAncho} por ${planoFondo} metros con ${zonas.length} zonas`}
     >
@@ -176,7 +176,8 @@ export function Plano2D({
       {puertas
         .filter((p) => p.activo)
         .map((puerta) => {
-          const color = puerta.esSalidaEmergencia ? "var(--color-acento)" : "var(--color-ink)";
+          // Salidas de emergencia en verde, como su cartel; el resto, en tinta.
+          const color = puerta.esSalidaEmergencia ? "var(--verde)" : "var(--color-ink)";
           return (
             <g key={puerta.id}>
               <circle

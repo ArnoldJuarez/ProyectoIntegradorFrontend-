@@ -32,7 +32,7 @@ export function Medidor({
     >
       <div
         className={tono === "alerta" ? "medidor__relleno medidor__relleno--alerta" : "medidor__relleno"}
-        style={{ width: `${porcentaje}%` }}
+        style={{ transform: `scaleX(${porcentaje / 100})` }}
       />
     </div>
   );

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "sonner";
 import { AvisoDeError } from "../Aviso";
 import {
   ErrorDeApi,
@@ -73,7 +74,7 @@ function Contenido({ valor }: { valor: unknown }) {
     return (
       <ul className="flex flex-col gap-3">
         {valor.map((v, i) => (
-          <li key={i} className="border border-line bg-raised p-3">
+          <li key={i} className="rounded-xl border border-line bg-raised p-3">
             <Contenido valor={v} />
           </li>
         ))}
@@ -102,23 +103,26 @@ function BotonDeAgente({ agente, alTerminar }: { agente: AgenteDeIa; alTerminar:
     try {
       const r = await lanzarAgente(agente.clave);
       setNota({ texto: r.mensaje, ok: true });
+      toast.success(r.mensaje);
       alTerminar();
     } catch (e) {
-      setNota({ texto: e instanceof ErrorDeApi ? e.message : "El agente ha fallado.", ok: false });
+      const texto = e instanceof ErrorDeApi ? e.message : "El agente ha fallado.";
+      setNota({ texto, ok: false });
+      toast.error(texto);
     } finally {
       setOcupado(false);
     }
   }
 
   return (
-    <div className="flex w-64 flex-col gap-2 border border-line bg-surface p-3">
+    <div className="flex w-64 flex-col gap-2 rounded-2xl border border-line bg-surface p-4">
       <p className="text-sm font-semibold">{agente.nombre}</p>
       <p className="text-xs text-muted">{agente.descripcion}</p>
       <button
         type="button"
         onClick={lanzar}
         disabled={ocupado}
-        className="mt-auto border border-acento-dim bg-acento-wash px-3 py-1.5 text-sm font-semibold text-acento-text transition hover:brightness-125 disabled:opacity-50"
+        className="mt-auto h-9 rounded-lg border border-acento-dim bg-acento-wash text-sm font-semibold text-acento-text transition-[transform,filter,opacity] duration-150 hover:brightness-125 disabled:opacity-50"
       >
         {ocupado ? "Pensando…" : "Lanzar"}
       </button>
@@ -142,7 +146,10 @@ function Decision({ propuesta, alDecidir }: { propuesta: PropuestaDeIa; alDecidi
     try {
       // El resultado se enseña antes de recargar: dice qué se ha creado de
       // verdad y qué queda por hacer a mano.
-      setDesenlace(await decidirPropuesta(propuesta.id, decision));
+      const r = await decidirPropuesta(propuesta.id, decision);
+      setDesenlace(r);
+      if (r.aplicada) toast.success(r.mensaje);
+      else toast(r.mensaje);
     } catch (e) {
       setError(e instanceof ErrorDeApi ? e.message : "No hemos podido guardar la decisión.");
     } finally {
@@ -153,7 +160,7 @@ function Decision({ propuesta, alDecidir }: { propuesta: PropuestaDeIa; alDecidi
   if (desenlace) {
     return (
       <div
-        className={`flex flex-col gap-2 border p-4 ${
+        className={`flex flex-col gap-2 rounded-xl border p-4 ${
           desenlace.aplicada ? "border-good bg-good-wash" : "border-line-strong bg-raised"
         }`}
       >
@@ -179,7 +186,7 @@ function Decision({ propuesta, alDecidir }: { propuesta: PropuestaDeIa; alDecidi
           type="button"
           onClick={() => decidir("APROBAR")}
           disabled={ocupado !== null}
-          className="border border-good bg-good-wash px-4 py-1.5 text-sm font-semibold text-good transition hover:brightness-125 disabled:opacity-50"
+          className="h-9 rounded-lg border border-good/40 bg-good-wash px-4 text-sm font-semibold text-good transition-[transform,filter,opacity] duration-150 hover:brightness-125 disabled:opacity-50"
         >
           {ocupado === "APROBAR" ? "Guardando…" : "Aprobar"}
         </button>
@@ -187,7 +194,7 @@ function Decision({ propuesta, alDecidir }: { propuesta: PropuestaDeIa; alDecidi
           type="button"
           onClick={() => decidir("DESCARTAR")}
           disabled={ocupado !== null}
-          className="eyebrow border border-line-strong px-4 py-2 text-ink-soft transition hover:border-acento hover:text-acento-text disabled:opacity-50"
+          className="h-9 rounded-lg border border-line px-4 text-sm font-medium text-ink-soft transition-colors duration-150 hover:border-line-strong hover:text-ink disabled:opacity-50"
         >
           {ocupado === "DESCARTAR" ? "Guardando…" : "Descartar"}
         </button>
@@ -263,15 +270,15 @@ export function PropuestasIa() {
         {agentes.fase === "error" && <p className="mb-6 text-sm text-bad">{agentes.mensaje}</p>}
 
         {b.propuestas.length === 0 ? (
-          <p className="border border-dashed border-line-strong p-6 text-sm text-ink-soft">
+          <p className="rounded-2xl border border-dashed border-line-strong p-6 text-sm text-ink-soft">
             Todavía no hay propuestas. Lanza un agente con los botones de arriba.
           </p>
         ) : (
           <div className="flex flex-col gap-4">
             {b.propuestas.map((p) => (
-              <article key={p.id} className="border border-line bg-surface">
+              <article key={p.id} className="overflow-hidden rounded-2xl border border-line bg-surface">
                 <header className="flex flex-wrap items-baseline justify-between gap-2 border-b border-line px-5 py-3">
-                  <h3 className="text-lg">{p.tipoNombre}</h3>
+                  <h3 className="font-sans text-base font-semibold tracking-normal">{p.tipoNombre}</h3>
                   <span className="text-xs text-muted">
                     {p.agente} · {horaDeSala(p.creadoEn)}
                   </span>

@@ -1,37 +1,36 @@
 /*
  * El punto de venta de la barra.
  *
- * Se usa en una tablet apoyada en la barra, de pie, con la mano mojada y con
- * gente esperando. De ahí lo que sigue: teclas grandes, dos columnas en pantalla
- * ancha —catálogo y ticket a la vez, sin cambiar de vista—, y una sola columna
- * en móvil.
- *
- * Hereda la paleta de App.css. Sin variante clara, igual que la puerta: son las
- * mismas horas y la misma pantalla en la cara del cliente.
+ * Se usa de pie, con una tablet, con prisa y con poca luz. Teclas grandes, el
+ * precio siempre a la vista y el total imposible de no ver. Se pulsa decenas de
+ * veces por hora, así que el movimiento es el mínimo: la tecla se hunde 100 ms al
+ * tocarla (confirma que la oyó) y nada más.
  */
 
 .tpv {
-  max-width: 76rem;
+  max-width: 80rem;
   margin: 0 auto;
-  padding: 1.25rem 1rem 3rem;
+  padding: 1rem 1rem 3rem;
 }
 
 .tpv--login,
 .tpv--apertura {
-  max-width: 34rem;
+  max-width: 30rem;
   padding-top: 3rem;
 }
-
-/* ── Cabecera ─────────────────────────────────────────────────── */
 
 .tpv__cabecera {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 1rem;
-  border-bottom: 1px solid var(--linea);
-  padding-bottom: 1rem;
   margin-bottom: 1.25rem;
+  padding: 1rem 1.15rem;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-l);
+  background:
+    radial-gradient(70% 140% at 0% 0%, var(--magenta-suave), transparent 60%),
+    var(--superficie);
 }
 
 .tpv__marca {
@@ -39,18 +38,21 @@
   align-items: center;
   gap: 0.5rem;
   margin: 0 0 0.35rem;
-  font-size: 0.7rem;
+  font-family: var(--fuente-display);
+  font-size: 0.78rem;
   font-weight: 700;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--chartreuse);
+  color: var(--magenta);
 }
 
 .tpv__latido {
-  width: 0.4rem;
-  height: 0.4rem;
-  background: var(--chartreuse);
-  animation: latir 1.6s ease-in-out infinite;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: var(--verde);
+  box-shadow: 0 0 10px var(--verde);
+  animation: latido 1.6s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -61,14 +63,16 @@
 
 .tpv h1 {
   margin: 0;
-  font-size: 1.6rem;
+  font-size: 1.45rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
   line-height: 1.15;
 }
 
 .tpv__sala {
-  margin: 0.35rem 0 0;
-  font-size: 0.9rem;
-  color: var(--tinta-suave);
+  margin: 0.3rem 0 0;
+  font-size: 0.875rem;
+  color: var(--texto-2);
 }
 
 .tpv__cajon {
@@ -79,134 +83,149 @@
 .tpv__cifra {
   margin: 0;
   font-size: 1.6rem;
-  font-weight: 900;
+  font-weight: 650;
+  letter-spacing: -0.02em;
   line-height: 1;
-  color: var(--chartreuse);
   font-variant-numeric: tabular-nums;
 }
 
 .tpv__pie {
-  margin: 0.2rem 0 0.5rem;
-  font-size: 0.65rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--tinta-suave);
+  margin: 0.25rem 0 0.6rem;
+  font-size: 0.75rem;
+  color: var(--texto-3);
 }
 
 .tpv__cajon button,
 .tpv__salir {
-  background: none;
-  border: 1px solid var(--linea-fuerte);
-  color: var(--tinta-suave);
-  padding: 0.3rem 0.7rem;
-  font: inherit;
+  min-height: 2.25rem;
+  padding: 0 0.85rem;
+  border: 1px solid var(--borde-2);
+  border-radius: var(--radio-s);
+  background: transparent;
+  color: var(--texto-2);
   font-size: 0.8rem;
+  font-weight: 500;
   cursor: pointer;
+  transition: transform 100ms var(--ease-out), border-color 150ms ease, color 150ms ease;
+}
+
+.tpv__cajon button:active,
+.tpv__salir:active {
+  transform: scale(0.97);
 }
 
 .tpv__salir {
   margin-top: 2rem;
 }
 
-.tpv__cajon button:hover,
-.tpv__salir:hover {
-  color: var(--tinta);
-  border-color: var(--tinta-suave);
-}
-
-/* ── Avisos ───────────────────────────────────────────────────── */
-
 .tpv__aviso {
+  max-width: 80rem;
   margin: 1rem auto;
-  max-width: 76rem;
-  padding: 0.9rem 1rem;
-  border: 1px solid var(--linea);
-  color: var(--tinta-suave);
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  background: var(--superficie);
+  color: var(--texto-2);
   font-size: 0.9rem;
 }
 
 .tpv__aviso--mal {
-  border-color: var(--magenta);
-  color: var(--tinta);
+  border-color: rgb(255 87 116 / 0.4);
+  background: var(--rojo-suave);
+  color: var(--texto);
 }
 
 .tpv__pista {
   margin: 0.4rem 0 0;
   font-size: 0.85rem;
-  color: var(--tinta-suave);
+  color: var(--texto-3);
 }
 
-/* ── Apertura y cierre ────────────────────────────────────────── */
+/* ── Abrir y cerrar caja ──────────────────────────────────────── */
 
 .apertura,
 .cierre {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  margin-top: 1.5rem;
+  gap: 0.8rem;
+  margin-top: 1.25rem;
 }
 
 .apertura label,
 .cierre label {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
-  font-size: 0.75rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--tinta-suave);
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--texto-2);
 }
 
 .apertura input,
 .cierre input {
-  background: var(--concreto);
-  border: 1px solid var(--linea-fuerte);
-  color: var(--tinta);
-  /* 16px o más: por debajo, Safari en iPad hace zoom al enfocar el campo. */
+  min-height: 3.25rem;
+  padding: 0 0.9rem;
+  border: 1px solid var(--borde-2);
+  border-radius: var(--radio);
+  background: var(--fondo-2);
+  color: var(--texto);
   font-size: 1.5rem;
-  font-family: inherit;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
-  padding: 0.7rem 0.75rem;
-  text-transform: none;
-  letter-spacing: normal;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
 }
 
 .apertura input:focus,
 .cierre input:focus {
-  outline: 2px solid var(--chartreuse);
-  outline-offset: -2px;
+  outline: none;
+  border-color: var(--magenta);
+  box-shadow: 0 0 0 3px var(--magenta-suave);
 }
 
-.apertura button[type="submit"] {
-  padding: 1rem;
-  background: var(--chartreuse);
-  color: var(--negro);
-  border: none;
-  font: inherit;
-  font-weight: 800;
+.apertura button[type="submit"],
+.ticket__cobrar {
+  width: 100%;
+  min-height: 3.4rem;
+  border: 0;
+  border-radius: var(--radio);
+  background: var(--magenta-boton);
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 650;
   cursor: pointer;
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.2) inset, 0 12px 30px -14px rgb(255 61 154 / 0.9);
+  transition: transform 100ms var(--ease-out), background-color 150ms ease;
 }
 
-.apertura button:disabled {
-  background: var(--linea-fuerte);
-  color: var(--tinta-suave);
+.apertura button[type="submit"]:active:not(:disabled),
+.ticket__cobrar:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.apertura button:disabled,
+.ticket__cobrar:disabled {
+  background: var(--superficie-3);
+  color: var(--texto-3);
+  box-shadow: none;
   cursor: default;
 }
 
 .cierre {
   margin-top: 1rem;
-  padding: 0.9rem;
-  border: 1px solid var(--magenta);
+  padding: 1rem;
+  border: 1px solid rgb(255 87 116 / 0.35);
+  border-radius: var(--radio);
+  background: var(--rojo-suave);
 }
 
 .cierre__esperado {
   margin: 0;
   font-size: 0.85rem;
-  color: var(--tinta-suave);
+  color: var(--texto-2);
 }
 
 .cierre__esperado strong {
-  color: var(--tinta);
+  color: var(--texto);
   font-variant-numeric: tabular-nums;
 }
 
@@ -217,199 +236,224 @@
 
 .cierre__botones button {
   flex: 1;
-  padding: 0.7rem;
-  background: var(--concreto);
-  border: 1px solid var(--linea-fuerte);
-  color: var(--tinta);
-  font: inherit;
+  min-height: 2.75rem;
+  border: 1px solid var(--borde-2);
+  border-radius: var(--radio-s);
+  background: var(--superficie-2);
+  color: var(--texto);
+  font-weight: 550;
   cursor: pointer;
+  transition: transform 100ms var(--ease-out);
+}
+
+.cierre__botones button:active {
+  transform: scale(0.97);
 }
 
 .cierre__botones button[type="submit"] {
-  background: var(--magenta);
-  border-color: var(--magenta);
-  color: var(--negro);
-  font-weight: 700;
+  border-color: transparent;
+  background: var(--rojo);
+  color: #fff;
+  font-weight: 650;
 }
 
 .arqueo {
   margin: 1.5rem 0 0;
-  border-top: 1px solid var(--linea);
+  overflow: hidden;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  background: var(--superficie);
 }
 
 .arqueo > div {
   display: flex;
   justify-content: space-between;
-  padding: 0.6rem 0;
-  border-bottom: 1px solid var(--linea);
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid var(--borde);
+}
+
+.arqueo > div:last-child {
+  border-bottom: 0;
 }
 
 .arqueo dt {
-  color: var(--tinta-suave);
+  color: var(--texto-2);
   font-size: 0.9rem;
 }
 
 .arqueo dd {
   margin: 0;
+  font-weight: 650;
   font-variant-numeric: tabular-nums;
-  font-weight: 700;
 }
 
 .arqueo--mal dd {
-  color: var(--magenta);
+  color: var(--rojo);
 }
 
-/* ── Catálogo y ticket ────────────────────────────────────────── */
+/* ── Venta: catálogo + ticket ─────────────────────────────────── */
 
 .tpv__cuerpo {
   display: grid;
   gap: 1.25rem;
-  /* En pantalla ancha, catálogo y ticket a la vez: cambiar de vista para ver
-     lo que llevas cobrado es justo lo que no se puede hacer con cola. */
   grid-template-columns: 1fr;
 }
 
 @media (min-width: 60rem) {
   .tpv__cuerpo {
-    grid-template-columns: 1fr 20rem;
+    grid-template-columns: 1fr 21rem;
     align-items: start;
   }
 }
 
 .catalogo__grupo h2 {
   margin: 0 0 0.6rem;
-  font-size: 0.7rem;
-  letter-spacing: 0.16em;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--tinta-suave);
+  color: var(--texto-3);
 }
 
 .catalogo__grupo + .catalogo__grupo {
-  margin-top: 1.5rem;
+  margin-top: 1.4rem;
 }
 
 .catalogo__rejilla {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
-  gap: 0.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+  gap: 0.55rem;
 }
 
-/*
- * Las teclas son altas a propósito: 5rem es lo que se acierta con el pulgar sin
- * mirar. Es la misma razón por la que el orden de las categorías es fijo.
- */
+/* Cada producto, una tecla de dedo entero. */
 .tecla {
   position: relative;
-  min-height: 5rem;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-end;
   gap: 0.3rem;
-  padding: 0.7rem;
-  background: var(--concreto);
-  border: 1px solid var(--linea-fuerte);
-  color: var(--tinta);
-  font: inherit;
+  min-height: 5.5rem;
+  padding: 0.75rem;
+  border: 1px solid var(--borde-2);
+  border-radius: var(--radio);
+  background: var(--superficie);
+  color: var(--texto);
   text-align: left;
   cursor: pointer;
-}
-
-.tecla:hover {
-  border-color: var(--chartreuse);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  transition: transform 100ms var(--ease-out), background-color 120ms ease, border-color 120ms ease;
 }
 
 .tecla:active {
-  background: var(--linea);
+  transform: scale(0.96);
+  background: var(--superficie-3);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tecla:hover {
+    border-color: var(--magenta-borde);
+  }
 }
 
 .tecla__nombre {
-  font-weight: 700;
+  font-size: 0.9rem;
+  font-weight: 600;
   line-height: 1.2;
 }
 
 .tecla__precio {
-  color: var(--chartreuse);
+  font-size: 0.9rem;
+  font-weight: 650;
+  color: var(--magenta);
   font-variant-numeric: tabular-nums;
 }
 
-/* El stock bajo se avisa, pero la tecla sigue cobrando. */
 .tecla__stock {
   position: absolute;
-  top: 0.35rem;
-  right: 0.45rem;
-  font-size: 0.7rem;
+  top: 0.45rem;
+  right: 0.55rem;
+  font-size: 0.72rem;
+  color: var(--texto-3);
   font-variant-numeric: tabular-nums;
-  color: var(--tinta-suave);
 }
 
 .tecla--sin {
-  border-color: var(--magenta);
+  border-color: rgb(255 87 116 / 0.35);
+  opacity: 0.6;
 }
 
 .tecla--sin .tecla__stock {
-  color: var(--magenta);
-  font-weight: 700;
+  color: var(--rojo);
+  font-weight: 650;
 }
 
-/* ── El ticket ────────────────────────────────────────────────── */
-
 .ticket {
-  background: var(--concreto);
-  border: 1px solid var(--linea);
-  padding: 0.9rem;
   position: sticky;
   top: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--borde-2);
+  border-radius: var(--radio-l);
+  background: var(--superficie);
+  box-shadow: var(--sombra-2);
 }
 
 .ticket h2 {
-  margin: 0 0 0.7rem;
-  font-size: 0.7rem;
-  letter-spacing: 0.16em;
+  margin: 0 0 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--tinta-suave);
+  color: var(--texto-3);
 }
 
 .ticket__vacio {
-  margin: 0 0 0.8rem;
-  font-size: 0.85rem;
-  color: var(--tinta-suave);
+  margin: 0 0 0.9rem;
+  font-size: 0.875rem;
+  color: var(--texto-3);
 }
 
 .ticket__lineas {
-  list-style: none;
-  margin: 0 0 0.8rem;
+  margin: 0 0 0.85rem;
   padding: 0;
+  list-style: none;
 }
 
 .ticket__lineas li {
   display: flex;
   align-items: center;
-  gap: 0.45rem;
-  padding: 0.35rem 0;
-  border-bottom: 1px solid var(--linea);
-  font-size: 0.85rem;
+  gap: 0.5rem;
+  padding: 0.45rem 0;
+  border-bottom: 1px solid var(--borde);
+  font-size: 0.875rem;
 }
 
 .ticket__quitar {
-  width: 1.75rem;
-  height: 1.75rem;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
   flex-shrink: 0;
-  background: none;
-  border: 1px solid var(--linea-fuerte);
-  color: var(--tinta-suave);
+  border: 1px solid var(--borde-2);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--texto-2);
   font-size: 1rem;
   line-height: 1;
   cursor: pointer;
+  transition: transform 100ms var(--ease-out), border-color 120ms ease, color 120ms ease;
 }
 
-.ticket__quitar:hover {
-  border-color: var(--magenta);
-  color: var(--magenta);
+.ticket__quitar:active {
+  transform: scale(0.9);
+  border-color: var(--rojo);
+  color: var(--rojo);
 }
 
 .ticket__cuantas {
-  min-width: 1.25rem;
-  font-weight: 700;
+  min-width: 1.4rem;
+  font-weight: 650;
   font-variant-numeric: tabular-nums;
 }
 
@@ -422,81 +466,83 @@
 }
 
 .ticket__importe {
+  color: var(--texto-2);
   font-variant-numeric: tabular-nums;
-  color: var(--tinta-suave);
 }
 
 .ticket__total {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  padding-top: 0.6rem;
-  border-top: 1px solid var(--linea-fuerte);
+  padding-top: 0.65rem;
+  color: var(--texto-2);
   font-variant-numeric: tabular-nums;
 }
 
 .ticket__total strong {
-  font-size: 1.4rem;
-  color: var(--chartreuse);
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--texto);
 }
 
+/* El método de pago: un control segmentado. Elegir mal descuadra el cajón por el
+   importe entero, así que el elegido se ve sin dudas. */
 .pagos {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(5rem, 1fr));
-  gap: 0.3rem;
-  margin: 0.8rem 0;
+  grid-template-columns: repeat(auto-fit, minmax(4.5rem, 1fr));
+  gap: 0.25rem;
+  margin: 0.85rem 0;
+  padding: 0.25rem;
+  border: 1px solid var(--borde);
+  border-radius: calc(var(--radio-s) + 0.25rem);
+  background: var(--fondo-2);
 }
 
 .pago {
-  padding: 0.55rem 0.3rem;
-  background: var(--negro);
-  border: 1px solid var(--linea-fuerte);
-  color: var(--tinta-suave);
-  font: inherit;
+  min-height: 2.5rem;
+  border: 0;
+  border-radius: var(--radio-s);
+  background: transparent;
+  color: var(--texto-2);
   font-size: 0.8rem;
+  font-weight: 550;
   cursor: pointer;
+  transition: transform 100ms var(--ease-out), background-color 120ms ease, color 120ms ease;
 }
 
-/* El método elegido se ve de un vistazo: cobrar en efectivo lo que se pagó con
-   tarjeta descuadra el cajón por el importe entero. */
+.pago:active {
+  transform: scale(0.96);
+}
+
 .pago--elegido {
-  background: var(--chartreuse);
-  border-color: var(--chartreuse);
-  color: var(--negro);
-  font-weight: 700;
-}
-
-.ticket__cobrar {
-  width: 100%;
-  padding: 1rem;
-  background: var(--chartreuse);
-  color: var(--negro);
-  border: none;
-  font: inherit;
-  font-size: 1rem;
-  font-weight: 800;
-  cursor: pointer;
-}
-
-.ticket__cobrar:disabled {
-  background: var(--linea-fuerte);
-  color: var(--tinta-suave);
-  cursor: default;
+  background: var(--superficie-3);
+  color: var(--texto);
+  box-shadow: inset 0 0 0 1px var(--magenta-borde);
 }
 
 .ticket__cerrar {
   width: 100%;
+  min-height: 2.5rem;
   margin-top: 0.6rem;
-  padding: 0.6rem;
-  background: none;
-  border: 1px solid var(--linea-fuerte);
-  color: var(--tinta-suave);
-  font: inherit;
+  border: 1px solid var(--borde-2);
+  border-radius: var(--radio-s);
+  background: transparent;
+  color: var(--texto-2);
   font-size: 0.85rem;
   cursor: pointer;
+  transition: transform 100ms var(--ease-out), border-color 120ms ease, color 120ms ease;
 }
 
-.ticket__cerrar:hover {
-  border-color: var(--magenta);
-  color: var(--magenta);
+.ticket__cerrar:active {
+  transform: scale(0.98);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ticket__cerrar:hover,
+  .tpv__cajon button:hover,
+  .tpv__salir:hover {
+    border-color: var(--rojo);
+    color: var(--rojo);
+  }
 }

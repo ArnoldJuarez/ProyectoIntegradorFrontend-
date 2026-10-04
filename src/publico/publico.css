@@ -1,19 +1,17 @@
 /*
- * Estilos de la web publica.
+ * La web pública.
  *
- * Aparte de App.css a proposito: el panel y la web son dos productos con dos
- * publicos. El panel prioriza densidad —tablas, cifras alineadas— y la web
- * prioriza el impacto. Mezclarlos en un archivo termina con reglas que nadie se
- * atreve a tocar por si rompen el otro lado.
- *
- * Las variables de color (--negro, --chartreuse...) se definen en App.css, que
- * es lo comun a los dos.
+ * Es lo que se abre desde Instagram un jueves por la noche, casi siempre en el
+ * móvil. Tiene que oler a los flyers de la casa —magenta y violeta de neón,
+ * letra gorda, la rejilla en perspectiva— sin dejar de ser una tienda clara:
+ * qué noche, cuánto cuesta, cómo entro.
  */
 
 .sitio {
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 .sitio main {
@@ -25,390 +23,519 @@
 .barra {
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 30;
+  border-bottom: 1px solid var(--borde);
+  background: rgb(11 7 16 / 0.72);
+  backdrop-filter: blur(14px) saturate(1.4);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
+}
+
+.barra__dentro {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 1rem;
-  padding: 1rem 1.5rem;
-  background: rgba(8, 8, 8, 0.85);
-  backdrop-filter: blur(8px);
-  border-bottom: 1px solid var(--linea);
+  max-width: 76rem;
+  height: 3.75rem;
+  margin: 0 auto;
+  padding: 0 1rem;
 }
 
 .barra__marca {
-  font-size: 1.1rem;
-  font-weight: 900;
-  letter-spacing: 0.16em;
-  color: var(--chartreuse);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--fuente-display);
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  color: var(--texto);
   text-decoration: none;
+}
+
+.barra__marca::before {
+  content: "";
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--magenta);
+  box-shadow: 0 0 12px 2px rgb(255 61 154 / 0.65);
 }
 
 .barra__nav {
   display: flex;
-  gap: 1.25rem;
+  align-items: center;
+  gap: 0.15rem;
+  margin-left: auto;
 }
 
 .barra__nav a {
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--tinta-suave);
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.25rem;
+  padding: 0 0.75rem;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--texto-2);
   text-decoration: none;
+  transition: background-color 150ms ease, color 150ms ease;
 }
 
-.barra__nav a:hover,
 .barra__nav a.active {
-  color: var(--chartreuse);
+  color: var(--texto);
+  background: var(--superficie-2);
 }
 
-/* ── Portada ──────────────────────────────────────────────────── */
+@media (hover: hover) and (pointer: fine) {
+  .barra__nav a:hover {
+    color: var(--texto);
+  }
+}
+
+.barra__cta {
+  min-height: 2.25rem !important;
+  padding: 0 0.95rem !important;
+  border-radius: 999px !important;
+  font-size: 0.84rem !important;
+}
+
+/* En un móvil estrecho solo cabe lo imprescindible: la agenda y reservar. */
+@media (max-width: 30rem) {
+  .barra__nav .barra__secundario {
+    display: none;
+  }
+}
+
+/* ── Cabecera de una noche (estilo flyer) ─────────────────────── */
 
 .hero {
   position: relative;
-  min-height: 68vh;
   display: flex;
   align-items: flex-end;
-  padding: 3rem 1.5rem;
+  min-height: min(70vh, 38rem);
+  overflow: hidden;
+  padding: 6rem 1rem 2.5rem;
+  background-color: var(--fondo-2);
   background-size: cover;
-  background-position: center;
+  background-position: center 30%;
 }
 
 .hero--evento {
-  min-height: 46vh;
+  min-height: min(62vh, 34rem);
 }
 
-/* Velo oscuro. Sin el, el texto claro sobre una foto clara no se lee, y no se
-   puede controlar que foto sube el local. */
+/* Luces de neón sobre la foto y un fundido a negro donde va el texto. */
 .hero__velo {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    to top,
-    rgba(8, 8, 8, 0.96) 0%,
-    rgba(8, 8, 8, 0.72) 45%,
-    rgba(8, 8, 8, 0.42) 100%
-  );
+  background:
+    radial-gradient(70% 60% at 85% 10%, rgb(163 116 255 / 0.35), transparent 60%),
+    radial-gradient(60% 55% at 10% 90%, rgb(255 61 154 / 0.35), transparent 60%),
+    linear-gradient(to top, var(--fondo) 2%, rgb(11 7 16 / 0.82) 38%, rgb(11 7 16 / 0.35) 100%);
+}
+
+/* La rejilla en perspectiva de los flyers, en el suelo de la cabecera. */
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: auto -25% 0 -25%;
+  height: 42%;
+  background:
+    linear-gradient(transparent 0 calc(100% - 1px), rgb(255 61 154 / 0.32) 0) 0 0 / 100% 2.4rem,
+    linear-gradient(90deg, transparent 0 calc(100% - 1px), rgb(255 61 154 / 0.26) 0) 0 0 / 3rem 100%;
+  transform: perspective(26rem) rotateX(64deg);
+  transform-origin: bottom;
+  mask-image: linear-gradient(to top, #000 0%, transparent 85%);
+  pointer-events: none;
 }
 
 .hero__contenido {
   position: relative;
-  max-width: 68rem;
-  margin: 0 auto;
+  z-index: 1;
+  display: grid;
+  gap: 1.25rem;
   width: 100%;
+  max-width: 76rem;
+  margin: 0 auto;
+}
+
+@media (min-width: 48rem) {
+  .hero__contenido {
+    grid-template-columns: auto 1fr;
+    align-items: end;
+    gap: 2rem;
+  }
+}
+
+/* La fecha apilada, como en la esquina de los flyers: SÁB / 10 / OCT. */
+.hero__fecha {
+  display: inline-grid;
+  justify-items: center;
+  width: fit-content;
+  padding: 0.7rem 1rem 0.8rem;
+  border: 1px solid rgb(255 255 255 / 0.18);
+  border-radius: var(--radio);
+  background: rgb(11 7 16 / 0.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  font-family: var(--fuente-display);
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.hero__fecha-dia {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--magenta);
+  letter-spacing: 0.08em;
+}
+
+.hero__fecha-numero {
+  margin: 0.15rem 0;
+  font-size: 2.6rem;
+  font-weight: 800;
+}
+
+.hero__fecha-mes {
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
 }
 
 .hero__eyebrow {
-  margin: 0 0 0.5rem;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--chartreuse);
-}
-
-/* clamp() para que el titular llene la pantalla en movil y no se desborde en
-   escritorio, sin puntos de ruptura. */
-.hero__nombre {
-  margin: 0;
-  font-size: clamp(2.5rem, 11vw, 6rem);
-  font-weight: 900;
-  letter-spacing: 0.06em;
-  line-height: 0.95;
-}
-
-.hero__nombre--evento {
-  font-size: clamp(2rem, 7vw, 4rem);
-}
-
-.hero__tagline {
-  margin: 0.75rem 0 0;
-  max-width: 34rem;
-  color: var(--tinta-suave);
-}
-
-.hero__proxima {
-  margin-top: 2rem;
-}
-
-.hero__cuando {
-  margin: 0;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--tinta-suave);
-}
-
-.hero__titulo {
-  margin: 0.2rem 0 1rem;
-  font-size: 1.6rem;
-  font-weight: 800;
-}
-
-.hero__agotado {
-  margin: 0.75rem 0 0;
-  font-size: 0.8rem;
-  font-weight: 800;
-  letter-spacing: 0.16em;
+  margin: 0 0 0.6rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--magenta);
 }
 
-.boton {
-  display: inline-block;
-  background: var(--chartreuse);
-  color: var(--negro);
-  padding: 0.8rem 1.5rem;
-  font-size: 0.75rem;
+.hero__nombre {
+  margin: 0;
+  font-family: var(--fuente-display);
+  font-size: clamp(2.3rem, 8vw, 4.8rem);
   font-weight: 800;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  text-decoration: none;
+  letter-spacing: -0.02em;
+  line-height: 0.98;
 }
 
-.boton:hover {
-  background: var(--tinta);
+.hero__nombre--evento {
+  font-size: clamp(2rem, 6.4vw, 4rem);
 }
 
-/* ── Secciones ────────────────────────────────────────────────── */
+.hero__datos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hero__datos li {
+  padding: 0.35rem 0.75rem;
+  border: 1px solid rgb(255 255 255 / 0.14);
+  border-radius: 999px;
+  background: rgb(11 7 16 / 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  font-size: 0.8rem;
+  color: var(--texto-2);
+}
+
+.hero__datos li.hero__dato--lista {
+  border-color: rgb(62 230 160 / 0.35);
+  color: var(--verde);
+}
+
+.hero__tagline {
+  max-width: 34rem;
+  margin: 0.75rem 0 0;
+  color: var(--texto-2);
+}
+
+.hero__agotado {
+  display: inline-flex;
+  margin: 0.9rem 0 0;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  background: var(--ambar-suave);
+  font-size: 0.8rem;
+  font-weight: 650;
+  color: var(--ambar);
+}
+
+/* ── Estructura general ───────────────────────────────────────── */
 
 .publico {
   padding-bottom: 3rem;
 }
 
 .seccion {
-  max-width: 68rem;
+  max-width: 76rem;
   margin: 0 auto;
-  padding: 3rem 1.5rem 0;
+  padding: 3rem 1rem 0;
+}
+
+.seccion--estrecha {
+  max-width: 42rem;
 }
 
 .seccion__titulo {
-  margin: 0 0 1.5rem;
-  font-size: 0.78rem;
+  margin: 0 0 1.25rem;
+  font-family: var(--fuente-display);
+  font-size: clamp(1.35rem, 3vw, 1.8rem);
   font-weight: 700;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--tinta-suave);
-  border-bottom: 1px solid var(--linea);
-  padding-bottom: 0.7rem;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
 }
 
 .seccion__subtitulo {
   margin: 2rem 0 0.75rem;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--tinta-suave);
-}
-
-/* ── Tarjetas de noche ────────────────────────────────────────── */
-
-/* auto-fill con minimo en rem: las tarjetas se reparten solas sin escribir un
-   solo punto de ruptura. */
-.noches {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
-  gap: 1.5rem;
-}
-
-.noche__enlace {
-  display: block;
-  text-decoration: none;
-  color: inherit;
-  border: 1px solid var(--linea);
-  height: 100%;
-}
-
-.noche__enlace:hover {
-  border-color: var(--chartreuse);
-}
-
-.noche__foto {
-  position: relative;
-  aspect-ratio: 3 / 2;
-  background-color: var(--concreto);
-  background-size: cover;
-  background-position: center;
-}
-
-.noche__agotada {
-  position: absolute;
-  top: 0.6rem;
-  right: 0.6rem;
-  background: var(--magenta);
-  color: var(--negro);
-  padding: 0.2rem 0.55rem;
-  font-size: 0.62rem;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.noche__cuerpo {
-  padding: 1rem;
-}
-
-.noche__fecha {
-  margin: 0;
-  font-size: 0.66rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--chartreuse);
-}
-
-.noche__titulo {
-  margin: 0.35rem 0 0.4rem;
-  font-size: 1.1rem;
-  font-weight: 800;
-  line-height: 1.2;
-}
-
-.noche__cartel {
-  margin: 0 0 0.9rem;
-  font-size: 0.85rem;
-  color: var(--tinta-suave);
-}
-
-.noche__pie {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0.5rem;
-  margin: 0;
   font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--texto-3);
 }
 
-.noche__precio {
-  color: var(--tinta);
-}
-
-.noche__llenando {
-  color: var(--magenta);
-  font-size: 0.72rem;
-}
-
-/* ── Promo ────────────────────────────────────────────────────── */
-
-.promo {
-  text-align: center;
-}
-
-.promo__titulo {
-  margin: 0 0 0.5rem;
-  font-size: clamp(1.3rem, 4vw, 2rem);
-  font-weight: 900;
-  color: var(--magenta);
-}
-
-.promo__texto {
-  margin: 0 0 0.4rem;
+.publico .descripcion {
   font-size: 1.05rem;
+  line-height: 1.7;
 }
 
-.promo__letra {
-  margin: 0;
-  font-size: 0.8rem;
-  color: var(--tinta-suave);
+/* La ficha de la noche: el contenido a la izquierda y la compra a la derecha,
+   fija mientras se baja. En móvil, una columna con la compra al final. */
+.ficha {
+  display: grid;
+  gap: 2.5rem;
+  max-width: 76rem;
+  margin: 0 auto;
+  padding: 2.5rem 1rem 0;
+}
+
+@media (min-width: 60rem) {
+  .ficha {
+    grid-template-columns: minmax(0, 1fr) 24rem;
+    align-items: start;
+    gap: 3rem;
+  }
+
+  .ficha__lateral {
+    position: sticky;
+    top: 5rem;
+  }
+}
+
+.ficha__principal > h2:not(:first-child) {
+  margin-top: 2.5rem;
+}
+
+.tarjeta-compra {
+  padding: 1.25rem;
+  border: 1px solid var(--borde-2);
+  border-radius: var(--radio-l);
+  background:
+    radial-gradient(90% 60% at 100% 0%, var(--magenta-suave), transparent 60%),
+    var(--superficie);
+  box-shadow: var(--sombra-2);
+}
+
+.tarjeta-compra .seccion__titulo {
+  font-size: 1.25rem;
+  margin-bottom: 0.9rem;
+}
+
+/* ── Botón principal (CTA) ────────────────────────────────────── */
+
+.publico .boton,
+.sitio .boton {
+  min-height: 2.9rem;
+  padding: 0 1.4rem;
+  border-radius: 999px;
+  font-size: 0.92rem;
 }
 
 /* ── Agenda ───────────────────────────────────────────────────── */
 
+.mes + .mes {
+  margin-top: 2.25rem;
+}
+
 .mes__titulo {
-  margin: 2rem 0 0.75rem;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.16em;
+  margin: 0 0 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--chartreuse);
+  color: var(--magenta);
 }
 
 .lista-noches {
-  list-style: none;
+  display: grid;
+  gap: 0.6rem;
   margin: 0;
   padding: 0;
+  list-style: none;
 }
 
 .fila-noche {
   display: grid;
-  grid-template-columns: 5.5rem 1fr auto;
+  grid-template-columns: 4.25rem minmax(0, 1fr) auto;
   gap: 1rem;
-  align-items: baseline;
-  padding: 0.9rem 0;
-  border-bottom: 1px solid var(--linea);
-  text-decoration: none;
+  align-items: center;
+  padding: 0.85rem 1rem 0.85rem 0.85rem;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  background: var(--superficie);
   color: inherit;
+  text-decoration: none;
+  transition:
+    transform 160ms var(--ease-out),
+    border-color 150ms ease,
+    background-color 150ms ease;
 }
 
-.fila-noche:hover {
-  color: var(--chartreuse);
+.fila-noche:active {
+  transform: scale(0.99);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .fila-noche:hover {
+    border-color: var(--magenta-borde);
+    background: var(--superficie-2);
+  }
 }
 
 .fila-noche__dia {
-  font-size: 0.75rem;
-  letter-spacing: 0.08em;
+  display: grid;
+  justify-items: center;
+  padding: 0.45rem 0;
+  border-radius: var(--radio-s);
+  background: var(--fondo-2);
+  font-family: var(--fuente-display);
+  line-height: 1;
   text-transform: uppercase;
-  color: var(--tinta-suave);
+}
+
+.fila-noche__dia small {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--magenta);
+  letter-spacing: 0.06em;
+}
+
+.fila-noche__dia b {
+  margin-top: 0.15rem;
+  font-size: 1.5rem;
+  font-weight: 800;
 }
 
 .fila-noche__titulo {
-  font-weight: 700;
+  display: block;
+  font-size: 1rem;
+  font-weight: 650;
+  line-height: 1.3;
+}
+
+.fila-noche__cartel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.6rem;
+  margin-top: 0.25rem;
+  font-size: 0.82rem;
+  color: var(--texto-3);
+}
+
+.fila-noche__lista {
+  padding: 0.05rem 0.5rem;
+  border-radius: 999px;
+  background: var(--verde-suave);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--verde);
 }
 
 .fila-noche__precio {
-  font-size: 0.8rem;
-  color: var(--tinta-suave);
+  display: grid;
+  justify-items: end;
+  font-size: 0.75rem;
+  color: var(--texto-3);
+  white-space: nowrap;
 }
 
-/* ── Cartel y entradas ────────────────────────────────────────── */
+.fila-noche__precio b {
+  font-size: 1rem;
+  font-weight: 650;
+  color: var(--texto);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Cartel de una noche ──────────────────────────────────────── */
 
 .cartel {
-  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(13rem, 100%), 1fr));
+  gap: 0.75rem;
   margin: 0 0 1rem;
   padding: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
-  gap: 1rem;
+  list-style: none;
 }
 
 .cartel li {
-  border: 1px solid var(--linea);
-  padding: 1rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  background: var(--superficie);
 }
 
-/* El cabeza de cartel lleva el acento: es el reclamo de la noche. */
-.cartel__cabeza {
-  border-color: var(--chartreuse);
+.cartel .cartel__cabeza {
+  border-color: var(--magenta-borde);
+  background:
+    radial-gradient(100% 80% at 0% 0%, var(--magenta-suave), transparent 70%),
+    var(--superficie);
 }
 
 .cartel__nombre {
   margin: 0;
-  font-weight: 800;
+  font-family: var(--fuente-display);
+  font-size: 1.05rem;
+  font-weight: 700;
 }
 
 .cartel__genero,
 .cartel__hora {
-  margin: 0.2rem 0 0;
-  font-size: 0.78rem;
-  color: var(--tinta-suave);
+  margin: 0.25rem 0 0;
+  font-size: 0.82rem;
+  color: var(--texto-2);
 }
 
+.cartel__hora {
+  color: var(--texto-3);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Entradas a la venta ──────────────────────────────────────── */
+
 .entradas {
-  list-style: none;
-  margin: 0 0 1.5rem;
+  display: grid;
+  gap: 0.5rem;
+  margin: 0 0 1.25rem;
   padding: 0;
+  list-style: none;
 }
 
 .entrada {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1.5rem;
-  padding: 1rem 0;
-  border-bottom: 1px solid var(--linea);
+  gap: 1rem;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  background: var(--fondo-2);
 }
 
 .entrada--sin {
@@ -417,13 +544,13 @@
 
 .entrada__nombre {
   margin: 0;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .entrada__desc {
-  margin: 0.2rem 0 0;
-  font-size: 0.82rem;
-  color: var(--tinta-suave);
+  margin: 0.15rem 0 0;
+  font-size: 0.8rem;
+  color: var(--texto-3);
 }
 
 .entrada__derecha {
@@ -433,45 +560,56 @@
 
 .entrada__precio {
   margin: 0;
-  font-weight: 800;
-  color: var(--chartreuse);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
 }
 
 .entrada__quedan {
-  margin: 0.15rem 0 0;
-  font-size: 0.72rem;
-  color: var(--tinta-suave);
+  margin: 0.1rem 0 0;
+  font-size: 0.74rem;
+  color: var(--texto-3);
 }
 
-/* ── Boletin ──────────────────────────────────────────────────── */
+/* ── Boletín ──────────────────────────────────────────────────── */
+
+.boletin {
+  text-align: left;
+}
 
 .boletin__texto {
   max-width: 40rem;
   margin: 0 0 1.25rem;
-  color: var(--tinta-suave);
+  color: var(--texto-2);
   line-height: 1.6;
 }
 
-/* Los campos crecen y el boton no: en movil se apilan solos por el wrap. */
 .boletin__form {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: 0.6rem;
+  max-width: 44rem;
 }
 
 .boletin__form input {
-  flex: 1 1 14rem;
-  background: var(--negro);
-  border: 1px solid var(--linea-fuerte);
-  color: var(--tinta);
-  padding: 0.75rem 0.85rem;
-  font-size: 0.95rem;
-  font-family: inherit;
+  flex: 1 1 13rem;
+  height: 2.9rem;
+  padding: 0 1rem;
+  border: 1px solid var(--borde-2);
+  border-radius: 999px;
+  background: var(--fondo-2);
+  color: var(--texto);
+  font-size: 1rem;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
 }
 
-.boletin__form input:focus {
+.boletin__form input:focus,
+.reserva input:focus,
+.reserva select:focus,
+.reserva textarea:focus,
+.comprar__datos input:focus {
   outline: none;
-  border-color: var(--chartreuse);
+  border-color: var(--magenta);
+  box-shadow: 0 0 0 3px var(--magenta-suave);
 }
 
 .boletin__form input:disabled,
@@ -479,52 +617,32 @@
   opacity: 0.55;
 }
 
-.boletin__form button {
-  border: none;
-  cursor: pointer;
-  font-family: inherit;
-}
-
 .boletin__hecho {
   margin: 0;
-  border-left: 2px solid var(--chartreuse);
-  padding-left: 1rem;
-  color: var(--chartreuse);
+  padding: 0.85rem 1rem;
+  border-radius: var(--radio);
+  background: var(--verde-suave);
+  color: var(--verde);
 }
 
 .boletin__error {
   margin: 1rem 0 0;
-  border-left: 2px solid var(--magenta);
-  padding-left: 1rem;
-  color: var(--magenta);
-  font-size: 0.9rem;
-}
-
-/*
- * Etiqueta para lector de pantalla, invisible en la pantalla.
- *
- * No se usa display:none ni visibility:hidden: eso la esconde tambien del
- * lector, que es justo lo contrario de lo que se busca. El campo lleva
- * placeholder, pero un placeholder no es una etiqueta: desaparece al escribir.
- */
-.visualmente-oculto {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-  border: 0;
+  padding: 0.75rem 0.9rem;
+  border-radius: var(--radio-s);
+  background: var(--rojo-suave);
+  color: var(--rojo);
+  font-size: 0.88rem;
 }
 
 /* ── Reservados ───────────────────────────────────────────────── */
 
 .mesas {
-  list-style: none;
-  margin: 0 0 1.75rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(14rem, 100%), 1fr));
+  gap: 0.6rem;
+  margin: 0 0 1.5rem;
   padding: 0;
+  list-style: none;
 }
 
 .mesa {
@@ -532,41 +650,46 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 0.85rem 0;
-  border-bottom: 1px solid var(--linea);
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  background: var(--superficie);
 }
 
-/* Los pedidos se enseñan atenuados en vez de esconderse: ver que el box grande
-   esta cogido explica por que no aparece; esconderlo parece un fallo. */
 .mesa--pedida {
-  opacity: 0.4;
+  opacity: 0.45;
 }
 
 .mesa__nombre {
   margin: 0;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .mesa__detalle {
-  margin: 0.2rem 0 0;
+  margin: 0.15rem 0 0;
   font-size: 0.8rem;
-  color: var(--tinta-suave);
+  color: var(--texto-3);
 }
 
 .mesa__estado {
-  font-size: 0.66rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--magenta);
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  background: var(--ambar-suave);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--ambar);
   white-space: nowrap;
 }
 
 .reserva {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(13rem, 100%), 1fr));
+  gap: 0.9rem;
   align-items: end;
+  padding: 1.25rem;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-l);
+  background: var(--superficie);
 }
 
 .reserva__nota,
@@ -576,10 +699,8 @@
 
 .reserva__nota {
   margin: 0;
-  border-left: 2px solid var(--linea-fuerte);
-  padding-left: 1rem;
   font-size: 0.85rem;
-  color: var(--tinta-suave);
+  color: var(--texto-2);
 }
 
 .reserva__fila {
@@ -587,37 +708,31 @@
   flex-direction: column;
 }
 
-.reserva label {
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--tinta-suave);
+.reserva label,
+.comprar__datos label {
   margin-bottom: 0.35rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--texto-2);
 }
 
 .reserva input,
 .reserva select,
-.reserva textarea {
-  background: var(--negro);
-  border: 1px solid var(--linea-fuerte);
-  color: var(--tinta);
-  padding: 0.65rem 0.75rem;
-  font-size: 0.95rem;
-  font-family: inherit;
+.reserva textarea,
+.comprar__datos input {
   width: 100%;
-  box-sizing: border-box;
+  min-height: 2.75rem;
+  padding: 0.6rem 0.85rem;
+  border: 1px solid var(--borde-2);
+  border-radius: var(--radio-s);
+  background: var(--fondo-2);
+  color: var(--texto);
+  font-size: 1rem;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
 }
 
 .reserva textarea {
   resize: vertical;
-}
-
-.reserva input:focus,
-.reserva select:focus,
-.reserva textarea:focus {
-  outline: none;
-  border-color: var(--chartreuse);
 }
 
 .reserva input:disabled,
@@ -627,160 +742,180 @@
   opacity: 0.55;
 }
 
-.reserva button {
-  border: none;
-  cursor: pointer;
-  font-family: inherit;
-}
-
 /* ── Pie ──────────────────────────────────────────────────────── */
 
 .pie {
-  /*
-   * Ancho explícito: es hijo de un flex en columna y con margen automático no
-   * se estira, sino que toma el ancho de su contenido. Con la rejilla auto-fit
-   * eso eran mil píxeles y la página se desplazaba de lado en el móvil.
-   */
-  width: 100%;
-  box-sizing: border-box;
-  margin: 4rem auto 0;
-  border-top: 1px solid var(--linea);
-  padding: 2.5rem 1.5rem;
+  margin-top: 4rem;
+  border-top: 1px solid var(--borde);
+  background:
+    radial-gradient(60% 120% at 0% 100%, rgb(255 61 154 / 0.12), transparent 60%),
+    radial-gradient(50% 120% at 100% 0%, rgb(163 116 255 / 0.12), transparent 60%),
+    var(--fondo-2);
+}
+
+.pie__dentro {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(14rem, 100%), 1fr));
   gap: 2rem;
-  max-width: 68rem;
-  font-size: 0.85rem;
-  color: var(--tinta-suave);
+  max-width: 76rem;
+  margin: 0 auto;
+  padding: 3rem 1rem 2rem;
+  font-size: 0.9rem;
+  color: var(--texto-2);
 }
 
 .pie p {
-  margin: 0 0 0.35rem;
+  margin: 0 0 0.4rem;
 }
 
 .pie a {
-  color: var(--tinta-suave);
+  color: var(--texto-2);
+  text-decoration: none;
+  transition: color 150ms ease;
 }
 
-.pie a:hover {
-  color: var(--chartreuse);
+@media (hover: hover) and (pointer: fine) {
+  .pie a:hover {
+    color: var(--magenta);
+  }
 }
 
 .pie__marca {
-  font-weight: 900;
-  letter-spacing: 0.14em;
-  color: var(--chartreuse);
+  margin-bottom: 0.75rem !important;
+  font-family: var(--fuente-display);
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--texto);
+}
+
+.pie__rotulo {
+  margin-bottom: 0.6rem !important;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--texto-3);
 }
 
 .pie__legal {
-  margin-top: 0.8rem;
-  font-size: 0.75rem;
-  opacity: 0.7;
+  margin-top: 0.8rem !important;
+  font-size: 0.78rem;
+  color: var(--texto-3);
 }
 
-/* La puerta del personal: encontrable, pero sin competir con nada. */
 .pie__personal {
   grid-column: 1 / -1;
-  border-top: 1px solid var(--linea);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
   padding-top: 1.25rem;
-  font-size: 0.72rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  opacity: 0.55;
-}
-
-/* La salida del panel hacia la web, empujada al final de la navegacion. */
-.nav__salida {
-  margin-left: auto;
-  opacity: 0.7;
+  border-top: 1px solid var(--borde);
+  font-size: 0.78rem;
+  color: var(--texto-3);
 }
 
 /* ── Comprar entradas ─────────────────────────────────────────── */
-/*
- * El carrito y el formulario. Se usa desde el movil casi siempre, asi que los
- * botones de + y − son cuadrados de 2.75rem: por debajo de eso hay que apuntar,
- * y apuntar con el pulgar en una parada de autobus no sale bien.
- */
 
 .comprar {
-  margin: 1.5rem 0 0;
+  margin: 0;
 }
 
 .comprar__tipos {
-  list-style: none;
+  display: grid;
+  gap: 0.5rem;
   margin: 0;
   padding: 0;
-  border-top: 1px solid var(--linea);
+  list-style: none;
 }
 
 .comprar__tipo {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  padding: 0.9rem 0;
-  border-bottom: 1px solid var(--linea);
+  gap: 0.75rem;
+  padding: 0.75rem 0.8rem;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  background: var(--fondo-2);
 }
 
 .comprar__nombre {
   margin: 0;
-  font-weight: 700;
+  font-size: 0.92rem;
+  font-weight: 600;
 }
 
 .comprar__precio {
-  margin: 0.2rem 0 0;
-  font-size: 0.85rem;
-  color: var(--tinta-suave);
+  margin: 0.15rem 0 0;
+  font-size: 0.82rem;
+  color: var(--texto-3);
+  font-variant-numeric: tabular-nums;
 }
 
+/* El contador: una píldora con − y +, cada uno con 44 px de dedo. */
 .contador-compra {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
+  flex-shrink: 0;
+  border: 1px solid var(--borde-2);
+  border-radius: 999px;
+  background: var(--superficie-2);
 }
 
 .contador-compra button {
-  width: 2.75rem;
-  height: 2.75rem;
-  background: var(--concreto);
-  border: 1px solid var(--linea-fuerte);
-  color: var(--tinta);
-  font-size: 1.3rem;
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--texto);
+  font-size: 1.2rem;
   line-height: 1;
   cursor: pointer;
+  transition: transform 160ms var(--ease-out), background-color 150ms ease, color 150ms ease;
 }
 
-.contador-compra button:hover:not(:disabled) {
-  border-color: var(--chartreuse);
-  color: var(--chartreuse);
+.contador-compra button:active:not(:disabled) {
+  transform: scale(0.9);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .contador-compra button:hover:not(:disabled) {
+    background: var(--superficie-3);
+    color: var(--magenta);
+  }
 }
 
 .contador-compra button:disabled {
-  opacity: 0.35;
+  opacity: 0.3;
   cursor: default;
 }
 
 .contador-compra__cifra {
-  min-width: 2.25rem;
+  min-width: 1.6rem;
   text-align: center;
-  font-size: 1.1rem;
-  font-weight: 700;
-  /* Tabular para que el ancho no baile al pasar de 9 a 10. */
+  font-size: 1rem;
+  font-weight: 650;
   font-variant-numeric: tabular-nums;
 }
 
 .comprar__cuenta {
-  margin: 1.25rem 0 0;
-  padding: 1rem;
-  background: var(--concreto);
-  border: 1px solid var(--linea);
+  margin: 1rem 0 0;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  background: var(--fondo-2);
 }
 
 .comprar__cuenta p {
   display: flex;
   justify-content: space-between;
-  margin: 0 0 0.5rem;
-  color: var(--tinta-suave);
+  margin: 0 0 0.45rem;
+  font-size: 0.88rem;
+  color: var(--texto-2);
   font-variant-numeric: tabular-nums;
 }
 
@@ -790,102 +925,102 @@
 
 .comprar__total {
   padding-top: 0.6rem;
-  border-top: 1px solid var(--linea);
-  font-size: 1.15rem;
+  border-top: 1px solid var(--borde);
+  font-size: 1.05rem !important;
+  color: var(--texto) !important;
 }
 
 .comprar__total strong {
-  color: var(--chartreuse);
+  font-weight: 700;
 }
 
 .comprar__datos {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
-  gap: 0.9rem;
-  margin-top: 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: 0.75rem;
+  margin-top: 1rem;
 }
 
 .comprar__datos label {
   display: flex;
   flex-direction: column;
+  margin-bottom: 0;
   gap: 0.35rem;
-  font-size: 0.75rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--tinta-suave);
-}
-
-.comprar__datos input {
-  background: var(--concreto);
-  border: 1px solid var(--linea-fuerte);
-  color: var(--tinta);
-  /* 16px o mas: por debajo, Safari en iPhone hace zoom al enfocar el campo. */
-  font-size: 1rem;
-  font-family: inherit;
-  padding: 0.7rem 0.75rem;
-  text-transform: none;
-  letter-spacing: normal;
-}
-
-.comprar__datos input:focus {
-  outline: 2px solid var(--chartreuse);
-  outline-offset: -2px;
 }
 
 .comprar__boton {
   width: 100%;
-  margin-top: 1.25rem;
-  padding: 1.1rem;
-  background: var(--chartreuse);
-  color: var(--negro);
-  border: none;
-  font: inherit;
+  min-height: 3.1rem;
+  margin-top: 1rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--magenta-boton);
+  color: #fff;
   font-size: 1rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
+  font-weight: 650;
   cursor: pointer;
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.2) inset, 0 12px 30px -12px rgb(255 61 154 / 0.85);
+  transition: transform 160ms var(--ease-out), background-color 150ms ease;
 }
 
-.comprar__boton:hover:not(:disabled) {
-  filter: brightness(1.1);
+.comprar__boton:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .comprar__boton:hover:not(:disabled) {
+    background: var(--magenta-boton-2);
+  }
 }
 
 .comprar__boton:disabled {
-  background: var(--linea-fuerte);
-  color: var(--tinta-suave);
+  background: var(--superficie-3);
+  color: var(--texto-3);
+  box-shadow: none;
   cursor: default;
 }
 
 .comprar__letra {
   margin: 0.75rem 0 0;
-  font-size: 0.8rem;
-  color: var(--tinta-suave);
+  font-size: 0.78rem;
+  color: var(--texto-3);
+  text-align: center;
+}
+
+.comprar__que {
+  margin: 0 0 0.75rem;
+  font-size: 0.85rem;
+  color: var(--texto-2);
 }
 
 /* ── Tus entradas ─────────────────────────────────────────────── */
 
-.seccion--estrecha {
-  max-width: 40rem;
-}
-
 .entradas__titulo {
   margin: 0.35rem 0 0;
-  font-size: clamp(2rem, 7vw, 3rem);
+  font-family: var(--fuente-display);
+  font-size: clamp(1.8rem, 6vw, 2.6rem);
+  font-weight: 750;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
 }
 
 .entradas__noche {
   margin: 0.6rem 0 0;
-  color: var(--tinta-suave);
+  color: var(--texto-2);
 }
 
 .entradas__aviso {
   margin: 1.5rem 0 0;
   font-size: 0.85rem;
-  color: var(--tinta-suave);
+  color: var(--texto-3);
 }
 
 .pagar {
-  margin-top: 2rem;
+  margin-top: 1.75rem;
+  padding: 1.25rem;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-l);
+  background: var(--superficie);
 }
 
 .pagar__total {
@@ -893,71 +1028,71 @@
   align-items: baseline;
   justify-content: space-between;
   margin: 0;
-  padding: 1.1rem;
-  background: var(--concreto);
-  border: 1px solid var(--linea);
   font-variant-numeric: tabular-nums;
+  color: var(--texto-2);
 }
 
 .pagar__total strong {
   font-size: 1.6rem;
-  color: var(--chartreuse);
+  font-weight: 700;
+  color: var(--texto);
 }
 
 .pagar__aviso {
   margin: 1rem 0 0;
-  padding: 0.8rem 0.9rem;
-  border-left: 2px solid var(--magenta);
+  padding: 0.75rem 0.9rem;
+  border-radius: var(--radio-s);
+  background: var(--ambar-suave);
   font-size: 0.85rem;
-  color: var(--tinta-suave);
+  color: var(--ambar);
 }
 
 .qrs {
-  list-style: none;
-  margin: 1.5rem 0 0;
-  padding: 0;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  margin: 1.5rem 0 0;
+  padding: 0;
+  list-style: none;
 }
 
+/* Cada entrada, como un ticket: el QR en blanco (los lectores lo necesitan así) y
+   los datos al lado. */
 .qr {
   display: flex;
   align-items: center;
   gap: 1.1rem;
   padding: 1rem;
-  background: var(--concreto);
-  border-left: 2px solid var(--chartreuse);
+  border: 1px solid var(--borde-2);
+  border-radius: var(--radio-l);
+  background:
+    radial-gradient(80% 100% at 100% 0%, var(--magenta-suave), transparent 60%),
+    var(--superficie);
 }
 
-/* Una entrada ya escaneada se atenua: no sirve para volver a entrar. */
 .qr--usada {
-  border-left-color: var(--linea-fuerte);
+  border-color: var(--borde);
   opacity: 0.55;
 }
 
-/*
- * El QR va sobre blanco puro y con su margen. No es un descuido de tema: un
- * lector necesita el contraste maximo y una zona en blanco alrededor, y sobre
- * el fondo casi negro de esta web un QR en gris no se lee.
- */
 .qr__imagen {
   flex-shrink: 0;
-  background: #ffffff;
-  padding: 0.4rem;
+  padding: 0.45rem;
+  border-radius: var(--radio-s);
+  background: #fff;
   line-height: 0;
 }
 
 .qr__imagen img {
   display: block;
-  width: 8rem;
-  height: 8rem;
+  width: 8.5rem;
+  height: 8.5rem;
 }
 
 .qr__texto {
   display: block;
-  width: 8rem;
-  color: #000000;
+  width: 8.5rem;
+  color: #000;
   font-size: 0.55rem;
   line-height: 1.3;
   word-break: break-all;
@@ -969,27 +1104,37 @@
 
 .qr__tipo {
   margin: 0;
-  font-weight: 700;
   font-size: 1.05rem;
+  font-weight: 650;
 }
 
 .qr__titular {
   margin: 0.25rem 0 0;
-  color: var(--tinta-suave);
+  color: var(--texto-2);
 }
 
 .qr__extra {
-  margin: 0.4rem 0 0;
-  font-size: 0.75rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--tinta-suave);
+  margin: 0.45rem 0 0;
+  font-size: 0.78rem;
+  color: var(--texto-3);
 }
 
 .qr__usada {
-  margin: 0.4rem 0 0;
-  font-size: 0.75rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--magenta);
+  display: inline-flex;
+  margin: 0.45rem 0 0;
+  padding: 0.12rem 0.5rem;
+  border-radius: 999px;
+  background: var(--superficie-3);
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--texto-2);
+}
+
+#reservados {
+  margin-top: 2.5rem;
+  scroll-margin-top: 5rem;
+}
+
+#comprar {
+  scroll-margin-top: 5rem;
 }

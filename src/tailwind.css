@@ -18,39 +18,45 @@
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/utilities.css" layer(utilities);
 
-/* Los mismos tokens que el sistema anterior, para que las clases signifiquen lo mismo. */
+/*
+ * Los nombres de antes (ground, surface, acento...) apuntan ahora al sistema de
+ * diseño de `estilos/sistema.css`: las piezas en Tailwind y las de CSS propio
+ * comparten paleta, tipografía y curvas.
+ */
 @theme {
-  --color-ground: #080808;
-  --color-surface: #111111;
-  --color-raised: #1e1e1e;
-  --color-line: #2a2a2a;
-  --color-line-strong: #444444;
+  --color-ground: var(--fondo);
+  --color-surface: var(--superficie);
+  --color-raised: var(--superficie-2);
+  --color-line: var(--borde-2);
+  --color-line-strong: var(--borde-3);
 
-  --color-ink: #f2f2f0;
-  --color-ink-soft: #b8b8b0;
-  --color-muted: #888880;
+  --color-ink: var(--texto);
+  --color-ink-soft: var(--texto-2);
+  --color-muted: var(--texto-3);
 
-  --color-acento: #c9ff00;
-  --color-acento-text: #c9ff00;
-  --color-acento-dim: #5c7300;
-  --color-acento-wash: #1a2000;
-  --color-on-acento: #080808;
+  --color-acento: var(--magenta-boton);
+  --color-acento-text: var(--magenta);
+  --color-acento-dim: var(--magenta-borde);
+  --color-acento-wash: var(--magenta-suave);
+  --color-on-acento: #ffffff;
+  --color-violeta: var(--violeta);
 
-  --color-alarma: #ff2b6e;
-  --color-alarma-dim: #8a1038;
-  --color-alarma-wash: #26060f;
-  --color-on-alarma: #080808;
+  --color-alarma: var(--rojo);
+  --color-alarma-dim: rgb(255 87 116 / 0.4);
+  --color-alarma-wash: var(--rojo-suave);
+  --color-on-alarma: #ffffff;
 
-  --color-good: #7ee787;
-  --color-good-wash: #0d2410;
-  --color-bad: #ff2b6e;
-  --color-bad-wash: #26060f;
+  --color-good: var(--verde);
+  --color-good-wash: var(--verde-suave);
+  --color-bad: var(--rojo);
+  --color-bad-wash: var(--rojo-suave);
 
-  --font-display: "Arial Narrow", "Roboto Condensed", sans-serif;
-  --font-sans: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  --font-mono: Consolas, ui-monospace, monospace;
+  --font-display: var(--fuente-display);
+  --font-sans: var(--fuente);
+  --font-mono: var(--fuente-mono);
 
-  --radius: 2px;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 @layer twbase {
@@ -77,6 +83,12 @@
     cursor: pointer;
   }
 
+  /* Todo lo pulsable responde al pulsarlo. */
+  .tw button:not(:disabled):active,
+  .tw a.pulsable:active {
+    transform: scale(0.97);
+  }
+
   .tw button:disabled {
     cursor: default;
   }
@@ -101,10 +113,9 @@
   .tw h2,
   .tw h3 {
     font-family: var(--font-display);
-    font-weight: 900;
-    line-height: 0.92;
-    letter-spacing: -0.01em;
-    text-transform: uppercase;
+    font-weight: 750;
+    line-height: 1;
+    letter-spacing: -0.02em;
     text-wrap: balance;
   }
 
@@ -115,30 +126,32 @@
 
   /* Etiquetas pequeñas en versalitas espaciadas. */
   .tw .eyebrow {
-    font-family: var(--font-mono);
-    font-size: 0.6875rem;
-    font-weight: 500;
-    letter-spacing: 0.2em;
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
   }
 
   .tw .glow-acento {
     box-shadow:
-      0 0 0 1px rgb(201 255 0 / 0.2),
-      0 0 32px -8px rgb(201 255 0 / 0.5);
+      0 1px 0 rgb(255 255 255 / 0.18) inset,
+      0 0 0 1px rgb(255 61 154 / 0.3),
+      0 12px 36px -10px rgb(255 61 154 / 0.65);
   }
 
   .tw .glow-alarma {
     box-shadow:
-      0 0 0 1px rgb(255 43 110 / 0.25),
-      0 0 32px -8px rgb(255 43 110 / 0.55);
+      0 0 0 1px rgb(255 87 116 / 0.3),
+      0 10px 30px -10px rgb(255 87 116 / 0.6);
   }
 
   .tw .text-neon {
-    color: var(--color-acento);
+    color: #fff;
     text-shadow:
-      0 0 6px rgb(201 255 0 / 0.55),
-      0 0 22px rgb(201 255 0 / 0.3);
+      0 0 8px rgb(255 61 154 / 0.8),
+      0 0 28px rgb(255 61 154 / 0.5),
+      0 0 60px rgb(163 116 255 / 0.4);
   }
 }
 
@@ -192,13 +205,26 @@
 
   .tw .reticula {
     background-image:
-      linear-gradient(rgb(255 255 255 / 0.022) 1px, transparent 1px),
-      linear-gradient(90deg, rgb(255 255 255 / 0.022) 1px, transparent 1px);
+      linear-gradient(rgb(255 255 255 / 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(255 255 255 / 0.03) 1px, transparent 1px);
     background-size: 44px 44px;
   }
 
   .tw .rayado {
-    background-image: repeating-linear-gradient(135deg, #131313 0 12px, #0d0d0d 12px 24px);
+    background-image:
+      radial-gradient(70% 90% at 20% 0%, rgb(255 61 154 / 0.28), transparent 60%),
+      radial-gradient(60% 80% at 100% 100%, rgb(163 116 255 / 0.25), transparent 60%),
+      linear-gradient(var(--superficie), var(--fondo-2));
+  }
+
+  /* La rejilla en perspectiva de los flyers (retrowave), como suelo de una sección. */
+  .tw .suelo-neon {
+    background:
+      linear-gradient(transparent 0 calc(100% - 1px), rgb(255 61 154 / 0.4) 0) 0 0 / 100% 2.4rem,
+      linear-gradient(90deg, transparent 0 calc(100% - 1px), rgb(255 61 154 / 0.32) 0) 0 0 / 3rem 100%;
+    transform: perspective(26rem) rotateX(64deg);
+    transform-origin: bottom;
+    mask-image: linear-gradient(to top, #000 5%, transparent 80%);
   }
 }
 
@@ -303,5 +329,31 @@
 
   .tw a {
     color: inherit;
+    text-decoration: none;
+  }
+}
+
+/*
+ * El chat se abre desde su botón, abajo a la derecha: escala desde esa esquina
+ * (origen consciente del disparador) y no desde el centro. Entra en 200 ms con
+ * ease-out. @starting-style evita el truco de montar y luego cambiar el estado.
+ */
+.chat-panel {
+  transform-origin: bottom right;
+  transition:
+    opacity 200ms cubic-bezier(0.23, 1, 0.32, 1),
+    transform 200ms cubic-bezier(0.23, 1, 0.32, 1);
+
+  @starting-style {
+    opacity: 0;
+    transform: scale(0.96) translateY(6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chat-panel {
+    @starting-style {
+      transform: none;
+    }
   }
 }

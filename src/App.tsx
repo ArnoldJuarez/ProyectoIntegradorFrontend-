@@ -1,91 +1,150 @@
-import { Link, NavLink, Outlet } from "react-router-dom";
+import {
+  ArrowUpRight,
+  BarChart3,
+  Boxes,
+  CalendarDays,
+  Contact,
+  Gauge,
+  LayoutDashboard,
+  LogOut,
+  Map as Plano,
+  Megaphone,
+  ScanLine,
+  Sparkles,
+  Ticket,
+  Users,
+  Wallet,
+  Wine,
+  Globe,
+  type LucideIcon,
+} from "lucide-react";
+import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import { Login } from "./Login";
 import { useSesion } from "./sesion";
 import "./App.css";
 
+type Seccion = { a: string; texto: string; icono: LucideIcon; exacta?: boolean };
+
 /**
- * Las secciones del panel, en el orden en que se miran.
+ * Las secciones del panel, agrupadas por lo que se está haciendo.
  *
- * En una constante y no escritas a mano en el JSX: son once enlaces con las
- * mismas clases, y repetir el `<NavLink>` en cada una es un sitio más donde
+ * En constantes y no escritas a mano en el JSX: son catorce enlaces con las
+ * mismas clases, y repetir el `<NavLink>` catorce veces es catorce sitios donde
  * cambiar una clase.
  *
  * `exacta` es para las rutas que son prefijo de otras. Sin ella, «Resumen»
- * (`/panel`) se quedaría encendido en todas las secciones y «Eventos» seguiría
- * encendido dentro de la ficha de una noche.
+ * (`/panel`) se quedaría encendido en todas las secciones.
  */
-const SECCIONES = [
-  { a: "/panel", texto: "Resumen", exacta: true },
-  { a: "/panel/noche", texto: "Torre de control" },
-  { a: "/panel/eventos", texto: "Eventos", exacta: true },
-  { a: "/panel/pedidos", texto: "Pedidos" },
-  { a: "/panel/clientes", texto: "Clientes" },
-  { a: "/panel/promotores", texto: "Promotores" },
-  { a: "/panel/crm", texto: "CRM" },
-  { a: "/panel/caja", texto: "Caja" },
-  { a: "/panel/inventario", texto: "Inventario" },
-  { a: "/panel/local", texto: "El local" },
-  { a: "/panel/propuestas", texto: "Propuestas IA" },
-  { a: "/panel/ia", texto: "Métricas IA" },
+const GRUPOS: { titulo: string; secciones: Seccion[] }[] = [
+  {
+    titulo: "Hoy",
+    secciones: [
+      { a: "/panel", texto: "Resumen", icono: LayoutDashboard, exacta: true },
+      { a: "/panel/noche", texto: "Torre de control", icono: Gauge },
+    ],
+  },
+  {
+    titulo: "Ventas",
+    secciones: [
+      { a: "/panel/eventos", texto: "Eventos", icono: CalendarDays },
+      { a: "/panel/pedidos", texto: "Pedidos", icono: Ticket },
+      { a: "/panel/promotores", texto: "Promotores", icono: Megaphone },
+    ],
+  },
+  {
+    titulo: "Clientes",
+    secciones: [
+      { a: "/panel/clientes", texto: "Clientes", icono: Contact },
+      { a: "/panel/crm", texto: "Segmentos y campañas", icono: Users },
+    ],
+  },
+  {
+    titulo: "Operación",
+    secciones: [
+      { a: "/panel/caja", texto: "Caja", icono: Wallet },
+      { a: "/panel/inventario", texto: "Inventario", icono: Boxes },
+      { a: "/panel/local", texto: "El local", icono: Plano },
+    ],
+  },
+  {
+    titulo: "Inteligencia",
+    secciones: [
+      { a: "/panel/propuestas", texto: "Propuestas IA", icono: Sparkles },
+      { a: "/panel/ia", texto: "Métricas IA", icono: BarChart3 },
+    ],
+  },
 ];
 
 /*
  * La barra y la puerta no son secciones del panel: son las dos pantallas de
  * turno, a pantalla completa y pensadas para usarse de pie. Se enlazan desde
- * aquí porque quien abre el panel a las once de la noche va a necesitarlas, y
- * buscarlas escribiendo la dirección a mano no es un plan. Dirección y gerencia
- * entran en las dos, así que ninguno de estos enlaces lleva a un 403.
+ * aquí porque quien abre el panel a las once de la noche va a necesitarlas.
  */
-const PANTALLAS_DE_TURNO = [
-  { a: "/barra", texto: "Barra ↗" },
-  { a: "/puerta", texto: "Puerta ↗" },
-  { a: "/", texto: "Ver la web ↗" },
+const PANTALLAS_DE_TURNO: Seccion[] = [
+  { a: "/barra", texto: "Barra", icono: Wine },
+  { a: "/puerta", texto: "Puerta", icono: ScanLine },
+  { a: "/", texto: "Ver la web", icono: Globe },
 ];
+
+const ROL: Record<string, string> = {
+  DIRECCION: "Dirección",
+  GERENCIA: "Gerencia",
+  PROMOTOR: "Promotor",
+  PUERTA: "Puerta",
+  BARRA: "Barra",
+  PERSONAL: "Personal",
+};
+
+function iniciales(nombre: string): string {
+  return nombre
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((p) => p[0]?.toUpperCase())
+    .join("");
+}
 
 /**
  * El armazón: marca, navegación y quién está dentro.
  *
  * Toda la aplicación cuelga de aquí, y aquí se decide lo único que no depende de
- * la ruta: si hay sesión se pinta la pantalla que toque, y si no, el login. Así
- * ninguna página tiene que preocuparse de comprobarlo por su cuenta.
+ * la ruta: si hay sesión se pinta la pantalla que toque, y si no, el login.
  *
- * El menú va en una **columna a la izquierda**, como en el sistema anterior.
- * En una fila horizontal, con once entradas, no cabían en una ventana estrecha:
- * o se desbordaban por la derecha —dejando secciones fuera de pantalla que
- * nadie encuentra— o se envolvían en cuatro líneas y había que pasar media
- * pantalla antes de ver la primera cifra. En columna el número de secciones
- * deja de importar.
- *
- * En móvil la columna se convierte en una tira horizontal de una sola línea que
- * se desliza, porque ahí una columna se comería la pantalla entera.
+ * El menú va en una columna a la izquierda, agrupado por lo que se hace. En
+ * móvil se convierte en una tira horizontal de una sola línea que se desliza.
  */
 export default function App() {
   const { estado, entrar, salir } = useSesion();
+  const { pathname } = useLocation();
 
-  // Sin sesión no hay panel que enmarcar. Lo único que se enseña es el login, y
-  // dejar la barra lateral con el menú de dirección detrás sería enseñar la casa
-  // a quien todavía no ha llamado al timbre.
   if (estado.fase !== "dentro") {
     return (
       <div className="portal">
-        <h1 className="portal__marca">SSIOMAMA</h1>
-        <p className="portal__pie">
-          React + Spring Boot · datos reales de <code>teca</code>
-        </p>
+        <aside className="portal__arte" aria-hidden="true">
+          <p className="portal__marca">SSIOMAMA</p>
+          <p className="portal__lema">
+            Las mejores fiestas <span>se viven aquí.</span>
+          </p>
+          <p className="portal__pie">Av. Dolores 119 · J. L. Bustamante y Rivero · Arequipa</p>
+        </aside>
 
-        {estado.fase === "comprobando" && <p className="aviso">Comprobando la sesión…</p>}
+        <main className="portal__lado">
+          <p className="portal__marca-movil">SSIOMAMA</p>
 
-        {estado.fase === "error" && (
-          <div className="aviso aviso--error">
-            <p className="aviso__titulo">No se pudo hablar con el backend</p>
-            <p>{estado.mensaje}</p>
-            <p className="aviso__pista">
-              Arráncalo con <code>cd backend</code> y <code>./mvnw spring-boot:run</code>
-            </p>
-          </div>
-        )}
+          {estado.fase === "comprobando" && <p className="aviso">Comprobando la sesión…</p>}
 
-        {estado.fase === "fuera" && <Login alEntrar={entrar} />}
+          {estado.fase === "error" && (
+            <div className="aviso aviso--error">
+              <p className="aviso__titulo">No se pudo hablar con el backend</p>
+              <p>{estado.mensaje}</p>
+              <p className="aviso__pista">
+                Arráncalo con <code>./mvnw spring-boot:run</code> en la carpeta del backend.
+              </p>
+            </div>
+          )}
+
+          {estado.fase === "fuera" && <Login alEntrar={entrar} />}
+        </main>
       </div>
     );
   }
@@ -94,37 +153,51 @@ export default function App() {
     <div className="armazon">
       <aside className="lateral">
         <div className="lateral__cuerpo">
-          <Link to="/" className="lateral__marca">
+          <Link to="/panel" className="lateral__marca">
             <span className="lateral__punto" aria-hidden="true" />
             SSIOMAMA
           </Link>
 
-          <nav className="menu">
-            {SECCIONES.map((s) => (
-              <NavLink key={s.a} to={s.a} end={s.exacta}>
-                {s.texto}
-              </NavLink>
+          <nav className="menu" aria-label="Secciones del panel">
+            {GRUPOS.map((g) => (
+              <div key={g.titulo} className="menu__grupo">
+                <p className="menu__titulo">{g.titulo}</p>
+                {g.secciones.map((s) => (
+                  <NavLink key={s.a} to={s.a} end={s.exacta}>
+                    <s.icono aria-hidden="true" />
+                    {s.texto}
+                  </NavLink>
+                ))}
+              </div>
             ))}
 
-            {/* Separadas del resto: salen del panel. */}
             <span className="menu__corte" aria-hidden="true" />
-            {PANTALLAS_DE_TURNO.map((p) => (
-              <Link key={p.a} to={p.a} className="menu__fuera">
-                {p.texto}
-              </Link>
-            ))}
+            <div className="menu__grupo">
+              <p className="menu__titulo">Turno</p>
+              {PANTALLAS_DE_TURNO.map((p) => (
+                <Link key={p.a} to={p.a} className="menu__fuera">
+                  <p.icono aria-hidden="true" />
+                  {p.texto}
+                  <ArrowUpRight className="menu__flecha" aria-hidden="true" />
+                </Link>
+              ))}
+            </div>
           </nav>
 
-          {/*
-            Quién está dentro, al fondo de la columna. `margin-top: auto` lo
-            empuja abajo en escritorio; en móvil la tira ya no tiene «abajo», y
-            por eso ahí se esconde: el nombre y el rol no son lo que se consulta
-            con el teléfono en la mano.
-          */}
+          {/* Quién está dentro, al fondo de la columna. En móvil no se enseña:
+              el nombre no es lo que se consulta con el teléfono en la mano. */}
           <div className="lateral__pie">
-            <p className="lateral__nombre">{estado.usuario.nombre}</p>
-            <p className="lateral__rol">{estado.usuario.rol}</p>
+            <div className="lateral__usuario">
+              <span className="lateral__avatar" aria-hidden="true">
+                {iniciales(estado.usuario.nombre)}
+              </span>
+              <div style={{ minWidth: 0 }}>
+                <p className="lateral__nombre">{estado.usuario.nombre}</p>
+                <p className="lateral__rol">{ROL[estado.usuario.rol] ?? estado.usuario.rol}</p>
+              </div>
+            </div>
             <button type="button" className="salir" onClick={salir}>
+              <LogOut size={14} aria-hidden="true" />
               Cerrar sesión
             </button>
           </div>
@@ -132,8 +205,12 @@ export default function App() {
       </aside>
 
       <main className="contenido">
-        <Outlet />
+        {/* La clave por ruta reinicia la entrada suave al cambiar de sección. */}
+        <div key={pathname} className="contenido__ancho aparecer">
+          <Outlet />
+        </div>
       </main>
     </div>
   );
 }
+

@@ -1,0 +1,287 @@
+/*
+ * Sistema de diseño de Ssiomama.
+ *
+ * La paleta sale de los flyers de la casa: magenta y violeta de neón sobre un
+ * negro que tira a morado, con el verde ácido de las noches de «Bellaqueo»
+ * reservado para lo que sale bien. Todo lo demás —panel, puerta, barra, web—
+ * usa estos tokens, así que cambiar un color aquí lo cambia en todas partes.
+ *
+ * El movimiento sigue los criterios de Emil Kowalski: curvas propias en vez de
+ * las de serie, nada por encima de 300 ms en la interfaz, solo transform y
+ * opacity, y los hover detrás de `(hover: hover)` para que en el móvil no se
+ * queden pegados.
+ */
+
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/unbounded";
+
+:root {
+  color-scheme: dark;
+
+  /* Fondo y superficies: de más hundido a más elevado. */
+  --fondo: #0b0710;
+  --fondo-2: #100a17;
+  --superficie: #161020;
+  --superficie-2: #1d1629;
+  --superficie-3: #271e36;
+
+  /* Bordes semitransparentes: se funden con cualquier superficie. */
+  --borde: rgb(255 255 255 / 0.07);
+  --borde-2: rgb(255 255 255 / 0.12);
+  --borde-3: rgb(255 255 255 / 0.2);
+
+  --texto: #f6f2fb;
+  --texto-2: #b9afc8;
+  --texto-3: #81778f;
+
+  /* La marca. El magenta de botón es más oscuro que el de texto: con blanco
+     encima necesita 4.5:1, y el magenta de los flyers no llega. */
+  --magenta: #ff3d9a;
+  --magenta-boton: #d81b72;
+  --magenta-boton-2: #e8287f;
+  --magenta-suave: rgb(255 61 154 / 0.14);
+  --magenta-borde: rgb(255 61 154 / 0.4);
+  --violeta: #a374ff;
+  --violeta-suave: rgb(163 116 255 / 0.15);
+
+  /* Estados. */
+  --verde: #3ee6a0;
+  --verde-suave: rgb(62 230 160 / 0.13);
+  --ambar: #ffbe55;
+  --ambar-suave: rgb(255 190 85 / 0.14);
+  --rojo: #ff5774;
+  --rojo-suave: rgb(255 87 116 / 0.14);
+
+  --fuente: "Inter Variable", "Inter", system-ui, "Segoe UI", Roboto, sans-serif;
+  --fuente-display: "Unbounded Variable", "Unbounded", "Inter Variable", system-ui, sans-serif;
+  --fuente-mono: "Cascadia Code", ui-monospace, Consolas, monospace;
+
+  --radio-s: 8px;
+  --radio: 12px;
+  --radio-l: 18px;
+  --radio-xl: 26px;
+
+  --sombra-1: 0 1px 0 rgb(255 255 255 / 0.04) inset, 0 1px 2px rgb(0 0 0 / 0.35);
+  --sombra-2: 0 1px 0 rgb(255 255 255 / 0.05) inset, 0 16px 40px -18px rgb(0 0 0 / 0.75);
+  --brillo: 0 0 0 1px var(--magenta-borde), 0 10px 32px -10px rgb(255 61 154 / 0.55);
+
+  /* Curvas (Emil): ease-out fuerte para entrar, ease-in-out para moverse. */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-cajon: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--fondo);
+  color: var(--texto);
+  font-family: var(--fuente);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  font-feature-settings: "cv11", "ss01";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Sin el destello gris al tocar en el móvil: cada control ya tiene su estado. */
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: var(--magenta);
+  color: #fff;
+}
+
+:focus-visible {
+  outline: 2px solid var(--magenta);
+  outline-offset: 2px;
+}
+
+input,
+select,
+textarea,
+button {
+  font: inherit;
+  color: inherit;
+}
+
+img {
+  max-width: 100%;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  text-wrap: balance;
+}
+
+code {
+  font-family: var(--fuente-mono);
+  font-size: 0.86em;
+  background: var(--superficie-2);
+  border: 1px solid var(--borde);
+  border-radius: 6px;
+  padding: 0.1em 0.4em;
+}
+
+/* Barras de desplazamiento discretas, del color de la superficie. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--superficie-3) transparent;
+}
+
+/* ── Botones ──────────────────────────────────────────────────── */
+/*
+ * Todo lo que se pulsa responde al pulsarse: scale(0.97) en 160 ms. Es lo que
+ * hace que la interfaz parezca escuchar. Solo transform y colores, nunca `all`.
+ */
+
+.boton,
+.boton-secundario,
+.boton-fantasma {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 2.5rem;
+  padding: 0 1.05rem;
+  border-radius: var(--radio-s);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    transform 160ms var(--ease-out),
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.boton {
+  border: 1px solid transparent;
+  background: var(--magenta-boton);
+  color: #fff;
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.18) inset, 0 6px 18px -8px rgb(255 61 154 / 0.7);
+}
+
+.boton-secundario {
+  border: 1px solid var(--borde-2);
+  background: var(--superficie-2);
+  color: var(--texto);
+}
+
+.boton-fantasma {
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--texto-2);
+}
+
+.boton:active,
+.boton-secundario:active,
+.boton-fantasma:active {
+  transform: scale(0.97);
+}
+
+.boton:disabled,
+.boton-secundario:disabled,
+.boton-fantasma:disabled,
+.boton[aria-disabled="true"] {
+  opacity: 0.45;
+  cursor: default;
+  transform: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .boton:hover:not(:disabled) {
+    background: var(--magenta-boton-2);
+  }
+
+  .boton-secundario:hover:not(:disabled) {
+    border-color: var(--borde-3);
+    background: var(--superficie-3);
+  }
+
+  .boton-fantasma:hover:not(:disabled) {
+    background: var(--superficie-2);
+    color: var(--texto);
+  }
+}
+
+.visualmente-oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ── Entrada de una pantalla ──────────────────────────────────── */
+/*
+ * Al cambiar de sección, el contenido sube 6 px mientras aparece. Es una
+ * transición ocasional —se cambia de sección, no se teclea— y evita el salto
+ * en seco de una pantalla a otra.
+ */
+
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.aparecer {
+  animation: aparecer 260ms var(--ease-out) both;
+}
+
+@keyframes latido {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+/* Menos movimiento no es ninguno: se quitan los desplazamientos y se dejan los fundidos. */
+@media (prefers-reduced-motion: reduce) {
+  .aparecer {
+    animation-name: fundir;
+  }
+
+  .boton:active,
+  .boton-secundario:active,
+  .boton-fantasma:active {
+    transform: none;
+  }
+}
+
+@keyframes fundir {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

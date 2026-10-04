@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
 import { AvisoDeError } from "../Aviso";
-import { horaDeSala, soles, verResumenDelPanel } from "../api";
+import { horaDeSala, soles, verHistorialDeNoches, verResumenDelPanel } from "../api";
 import type { Cifra, NocheEnPortada } from "../api";
 import { useCarga } from "../datos";
+import { GraficasDeNoches } from "./GraficasDeNoches";
 import { Bloque, BloqueVacio, Medidor } from "./Medidor";
 import "./panel.css";
 
@@ -21,6 +22,8 @@ import "./panel.css";
  */
 export function Resumen() {
   const carga = useCarga(verResumenDelPanel, []);
+  // Aparte del resumen: si las gráficas tardan o fallan, el resto se ve igual.
+  const historial = useCarga(() => verHistorialDeNoches(14), []);
 
   if (carga.fase === "cargando") return <p className="aviso">Cargando el resumen…</p>;
   if (carga.fase === "error") {
@@ -41,6 +44,8 @@ export function Resumen() {
           <FichaDeCifra key={c.etiqueta} cifra={c} />
         ))}
       </div>
+
+      {historial.fase === "listo" && <GraficasDeNoches noches={historial.datos} />}
 
       <div className="portada__rejilla">
         <Bloque titulo="Próxima noche">

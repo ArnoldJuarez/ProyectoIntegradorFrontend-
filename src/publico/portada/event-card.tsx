@@ -33,7 +33,7 @@ export function EventCard({ noche, indice = 0 }: { noche: NocheEnCartelera; indi
     <Link
       to={`/evento/${noche.slug}`}
       style={{ animationDelay: `${indice * 80}ms` }}
-      className="surgir group relative flex aspect-3/4 flex-col justify-between overflow-hidden border border-line bg-surface p-4 text-ink no-underline transition duration-500 hover:-translate-y-2 hover:border-acento focus-visible:-translate-y-2"
+      className="pulsable surgir group relative flex aspect-4/5 flex-col justify-between overflow-hidden rounded-2xl border border-line bg-surface p-4 text-ink no-underline transition-[transform,border-color] duration-300 ease-out hover:-translate-y-1 hover:border-acento-dim focus-visible:-translate-y-1"
       aria-label={`${noche.titulo}, ${fecha}`}
     >
       {/* La foto de la noche si la hay; si no, rayado de concreto. */}
@@ -67,11 +67,11 @@ export function EventCard({ noche, indice = 0 }: { noche: NocheEnCartelera; indi
         <span className="eyebrow text-acento-text">{fecha}</span>
 
         {agotada ? (
-          <span className="eyebrow shrink-0 border border-line-strong bg-ground/80 px-2 py-0.5 text-muted backdrop-blur">
+          <span className="eyebrow shrink-0 rounded-full border border-line-strong bg-ground/80 px-2.5 py-1 text-muted backdrop-blur">
             Agotado
           </span>
         ) : ultimas ? (
-          <span className="eyebrow glow-alarma shrink-0 bg-alarma px-2 py-0.5 font-semibold text-on-alarma">
+          <span className="eyebrow glow-alarma shrink-0 rounded-full bg-alarma px-2.5 py-1 font-semibold text-on-alarma">
             Últimas
           </span>
         ) : (
@@ -82,13 +82,13 @@ export function EventCard({ noche, indice = 0 }: { noche: NocheEnCartelera; indi
       </div>
 
       <div className="relative flex flex-col gap-2">
-        <h3 className="text-[2rem] transition group-hover:text-acento-text">{noche.titulo}</h3>
+        <h3 className="text-2xl transition-colors duration-150 group-hover:text-acento-text">{noche.titulo}</h3>
 
         <p className="eyebrow line-clamp-1 text-muted">
           {generos.join(" · ") || noche.cartel.map((a) => a.nombre).join(" · ") || "Cartel por confirmar"}
         </p>
 
-        <div aria-hidden className="h-[3px] bg-white/12">
+        <div aria-hidden className="h-1 overflow-hidden rounded-full bg-white/12">
           <div
             className="subir h-full"
             style={{
@@ -111,7 +111,7 @@ export function EventCard({ noche, indice = 0 }: { noche: NocheEnCartelera; indi
             </span>
           )}
           {!agotada && (
-            <span className="tnum font-display text-2xl font-black whitespace-nowrap text-acento-text">
+            <span className="tnum font-display text-xl font-bold whitespace-nowrap text-ink">
               {soles(noche.precioDesdeCentimos)}
             </span>
           )}
