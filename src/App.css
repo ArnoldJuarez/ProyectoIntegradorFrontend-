@@ -1108,3 +1108,40 @@ code {
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
+
+/* ── Apartados dentro de una pantalla del panel ───────────────── */
+
+.apartado {
+  margin-top: 2rem;
+}
+
+.subtitulo {
+  margin: 2rem 0 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.apartado .subtitulo {
+  margin-top: 0;
+}
+
+/* ── Flyer en el formulario de la noche ───────────────────────── */
+
+.portada-previa {
+  display: block;
+  max-width: 16rem;
+  max-height: 20rem;
+  margin: 0.5rem 0;
+  border: 1px solid var(--linea);
+  object-fit: cover;
+}
+
+.portada-acciones {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0.5rem 0;
+}
+
+.portada-acciones label.boton-secundario {
+  cursor: pointer;
+}

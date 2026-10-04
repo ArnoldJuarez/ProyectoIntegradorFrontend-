@@ -15,6 +15,17 @@
 const BASE = import.meta.env.VITE_API_URL ?? "http://localhost:8080";
 
 /**
+ * La dirección de una imagen lista para pintarla.
+ *
+ * Los flyers subidos desde el panel los sirve el backend (`/api/publico/...`),
+ * y el backend vive en otro origen: una ruta relativa iría a parar al servidor
+ * del frontend. Las fotos fijas (`/fotos/...`) sí son del frontend y se dejan.
+ */
+export function imagen(ruta: string): string {
+  return ruta.startsWith("/api/") ? `${BASE}${ruta}` : ruta;
+}
+
+/**
  * Error con el código HTTP a mano, para poder distinguir un 403 de un 500.
  *
  * El campo va declarado y asignado por separado, sin usar el atajo de
@@ -45,7 +56,9 @@ async function pedir<T>(ruta: string, opciones: RequestInit = {}): Promise<T> {
       credentials: "include",
       headers: {
         Accept: "application/json",
-        ...(opciones.body ? { "Content-Type": "application/json" } : {}),
+        // Un FormData lleva su propio Content-Type con el separador de partes:
+        // ponerle JSON encima rompe la subida de archivos.
+        ...(typeof opciones.body === "string" ? { "Content-Type": "application/json" } : {}),
         ...opciones.headers,
       },
     });
@@ -1404,3 +1417,232 @@ export const NOMBRE_DE_ESTADO_DE_RESERVA: Record<EstadoDeReserva, string> = {
   NO_VINO: "No vino",
   CANCELADO: "Cancelada",
 };
+
+// ─────────────────────── Promotores y listas ───────────────────────
+//
+// La comisión llega ya calculada: es `comisionPct` sobre lo pagado con su
+// código, y se calcula en el backend para que la cifra sea la misma en todas
+// partes.
+
+export type ListaDeInvitados = {
+  id: string;
+  nombre: string;
+  noche: string;
+  nocheSlug: string;
+  empiezaA: string;
+  promotor: string;
+  /** Personas, no filas: «Ana +3» son cuatro. */
+  apuntados: number;
+  maxInvitados: number;
+  entraron: number;
+  /** Si la noche ya empezó. Antes, «entraron 0» no significa nada. */
+  pasada: boolean;
+};
+
+export type Promotor = {
+  id: string;
+  nombre: string;
+  rol: Rol;
+  email: string | null;
+  codigo: string;
+  comisionPorcentaje: number;
+  activo: boolean;
+  pedidos: number;
+  vendidoCentimos: number;
+  comisionCentimos: number;
+  invitados: number;
+  entraron: number;
+  listas: ListaDeInvitados[];
+};
+
+export type ResumenDePromotores = {
+  activos: number;
+  vendidoCentimos: number;
+  comisionesCentimos: number;
+  invitados: number;
+  entraron: number;
+  promotores: Promotor[];
+};
+
+export function verPromotores(): Promise<ResumenDePromotores> {
+  return pedir<ResumenDePromotores>("/api/promotores");
+}
+
+export function listasDeLaNoche(slug: string): Promise<ListaDeInvitados[]> {
+  return pedir<ListaDeInvitados[]>(`/api/eventos/${encodeURIComponent(slug)}/listas`);
+}
+
+// ─────────────────────── Portada de una noche ───────────────────────
+
+export type PortadaGuardada = { portada: string; pesoKb: number };
+
+/** Sube el flyer. El backend lo reescala y le quita los metadatos. */
+export function subirPortada(slug: string, archivo: File): Promise<PortadaGuardada> {
+  const formulario = new FormData();
+  formulario.append("archivo", archivo);
+  return pedir<PortadaGuardada>(`/api/eventos/${encodeURIComponent(slug)}/portada`, {
+    method: "POST",
+    body: formulario,
+  });
+}
+
+export function quitarPortada(slug: string): Promise<void> {
+  return pedir<void>(`/api/eventos/${encodeURIComponent(slug)}/portada`, { method: "DELETE" });
+}
+
+// ─────────────────────── El local: plano y salidas ───────────────────────
+//
+// Las medidas van en metros, con el origen en la esquina del plano. La
+// evacuación se calcula en el navegador (`local/evacuacion.ts`): es una
+// fórmula sobre estos números, y así responde al instante al mover algo.
+
+export type { PuertaPlano, TipoZona, ZonaPlano } from "./local/evacuacion";
+import type { PuertaPlano, ZonaPlano } from "./local/evacuacion";
+
+export type SalaDelLocal = {
+  id: string;
+  nombre: string;
+  aforo: number;
+  planoAncho: number;
+  planoFondo: number;
+  zonas: ZonaPlano[];
+  puertas: PuertaPlano[];
+};
+
+export type GeometriaDeSala = {
+  salaId: string;
+  planoAncho: number;
+  planoFondo: number;
+  zonas: ZonaPlano[];
+  puertas: PuertaPlano[];
+};
+
+export function verLocal(): Promise<SalaDelLocal[]> {
+  return pedir<SalaDelLocal[]>("/api/local");
+}
+
+/** Guarda medidas, zonas y puertas de una sala, todo o nada. */
+export function guardarLocal(geometria: GeometriaDeSala): Promise<void> {
+  return pedir<void>("/api/local", { method: "PUT", body: JSON.stringify(geometria) });
+}
+
+// ─────────────────────── Capa de IA ───────────────────────
+//
+// Ningún agente actúa solo: cada ejecución deja una propuesta, y solo al
+// aprobarla desde el panel llega a tocar datos.
+
+export type AgenteDeIa = {
+  /** Como viaja en la URL: `crm-segmenter`. */
+  clave: string;
+  nombre: string;
+  descripcion: string;
+  modelo: string;
+};
+
+export type EjecucionLanzada = { ejecucionId: string; propuestaId: string; mensaje: string };
+
+export type EstadoDePropuesta = "PENDIENTE" | "APROBADA" | "RECHAZADA";
+
+export type PropuestaDeIa = {
+  id: string;
+  tipo: string;
+  tipoNombre: string;
+  agente: string;
+  estado: EstadoDePropuesta;
+  /** Tiene forma distinta según el agente: se pinta de forma genérica. */
+  datos: unknown;
+  creadoEn: string;
+  revisadaPor: string | null;
+  aplicada: boolean;
+  costeCentimos: number;
+  tokens: number;
+};
+
+export type BandejaDeIa = {
+  pendientes: number;
+  ejecuciones: number;
+  costeCentimos: number;
+  tokens: number;
+  propuestas: PropuestaDeIa[];
+};
+
+export type Desenlace = {
+  estado: EstadoDePropuesta;
+  aplicada: boolean;
+  mensaje: string;
+  avisos: string[];
+};
+
+export type MetricasDeIa = {
+  ejecuciones: number;
+  tasaDeAceptacion: number | null;
+  aprobadas: number;
+  revisadas: number;
+  pendientes: number;
+  costeCentimos: number;
+  tokens: number;
+  minutosHastaDecidir: number | null;
+  porAgente: { agente: string; veces: number; exitoPorcentaje: number; mediana: string; tokensMedios: string }[];
+  bancoDePruebas: { modelo: string; corridas: number; exitoPorcentaje: number; mediana: string; intentosMedios: string }[];
+  ultimas: {
+    id: string;
+    agente: string;
+    modelo: string | null;
+    lanzadaPor: string;
+    cuando: string;
+    estado: "EN_COLA" | "EJECUTANDO" | "COMPLETADA" | "FALLIDA";
+    propuestas: number;
+  }[];
+};
+
+export function listarAgentes(): Promise<AgenteDeIa[]> {
+  return pedir<AgenteDeIa[]>("/api/ia/agentes");
+}
+
+export function lanzarAgente(clave: string): Promise<EjecucionLanzada> {
+  return pedir<EjecucionLanzada>(`/api/ia/agentes/${encodeURIComponent(clave)}`, { method: "POST" });
+}
+
+export function verBandejaDeIa(): Promise<BandejaDeIa> {
+  return pedir<BandejaDeIa>("/api/ia/propuestas");
+}
+
+export function decidirPropuesta(id: string, decision: "APROBAR" | "DESCARTAR"): Promise<Desenlace> {
+  return pedir<Desenlace>(`/api/ia/propuestas/${encodeURIComponent(id)}`, {
+    method: "POST",
+    body: JSON.stringify({ decision }),
+  });
+}
+
+export function verMetricasDeIa(): Promise<MetricasDeIa> {
+  return pedir<MetricasDeIa>("/api/ia/metricas");
+}
+
+// ─────────────────────── Conserje (chat público) ───────────────────────
+
+export type TurnoDeChat = { rol: "usuario" | "asistente"; contenido: string };
+
+export function preguntarAlConserje(
+  mensaje: string,
+  historial: TurnoDeChat[],
+  sesionId: string | null,
+): Promise<{ sesionId: string; respuesta: string }> {
+  return pedir("/api/publico/chat", {
+    method: "POST",
+    body: JSON.stringify({ mensaje, historial, sesionId }),
+  });
+}
+
+// ─────────────────────── Portada pública ───────────────────────
+
+export type ExtrasDePortada = {
+  boxes: { zona: string | null; plazas: number; consumoMinimoCentimos: number; cuantos: number }[];
+  salas: { nombre: string; aforo: number; descripcion: string | null; zonas: { nombre: string; aforo: number }[] }[];
+  artistas: { nombre: string; genero: string; instagram: string | null }[];
+  pasadas: { slug: string; titulo: string; empiezaA: string; portada: string | null }[];
+};
+
+/** Boxes, el local, artistas y noches pasadas: lo que la portada enseña además de la agenda. */
+export function verExtrasDePortada(): Promise<ExtrasDePortada> {
+  return pedir<ExtrasDePortada>("/api/publico/portada");
+}

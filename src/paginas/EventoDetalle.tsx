@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { TablaDeListas } from "./Promotores";
 import { TiposDeEntrada } from "./TiposDeEntrada";
 import { AvisoDeError } from "../Aviso";
-import { NOMBRE_DE_ESTADO, horaDeSala, soles, verEvento } from "../api";
+import { NOMBRE_DE_ESTADO, horaDeSala, listasDeLaNoche, soles, verEvento } from "../api";
 import { useCarga } from "../datos";
 
 /** La ficha de una noche: horario, condiciones y cómo va la venta por tipo. */
@@ -20,6 +21,7 @@ export function EventoDetalle() {
    */
   const [version, setVersion] = useState(0);
   const carga = useCarga(() => verEvento(slug), [slug, version]);
+  const listas = useCarga(() => listasDeLaNoche(slug), [slug]);
 
   if (carga.fase === "cargando") return <p className="aviso">Cargando la noche…</p>;
   if (carga.fase === "error") {
@@ -91,6 +93,18 @@ export function EventoDetalle() {
         aforoDeSala={e.aforoDeSala}
         alCambiar={() => setVersion((v) => v + 1)}
       />
+
+      {/* Las listas no bloquean la ficha: si fallan, la noche se sigue viendo. */}
+      {listas.fase === "listo" && (
+        <div className="apartado">
+          <h3 className="subtitulo">Listas de invitados</h3>
+          {listas.datos.length === 0 ? (
+            <p className="sutil">Ningún promotor ha abierto lista para esta noche.</p>
+          ) : (
+            <TablaDeListas listas={listas.datos} conPromotor />
+          )}
+        </div>
+      )}
     </section>
   );
 }

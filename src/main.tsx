@@ -11,8 +11,12 @@ import { EventoDetalle } from "./paginas/EventoDetalle.tsx";
 import { EventoForm } from "./paginas/EventoForm.tsx";
 import { Eventos } from "./paginas/Eventos.tsx";
 import { Inventario } from "./paginas/Inventario.tsx";
+import { Local } from "./paginas/Local.tsx";
+import { MetricasIa } from "./paginas/MetricasIa.tsx";
 import { PedidoDetalle } from "./paginas/PedidoDetalle.tsx";
 import { Pedidos } from "./paginas/Pedidos.tsx";
+import { Promotores } from "./paginas/Promotores.tsx";
+import { PropuestasIa } from "./paginas/PropuestasIa.tsx";
 import { Segmentos } from "./paginas/Segmentos.tsx";
 import { Resumen } from "./panel/Resumen.tsx";
 import { Torre } from "./panel/Torre.tsx";
@@ -23,6 +27,7 @@ import { Portada } from "./publico/Portada.tsx";
 import { SitioPublico } from "./publico/SitioPublico.tsx";
 import { Puerta } from "./puerta/Puerta.tsx";
 import { ProveedorDeSesion } from "./sesion.tsx";
+import "./tailwind.css";
 
 /**
  * Dos zonas con reglas distintas.
@@ -73,10 +78,14 @@ createRoot(document.getElementById("root")!).render(
             <Route path="clientes/:id" element={<ClienteDetalle />} />
             <Route path="crm" element={<Segmentos />} />
             <Route path="pedidos" element={<Pedidos />} />
+            <Route path="promotores" element={<Promotores />} />
             <Route path="pedidos/:codigo" element={<PedidoDetalle />} />
             <Route path="caja" element={<Caja />} />
             <Route path="caja/:id" element={<ArqueoDetalle />} />
             <Route path="inventario" element={<Inventario />} />
+            <Route path="local" element={<Local />} />
+            <Route path="propuestas" element={<PropuestasIa />} />
+            <Route path="ia" element={<MetricasIa />} />
           </Route>
 
           {/*

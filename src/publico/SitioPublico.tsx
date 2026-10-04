@@ -3,6 +3,7 @@ import { CLUB, pendiente } from "../config";
 // App.css trae las variables de color y los avisos, que comparten las dos zonas.
 import "../App.css";
 import "./publico.css";
+import { ChatConserje } from "./ChatConserje";
 
 /**
  * El armazón de la web pública: lo que ve un cliente.
@@ -78,6 +79,8 @@ export function SitioPublico() {
           <Link to="/panel">Acceso del personal</Link>
         </p>
       </footer>
+
+      <ChatConserje />
     </div>
   );
 }

@@ -636,6 +636,13 @@
 /* ── Pie ──────────────────────────────────────────────────────── */
 
 .pie {
+  /*
+   * Ancho explícito: es hijo de un flex en columna y con margen automático no
+   * se estira, sino que toma el ancho de su contenido. Con la rejilla auto-fit
+   * eso eran mil píxeles y la página se desplazaba de lado en el móvil.
+   */
+  width: 100%;
+  box-sizing: border-box;
   margin: 4rem auto 0;
   border-top: 1px solid var(--linea);
   padding: 2.5rem 1.5rem;

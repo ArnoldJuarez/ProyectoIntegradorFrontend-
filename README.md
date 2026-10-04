@@ -40,25 +40,39 @@ VITE_API_URL=https://donde-este-el-backend
 
 Ese archivo no va a git: `*.local` está en el `.gitignore`.
 
-## Las dos zonas
+## Las tres zonas
 
 **Pública** — cualquiera, sin cuenta:
 
 | Ruta | Qué hay |
 |---|---|
-| `/` | Portada: próxima noche, agenda, promo de cumpleaños, aviso de cartel, el local |
+| `/` | Portada: próxima noche con cuenta atrás, más fechas, boxes, el local, artistas, galería, preguntas, cómo llegar |
 | `/agenda` | Todas las fechas anunciadas, agrupadas por mes |
-| `/evento/:slug` | Cartel, horarios, entradas y solicitud de reservado |
+| `/evento/:slug` | Cartel, horarios, compra de entradas y solicitud de box |
+| `/entradas/:codigo` | Las entradas compradas, con su QR |
 
-**Panel** — pide sesión:
+En todas las páginas públicas está el **conserje**: un chat que contesta con
+datos de la base en el momento (cartel, precios, horario).
+
+**Panel** — pide sesión de dirección o gerencia:
 
 | Ruta | Qué hay |
 |---|---|
-| `/panel/eventos` | Las noches con su aforo vendido y lo recaudado |
-| `/panel/eventos/:slug` | Venta por tipo de entrada |
-| `/panel/clientes` | Listado con buscador |
-| `/panel/clientes/:id` | Ficha con historial de interacciones |
-| `/panel/inventario` | Productos de barra y almacén |
+| `/panel` | Resumen: lo que hay que mirar antes de abrir |
+| `/panel/noche` | Torre de control de la noche en curso |
+| `/panel/eventos` | Programar noches, tipos de entrada, flyer y listas de invitados |
+| `/panel/pedidos` | Pedidos de entradas |
+| `/panel/clientes` | Clientes y su historial |
+| `/panel/promotores` | Promotores, sus listas de invitados y su comisión |
+| `/panel/crm` | Segmentos y campañas |
+| `/panel/caja` | Arqueos de caja |
+| `/panel/inventario` | Stock, movimientos y proveedores |
+| `/panel/local` | Plano 2D, vista 3D y simulación de evacuación |
+| `/panel/propuestas` | Lanzar agentes de IA y aprobar o descartar lo que proponen |
+| `/panel/ia` | Coste, tiempos y aceptación de la IA |
+
+**Pantallas de turno** — a pantalla completa: `/puerta` (escáner de QR) y
+`/barra` (punto de venta).
 
 Cuentas de prueba: `admin@ssiomama.test`, `sala@ssiomama.test` y
 `puerta@ssiomama.test`, todas con contraseña `discoteca`. El portero entra al
@@ -74,8 +88,12 @@ src/
   sesion.tsx      Quién está dentro, compartido por toda la app.
   datos.ts        useCarga: el patrón de "pedir y pintar", escrito una vez.
   Aviso.tsx       Traduce un código HTTP a algo que se pueda leer.
-  publico/        La web del cliente.
+  tailwind.css    Tailwind sin reset global, solo dentro de `.tw` (ver abajo).
+  publico/        La web del cliente. `portada/` son las piezas de la portada.
   paginas/        El panel del personal.
+  panel/          Resumen y torre de control.
+  local/          Editor del plano, escena 3D y cálculo de evacuación.
+  puerta/ barra/  Las pantallas de turno.
 ```
 
 **`config.ts` es el único sitio con datos escritos a mano**, y tiene su razón:
@@ -107,7 +125,22 @@ sesión de un administrador.
 formatearlo, en `soles()`. Operar con el valor ya dividido es como salen los
 totales con decimales imposibles.
 
+## Dos sistemas de estilos, a propósito
+
+Las pantallas hechas desde cero usan CSS propio con clases en castellano
+(`App.css`, `publico.css`...). Las piezas que se trajeron del sistema anterior
+—la portada, el editor del local, la vista 3D, el conserje y la bandeja de la
+IA— venían escritas con utilidades de Tailwind, y se trajeron tal cual.
+
+Para que no se pisen, Tailwind entra **sin su reset global** y solo dentro de un
+contenedor con la clase `tw`. Todo Tailwind va en `@layer`, así que si alguna
+vez chocan, gana el CSS propio. Ninguna utilidad generada coincide hoy con una
+clase de las pantallas propias.
+
 ## Estado
 
-Van 8 pantallas de unas 25. Pendiente: compra de entradas, escáner de puerta,
-TPV de barra, caja, segmentos del CRM, el chat del conserje y el local en 3D.
+**Migrado entero.** Todas las pantallas del sistema anterior están aquí, contra
+la API de Spring Boot.
+
+Lo único que no se trajo es el **tema claro**: el sistema anterior tenía un
+conmutador día/noche, y aquí la web es solo oscura.

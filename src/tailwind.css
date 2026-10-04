@@ -1,0 +1,307 @@
+/*
+ * Tailwind, solo para las piezas portadas del sistema anterior.
+ *
+ * El editor del local, la vista 3D, el conserje y las pantallas de IA venían
+ * escritos con utilidades de Tailwind. Reescribir sus estilos a mano era
+ * reescribirlos dos veces, así que se trae Tailwind tal cual, con dos límites:
+ *
+ * 1. **Sin preflight.** El reset global de Tailwind cambiaría márgenes, botones
+ *    y tablas de todas las pantallas que ya existen. En su lugar, un reset
+ *    acotado a `.tw`: solo lo que vive dentro de un contenedor con esa clase.
+ *
+ * 2. **En capas.** Todo va en `@layer`, y el CSS propio del proyecto no. Un
+ *    estilo sin capa gana siempre a uno en capa, así que si alguna vez chocan,
+ *    manda el CSS del proyecto.
+ */
+@layer theme, twbase, utilities;
+
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+/* Los mismos tokens que el sistema anterior, para que las clases signifiquen lo mismo. */
+@theme {
+  --color-ground: #080808;
+  --color-surface: #111111;
+  --color-raised: #1e1e1e;
+  --color-line: #2a2a2a;
+  --color-line-strong: #444444;
+
+  --color-ink: #f2f2f0;
+  --color-ink-soft: #b8b8b0;
+  --color-muted: #888880;
+
+  --color-acento: #c9ff00;
+  --color-acento-text: #c9ff00;
+  --color-acento-dim: #5c7300;
+  --color-acento-wash: #1a2000;
+  --color-on-acento: #080808;
+
+  --color-alarma: #ff2b6e;
+  --color-alarma-dim: #8a1038;
+  --color-alarma-wash: #26060f;
+  --color-on-alarma: #080808;
+
+  --color-good: #7ee787;
+  --color-good-wash: #0d2410;
+  --color-bad: #ff2b6e;
+  --color-bad-wash: #26060f;
+
+  --font-display: "Arial Narrow", "Roboto Condensed", sans-serif;
+  --font-sans: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: Consolas, ui-monospace, monospace;
+
+  --radius: 2px;
+}
+
+@layer twbase {
+  .tw,
+  .tw *,
+  .tw ::before,
+  .tw ::after {
+    box-sizing: border-box;
+    border: 0 solid;
+    margin: 0;
+    padding: 0;
+  }
+
+  .tw button,
+  .tw input,
+  .tw select,
+  .tw textarea {
+    font: inherit;
+    color: inherit;
+    background: transparent;
+  }
+
+  .tw button {
+    cursor: pointer;
+  }
+
+  .tw button:disabled {
+    cursor: default;
+  }
+
+  .tw ol,
+  .tw ul {
+    list-style: none;
+  }
+
+  .tw img,
+  .tw svg,
+  .tw canvas {
+    display: block;
+    max-width: 100%;
+  }
+
+  .tw table {
+    border-collapse: collapse;
+  }
+
+  .tw h1,
+  .tw h2,
+  .tw h3 {
+    font-family: var(--font-display);
+    font-weight: 900;
+    line-height: 0.92;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+    text-wrap: balance;
+  }
+
+  /* Dígitos alineados en columna: precios, aforos, tiempos. */
+  .tw .tnum {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Etiquetas pequeñas en versalitas espaciadas. */
+  .tw .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .tw .glow-acento {
+    box-shadow:
+      0 0 0 1px rgb(201 255 0 / 0.2),
+      0 0 32px -8px rgb(201 255 0 / 0.5);
+  }
+
+  .tw .glow-alarma {
+    box-shadow:
+      0 0 0 1px rgb(255 43 110 / 0.25),
+      0 0 32px -8px rgb(255 43 110 / 0.55);
+  }
+
+  .tw .text-neon {
+    color: var(--color-acento);
+    text-shadow:
+      0 0 6px rgb(201 255 0 / 0.55),
+      0 0 22px rgb(201 255 0 / 0.3);
+  }
+}
+
+/* ── Movimiento y texturas del sistema anterior ───────────────── */
+
+@keyframes surgir {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes latir {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.35;
+    transform: scale(0.82);
+  }
+}
+
+@keyframes subir {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@layer twbase {
+  .tw .surgir {
+    animation: surgir 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .tw .latir {
+    animation: latir 1.8s ease-in-out infinite;
+  }
+
+  .tw .subir {
+    transform-origin: left;
+    animation: subir 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .tw .reticula {
+    background-image:
+      linear-gradient(rgb(255 255 255 / 0.022) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(255 255 255 / 0.022) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+
+  .tw .rayado {
+    background-image: repeating-linear-gradient(135deg, #131313 0 12px, #0d0d0d 12px 24px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tw *,
+  .tw *::before,
+  .tw *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* ── Portada pública: marquesina, haces de luz y encendido ────── */
+
+@keyframes respirar {
+  from {
+    transform: scale(1.08);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+@keyframes barrido {
+  from {
+    transform: translateX(-130%) skewX(-12deg);
+  }
+  to {
+    transform: translateX(320%) skewX(-12deg);
+  }
+}
+
+@keyframes marquesina {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Como un tubo de neón al arrancar: parpadea y se queda. */
+@keyframes encender {
+  0% { opacity: 0; }
+  12% { opacity: 1; }
+  16% { opacity: 0.3; }
+  22% { opacity: 1; }
+  28% { opacity: 0.5; }
+  34% { opacity: 1; }
+  100% { opacity: 1; }
+}
+
+@keyframes barrer {
+  from {
+    transform: rotate(var(--haz-desde));
+  }
+  to {
+    transform: rotate(var(--haz-hasta));
+  }
+}
+
+@keyframes acercar {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.12);
+  }
+}
+
+@layer twbase {
+  .tw .respirar {
+    animation: respirar 12s ease-out forwards;
+  }
+
+  .tw .marquesina {
+    animation: marquesina 34s linear infinite;
+  }
+
+  .tw .encender {
+    animation: encender 1.6s steps(1, end) both;
+  }
+
+  .tw .acercar {
+    animation: acercar 24s ease-in-out infinite alternate;
+    will-change: transform;
+  }
+
+  .tw .haz {
+    position: absolute;
+    top: -25%;
+    width: clamp(110px, 16vw, 240px);
+    height: 145%;
+    transform-origin: 50% 0;
+    background: linear-gradient(to bottom, var(--haz-color) 0%, transparent 70%);
+    filter: blur(30px);
+    mix-blend-mode: screen;
+    animation: barrer 11s ease-in-out infinite alternate;
+    will-change: transform;
+  }
+
+  .tw a {
+    color: inherit;
+  }
+}

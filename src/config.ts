@@ -52,6 +52,8 @@ export const CLUB = {
   transport: "«transporte público más cercano»",
   /** Enlace del mapa. Vacío = no se pinta el botón, mejor que un mapa a ninguna parte. */
   mapsUrl: "https://maps.app.goo.gl/pWHcwj4WLsPM2Js76",
+  /** Para el mapa incrustado de «Cómo llegar». Sin coordenadas no se pinta. */
+  coords: { lat: -16.4188215, lng: -71.5260979 },
 
   /**
    * WhatsApp en formato internacional y SIN signos: así lo quiere wa.me.

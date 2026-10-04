@@ -1,8 +1,9 @@
-import { Link, useParams } from "react-router-dom";
+import { useEffect } from "react";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { Comprar } from "./Comprar";
 import { Reservados } from "./Reservados";
 import { AvisoDeError } from "../Aviso";
-import { horaDeSala, soles, verNoche } from "../api";
+import { horaDeSala, imagen, soles, verNoche } from "../api";
 import { CLUB } from "../config";
 import { useCarga } from "../datos";
 
@@ -17,6 +18,15 @@ import { useCarga } from "../datos";
 export function FichaDeNoche() {
   const { slug = "" } = useParams();
   const carga = useCarga(() => verNoche(slug), [slug]);
+  const { hash } = useLocation();
+
+  // El navegador salta al ancla al cargar, pero aquí la sección aparece después,
+  // cuando llegan los datos: hay que llevarle a mano.
+  useEffect(() => {
+    if (carga.fase === "listo" && hash) {
+      document.getElementById(hash.slice(1))?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [carga.fase, hash]);
 
   if (carga.fase === "cargando") return <p className="aviso">Cargando la noche…</p>;
   if (carga.fase === "error") {
@@ -30,7 +40,7 @@ export function FichaDeNoche() {
     <div className="publico">
       <header
         className="hero hero--evento"
-        style={n.portada ? { backgroundImage: `url(${n.portada})` } : undefined}
+        style={n.portada ? { backgroundImage: `url(${imagen(n.portada)})` } : undefined}
       >
         <div className="hero__velo" />
         <div className="hero__contenido">
@@ -129,7 +139,10 @@ export function FichaDeNoche() {
         )}
 
         {/* Los reservados sí se pueden pedir: no cobran nada ni apartan la mesa. */}
-        <Reservados slug={n.slug} />
+        {/* Con ancla: la portada enlaza aquí desde «Reserva tu box». */}
+        <div id="reservados">
+          <Reservados slug={n.slug} />
+        </div>
 
         <p className="migas">
           <Link to="/agenda" className="enlace">

@@ -7,7 +7,7 @@ import "./App.css";
  * Las secciones del panel, en el orden en que se miran.
  *
  * En una constante y no escritas a mano en el JSX: son once enlaces con las
- * mismas clases, y repetir el `<NavLink>` once veces es once sitios donde
+ * mismas clases, y repetir el `<NavLink>` en cada una es un sitio más donde
  * cambiar una clase.
  *
  * `exacta` es para las rutas que son prefijo de otras. Sin ella, «Resumen»
@@ -20,9 +20,13 @@ const SECCIONES = [
   { a: "/panel/eventos", texto: "Eventos", exacta: true },
   { a: "/panel/pedidos", texto: "Pedidos" },
   { a: "/panel/clientes", texto: "Clientes" },
+  { a: "/panel/promotores", texto: "Promotores" },
   { a: "/panel/crm", texto: "CRM" },
   { a: "/panel/caja", texto: "Caja" },
   { a: "/panel/inventario", texto: "Inventario" },
+  { a: "/panel/local", texto: "El local" },
+  { a: "/panel/propuestas", texto: "Propuestas IA" },
+  { a: "/panel/ia", texto: "Métricas IA" },
 ];
 
 /*

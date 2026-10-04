@@ -8,6 +8,9 @@ import {
   crearNoche,
   deHoraDeSala,
   editarNoche,
+  imagen,
+  quitarPortada,
+  subirPortada,
   verEvento,
   verOpcionesDeProgramacion,
   type ArtistaParaElegir,
@@ -51,6 +54,8 @@ export function EventoForm() {
 
   const [guardando, setGuardando] = useState(false);
   const [fallo, setFallo] = useState<string | null>(null);
+  const [subiendo, setSubiendo] = useState(false);
+  const [avisoDePortada, setAvisoDePortada] = useState<string | null>(null);
 
   // Los valores iniciales llegan cuando llega la noche, no en el primer render.
   useEffect(() => {
@@ -103,6 +108,43 @@ export function EventoForm() {
   const salas = opciones.datos.salas;
   const artistas = opciones.datos.artistas;
   const sala = salas.find((s) => s.id === salaId);
+
+  /*
+   * El flyer se sube en cuanto se elige, sin esperar a «Guardar»: es un archivo
+   * aparte de la noche, y el backend ya lo deja apuntado en ella. Así el campo
+   * de texto refleja la dirección nueva y guardar después no la pisa.
+   */
+  async function elegirFlyer(e: React.ChangeEvent<HTMLInputElement>) {
+    const archivo = e.target.files?.[0];
+    e.target.value = "";
+    if (!archivo || !slug) return;
+
+    setSubiendo(true);
+    setAvisoDePortada(null);
+    try {
+      const r = await subirPortada(slug, archivo);
+      setPortada(r.portada);
+      setAvisoDePortada(`Flyer subido (${r.pesoKb} KB tras optimizarlo).`);
+    } catch (err) {
+      setAvisoDePortada(err instanceof ErrorDeApi ? err.message : "No se pudo subir el flyer.");
+    } finally {
+      setSubiendo(false);
+    }
+  }
+
+  async function quitarFlyer() {
+    if (!slug) return;
+    setSubiendo(true);
+    try {
+      await quitarPortada(slug);
+      setPortada("");
+      setAvisoDePortada("Flyer quitado.");
+    } catch (err) {
+      setAvisoDePortada(err instanceof ErrorDeApi ? err.message : "No se pudo quitar el flyer.");
+    } finally {
+      setSubiendo(false);
+    }
+  }
 
   async function guardar(evento: React.FormEvent) {
     evento.preventDefault();
@@ -244,24 +286,49 @@ export function EventoForm() {
           />
         </label>
 
-        <label className="campo campo--ancho">
-          Portada (dirección de imagen)
+        <div className="campo campo--ancho">
+          Portada
+          {portada && (
+            <img src={imagen(portada)} alt="Flyer de la noche" className="portada-previa" />
+          )}
+          {editando ? (
+            <div className="portada-acciones">
+              <label className="boton-secundario">
+                {subiendo ? "Subiendo…" : portada ? "Cambiar flyer" : "Subir flyer"}
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png"
+                  onChange={elegirFlyer}
+                  disabled={subiendo}
+                  hidden
+                />
+              </label>
+              {portada && (
+                <button
+                  type="button"
+                  className="boton-secundario"
+                  onClick={quitarFlyer}
+                  disabled={subiendo}
+                >
+                  Quitar
+                </button>
+              )}
+            </div>
+          ) : (
+            <span className="campo__pista">
+              Guarda la noche primero; el flyer se sube desde «Editar».
+            </span>
+          )}
+          {avisoDePortada && <span className="campo__pista">{avisoDePortada}</span>}
           <input
             value={portada}
             onChange={(e) => setPortada(e.target.value)}
             maxLength={500}
-            placeholder="/eventos/mi-noche.webp"
+            placeholder="o pega una dirección: /fotos/show.webp"
+            aria-label="Dirección de la imagen de portada"
           />
-          {/*
-            La subida de archivos del sistema anterior no está migrada: era un
-            formulario multiparte que optimizaba la imagen y la escribía en
-            disco, y eso es un problema aparte. Decirlo aquí es mejor que un
-            botón de subir que no existe.
-          */}
-          <span className="campo__pista">
-            Por ahora se pega una dirección. La subida de archivos todavía no está migrada.
-          </span>
-        </label>
+          <span className="campo__pista">JPG o PNG hasta 12 MB. Se reescala a 1400 px.</span>
+        </div>
 
         <fieldset className="campo campo--ancho elegir-cartel">
           <legend>Cartel</legend>
