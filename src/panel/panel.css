@@ -355,3 +355,49 @@
   margin: 0;
   font-size: 0.86rem;
 }
+
+/* ── Noches propuestas por la IA ──────────────────────────────── */
+
+.noche-propuesta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 1rem;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  background: var(--superficie-2);
+}
+
+.noche-propuesta__titulo {
+  margin: 0;
+  font-family: var(--fuente-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.noche-propuesta__entradas {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin: 0;
+  padding-left: 1rem;
+  font-size: 0.875rem;
+}
+
+.noche-propuesta__editor {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 0.75rem;
+}
+
+.noche-propuesta__editor > .boton--peligro {
+  grid-column: 1 / -1;
+  justify-self: start;
+}
+
+.noche-propuesta__entrada {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(4.5rem, 1fr) minmax(4.5rem, 1fr) auto;
+  gap: 0.4rem;
+  margin-top: 0.35rem;
+}

@@ -1535,3 +1535,239 @@ td .tipo-form {
 .tabla td > .etiqueta:first-child {
   margin-left: 0;
 }
+
+/* ── Gestión a mano: piezas compartidas ───────────────────────── */
+/*
+ * Lo que añadieron las pantallas de artistas, compras, reservas, gastos,
+ * listas y personal. Reutiliza los tokens de sistema.css: nada de colores
+ * sueltos.
+ */
+
+section > .tipo-form,
+.apartado > .tipo-form {
+  margin-bottom: 1.25rem;
+}
+
+.apartado__cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.8rem;
+}
+
+.apartado__cabecera .subtitulo {
+  margin: 0;
+}
+
+/* Lo que destruye o deshace, en rojo y sin relleno: se ve, pero no invita. */
+.boton--peligro,
+.tipo-form__acciones button.boton--peligro {
+  margin-right: auto;
+  border-color: var(--rojo-suave);
+  color: var(--rojo);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .boton--peligro:hover:not(:disabled) {
+    background: var(--rojo-suave);
+    color: var(--rojo);
+  }
+}
+
+/* Dar de alta algo sin salir de la pantalla: un artista, una categoría, un invitado. */
+.alta-rapida {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.alta-rapida input {
+  flex: 1 1 10rem;
+  min-width: 0;
+}
+
+.alta-rapida--fila {
+  align-items: flex-end;
+  margin: 1.25rem 0;
+  padding: 0.9rem;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  background: var(--superficie);
+}
+
+.alta-rapida__personas {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  width: 6.5rem;
+  font-size: 0.8rem;
+  color: var(--texto-2);
+}
+
+.casilla {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.casilla input {
+  width: 1.05rem;
+  height: 1.05rem;
+  accent-color: var(--magenta-boton);
+}
+
+.fila--apagada td {
+  opacity: 0.55;
+}
+
+.fila--abierta td {
+  background: var(--superficie-2);
+}
+
+/* «octubre de 2026» → «Octubre de 2026»: solo la primera letra, no cada palabra. */
+.mes {
+  display: inline-block;
+  min-width: 9.5rem;
+  text-align: center;
+}
+
+.mes::first-letter {
+  text-transform: uppercase;
+}
+
+/* ── Flyer y video en la ficha de la noche ────────────────────── */
+
+.medios {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.medios__flyer {
+  width: min(14rem, 100%);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  object-fit: cover;
+}
+
+.medios__video {
+  flex: 1 1 18rem;
+  max-width: 32rem;
+  aspect-ratio: 16 / 9;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  background: #000;
+}
+
+/* ── Catálogo de artistas ─────────────────────────────────────── */
+
+.catalogo {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(19rem, 100%), 1fr));
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.catalogo > .tipo-form {
+  grid-column: 1 / -1;
+}
+
+.catalogo__item {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.85rem;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  background: var(--superficie);
+}
+
+.catalogo__foto {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 3.25rem;
+  height: 3.25rem;
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--violeta-suave);
+  color: var(--violeta);
+  font-family: var(--fuente-display);
+  font-weight: 700;
+}
+
+.catalogo__foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.catalogo__datos {
+  flex: 1;
+  min-width: 0;
+}
+
+.catalogo__datos p {
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.catalogo__nombre {
+  font-weight: 600;
+}
+
+.catalogo__miniatura {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* ── Pedidos a proveedor ──────────────────────────────────────── */
+
+.lineas-de-pedido {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.lineas-de-pedido__fila {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(5rem, 1fr) minmax(5rem, 1fr) auto;
+  gap: 0.5rem;
+}
+
+.lineas-de-pedido > .boton-secundario {
+  align-self: flex-start;
+}
+
+@media (max-width: 40rem) {
+  .lineas-de-pedido__fila {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .lineas-de-pedido__fila select {
+    grid-column: 1 / -1;
+  }
+}
+
+.detalle-orden {
+  padding: 1rem;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  background: var(--superficie);
+}
+
+.recepcion {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--borde);
+}

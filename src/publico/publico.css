@@ -1138,3 +1138,99 @@
 #comprar {
   scroll-margin-top: 5rem;
 }
+
+/* El video de la noche: ancho de la columna, proporción de pantalla. */
+.ficha__video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 0;
+  border-radius: var(--radio-l);
+  background: #000;
+}
+
+/* ── Movimiento al hacer scroll (solo web pública) ───────────────────
+ *
+ * Marketing, no panel: se ve una vez y orienta la lectura. Todo con
+ * transform/opacity, la curva fuerte del sistema y desactivado o reducido a
+ * fundido con «reducir movimiento».
+ */
+
+/* Aparecer al entrar en pantalla: una vez, sube 24 px y se funde. */
+.revelar {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 600ms var(--ease-out),
+    transform 600ms var(--ease-out);
+}
+
+.revelar[data-visible] {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .revelar {
+    transform: none;
+    transition: opacity 300ms ease;
+  }
+}
+
+/*
+ * Barra de progreso de lectura: atada al scroll del documento, sin JS.
+ * Solo donde el navegador sabe animar con el scroll; en el resto no aparece.
+ */
+.progreso-scroll {
+  display: none;
+}
+
+@supports (animation-timeline: scroll()) {
+  .progreso-scroll {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 60;
+    display: block;
+    height: 2px;
+    background: linear-gradient(90deg, var(--magenta), var(--violeta));
+    transform-origin: 0 50%;
+    transform: scaleX(0);
+    animation: progreso-scroll linear both;
+    animation-timeline: scroll(root block);
+    pointer-events: none;
+  }
+
+  @keyframes progreso-scroll {
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  /*
+   * Paralaje del fondo del hero: mientras la portada sale por arriba, el fondo
+   * baja a la mitad de velocidad y se oscurece un poco.
+   */
+  @media (prefers-reduced-motion: no-preference) {
+    .paralaje {
+      animation: paralaje linear both;
+      animation-timeline: view();
+      animation-range: exit 0% exit 100%;
+    }
+
+    @keyframes paralaje {
+      to {
+        transform: translateY(22%) scale(1.04);
+        opacity: 0.55;
+      }
+    }
+  }
+}
+
+/* Las tarjetas con «surgir» dentro de un Revelar esperan a que la sección entre en pantalla. */
+.revelar .surgir {
+  animation-play-state: paused;
+}
+
+.revelar[data-visible] .surgir {
+  animation-play-state: running;
+}

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { AvisoDeError } from "../Aviso";
 import {
@@ -11,7 +12,9 @@ import {
   verBandejaDeIa,
   type AgenteDeIa,
   type Desenlace,
+  type NochePropuesta,
   type PropuestaDeIa,
+  type PropuestaDeNoches,
 } from "../api";
 import { useCarga } from "../datos";
 
@@ -19,8 +22,13 @@ import { useCarga } from "../datos";
  * La bandeja de la IA: lanzar agentes y decidir sobre lo que proponen.
  *
  * Ningún agente publica, envía ni cambia nada por su cuenta. Lo que hace es
- * dejar aquí una propuesta, y solo al aprobarla se crea la campaña, el pedido o
- * el cambio de precio, siempre en borrador cuando sale hacia fuera.
+ * dejar aquí una propuesta, y solo al aprobarla se crea la campaña, el pedido,
+ * el cambio de precio o la noche, siempre en borrador cuando sale hacia fuera.
+ *
+ * Las noches que propone el programador se pueden retocar antes de aprobar:
+ * cambiar el título, mover la hora, ajustar un precio o quitar una de las
+ * noches. Lo que se aprueba es lo retocado; lo que dijo la IA queda guardado
+ * en su ejecución.
  */
 
 /** Cómo se lee cada campo de las propuestas. Tienen forma distinta según el agente. */
@@ -59,6 +67,8 @@ const CAMPOS: Record<string, string> = {
   value: "Valor",
   recommendations: "Recomendaciones",
   nombre: "Nombre",
+  razonamiento: "Razonamiento",
+  noches: "Noches",
 };
 
 /** Pinta cualquier JSON de forma legible, sea cual sea el agente que lo produjo. */
@@ -135,7 +145,18 @@ function BotonDeAgente({ agente, alTerminar }: { agente: AgenteDeIa; alTerminar:
   );
 }
 
-function Decision({ propuesta, alDecidir }: { propuesta: PropuestaDeIa; alDecidir: () => void }) {
+function Decision({
+  propuesta,
+  alDecidir,
+  datos,
+  textoAprobar = "Aprobar",
+}: {
+  propuesta: PropuestaDeIa;
+  alDecidir: () => void;
+  /** La propuesta retocada a mano, si se retocó. */
+  datos?: unknown;
+  textoAprobar?: string;
+}) {
   const [ocupado, setOcupado] = useState<"APROBAR" | "DESCARTAR" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [desenlace, setDesenlace] = useState<Desenlace | null>(null);
@@ -146,7 +167,7 @@ function Decision({ propuesta, alDecidir }: { propuesta: PropuestaDeIa; alDecidi
     try {
       // El resultado se enseña antes de recargar: dice qué se ha creado de
       // verdad y qué queda por hacer a mano.
-      const r = await decidirPropuesta(propuesta.id, decision);
+      const r = await decidirPropuesta(propuesta.id, decision, decision === "APROBAR" ? datos : undefined);
       setDesenlace(r);
       if (r.aplicada) toast.success(r.mensaje);
       else toast(r.mensaje);
@@ -172,6 +193,19 @@ function Decision({ propuesta, alDecidir }: { propuesta: PropuestaDeIa; alDecidi
             · {a}
           </p>
         ))}
+        {desenlace.enlaces.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {desenlace.enlaces.map((e) => (
+              <Link
+                key={e.ruta}
+                to={e.ruta}
+                className="rounded-lg border border-line-strong px-3 py-1.5 text-xs font-semibold text-ink"
+              >
+                Abrir «{e.texto}» →
+              </Link>
+            ))}
+          </div>
+        )}
         <button type="button" onClick={alDecidir} className="self-start text-xs text-muted underline">
           Actualizar la bandeja
         </button>
@@ -188,7 +222,7 @@ function Decision({ propuesta, alDecidir }: { propuesta: PropuestaDeIa; alDecidi
           disabled={ocupado !== null}
           className="h-9 rounded-lg border border-good/40 bg-good-wash px-4 text-sm font-semibold text-good transition-[transform,filter,opacity] duration-150 hover:brightness-125 disabled:opacity-50"
         >
-          {ocupado === "APROBAR" ? "Guardando…" : "Aprobar"}
+          {ocupado === "APROBAR" ? "Guardando…" : textoAprobar}
         </button>
         <button
           type="button"
@@ -203,6 +237,180 @@ function Decision({ propuesta, alDecidir }: { propuesta: PropuestaDeIa; alDecidi
         <p role="alert" className="text-xs text-bad">
           {error}
         </p>
+      )}
+    </div>
+  );
+}
+
+// ─────────────────────── Noches propuestas ───────────────────────
+
+const soloHora = (t: string) => (/^\d{1,2}:\d{2}$/.test(t) ? t.padStart(5, "0") : "21:00");
+
+/** «2026-10-23» → «viernes 23 de octubre». */
+function fechaLegible(dia: string): string {
+  const [a, m, d] = dia.split("-").map(Number);
+  if (!a || !m || !d) return dia;
+  return new Intl.DateTimeFormat("es-PE", { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" }).format(
+    new Date(Date.UTC(a, m - 1, d, 12)),
+  );
+}
+
+/**
+ * Las noches que propone el programador, como noches y no como JSON.
+ *
+ * Pendiente, se puede abrir el editor: cada campo se cambia en su sitio y una
+ * noche entera se puede quitar. Al aprobar viaja lo editado.
+ */
+function PropuestaDeNochesVista({ propuesta, alDecidir }: { propuesta: PropuestaDeIa; alDecidir: () => void }) {
+  const original = propuesta.datos as PropuestaDeNoches;
+  const [datos, setDatos] = useState<PropuestaDeNoches>(() => structuredClone(original));
+  const [editando, setEditando] = useState(false);
+  const pendiente = propuesta.estado === "PENDIENTE";
+  const retocada = JSON.stringify(datos) !== JSON.stringify(original);
+
+  function cambiarNoche(i: number, cambio: Partial<NochePropuesta>) {
+    setDatos((d) => ({ ...d, noches: d.noches.map((n, j) => (j === i ? { ...n, ...cambio } : n)) }));
+  }
+
+  function cambiarEntrada(i: number, k: number, cambio: Partial<NochePropuesta["entradas"][number]>) {
+    setDatos((d) => ({
+      ...d,
+      noches: d.noches.map((n, j) =>
+        j === i ? { ...n, entradas: n.entradas.map((t, l) => (l === k ? { ...t, ...cambio } : t)) } : n,
+      ),
+    }));
+  }
+
+  function quitarEntrada(i: number, k: number) {
+    setDatos((d) => ({
+      ...d,
+      noches: d.noches.map((n, j) => (j === i ? { ...n, entradas: n.entradas.filter((_, l) => l !== k) } : n)),
+    }));
+  }
+
+  return (
+    <div className="flex flex-col gap-4">
+      <p className="text-sm leading-relaxed text-ink-soft">{datos.razonamiento}</p>
+
+      {datos.noches.length === 0 && (
+        <p className="text-sm text-bad">Has quitado todas las noches: no queda nada que aprobar.</p>
+      )}
+
+      {datos.noches.map((n, i) => (
+        <div key={i} className="noche-propuesta">
+          {editando ? (
+            <div className="noche-propuesta__editor">
+              <label className="campo campo--ancho">
+                Título
+                <input value={n.titulo} onChange={(e) => cambiarNoche(i, { titulo: e.target.value })} maxLength={160} />
+              </label>
+              <label className="campo">
+                Fecha
+                <input type="date" value={n.fecha} onChange={(e) => cambiarNoche(i, { fecha: e.target.value })} />
+              </label>
+              <label className="campo">
+                Puertas
+                <input type="time" value={soloHora(n.puertas)} onChange={(e) => cambiarNoche(i, { puertas: e.target.value })} />
+              </label>
+              <label className="campo">
+                Cierre
+                <input type="time" value={soloHora(n.cierre)} onChange={(e) => cambiarNoche(i, { cierre: e.target.value })} />
+              </label>
+              <label className="campo">
+                Vestimenta
+                <input value={n.vestimenta} onChange={(e) => cambiarNoche(i, { vestimenta: e.target.value })} maxLength={120} />
+              </label>
+              <label className="campo campo--ancho">
+                Descripción
+                <textarea value={n.descripcion} onChange={(e) => cambiarNoche(i, { descripcion: e.target.value })} rows={2} maxLength={2000} />
+              </label>
+              <label className="campo campo--ancho">
+                Cartel (separado por comas; el primero es el cabeza)
+                <input
+                  value={n.artistas.join(", ")}
+                  onChange={(e) =>
+                    cambiarNoche(i, { artistas: e.target.value.split(",").map((a) => a.trim()).filter(Boolean) })
+                  }
+                />
+              </label>
+              <div className="campo campo--ancho">
+                Entradas
+                {n.entradas.map((t, k) => (
+                  <div key={k} className="noche-propuesta__entrada">
+                    <input value={t.nombre} onChange={(e) => cambiarEntrada(i, k, { nombre: e.target.value })} aria-label="Nombre de la entrada" maxLength={60} />
+                    <input
+                      type="number"
+                      min={0}
+                      step={1}
+                      value={t.precioCentimos / 100}
+                      onChange={(e) => cambiarEntrada(i, k, { precioCentimos: Math.round(Number(e.target.value) * 100) })}
+                      aria-label="Precio en soles"
+                    />
+                    <input
+                      type="number"
+                      min={1}
+                      value={t.cantidad}
+                      onChange={(e) => cambiarEntrada(i, k, { cantidad: Number(e.target.value) })}
+                      aria-label="Cupo"
+                    />
+                    <button type="button" className="boton-fantasma" onClick={() => quitarEntrada(i, k)}>
+                      Quitar
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <button
+                type="button"
+                className="boton-fantasma boton--peligro"
+                onClick={() => setDatos((d) => ({ ...d, noches: d.noches.filter((_, j) => j !== i) }))}
+              >
+                Quitar esta noche de la propuesta
+              </button>
+            </div>
+          ) : (
+            <>
+              <p className="eyebrow text-acento-text">
+                {fechaLegible(n.fecha)} · {soloHora(n.puertas)} a {soloHora(n.cierre)}
+              </p>
+              <h4 className="noche-propuesta__titulo">{n.titulo}</h4>
+              <p className="text-sm text-ink-soft">{n.descripcion}</p>
+              <p className="text-sm">
+                <span className="text-muted">Cartel: </span>
+                {n.artistas.length ? n.artistas.join(" · ") : "sin confirmar"}
+                {n.vestimenta && <span className="text-muted"> · {n.vestimenta}</span>}
+              </p>
+              <ul className="noche-propuesta__entradas">
+                {n.entradas.map((t, k) => (
+                  <li key={k}>
+                    <strong>{t.nombre}</strong> {t.precioCentimos === 0 ? "gratis" : soles(t.precioCentimos)} ·{" "}
+                    {t.cantidad} entradas
+                    {t.descripcion && <span className="text-muted"> · {t.descripcion}</span>}
+                  </li>
+                ))}
+              </ul>
+              <p className="text-xs text-muted">Por qué: {n.motivo}</p>
+            </>
+          )}
+        </div>
+      ))}
+
+      {pendiente && (
+        <div className="flex flex-col gap-3">
+          <button type="button" className="self-start text-sm text-acento-text underline" onClick={() => setEditando((v) => !v)}>
+            {editando ? "Ver como quedará" : "Editar antes de aprobar"}
+          </button>
+          {retocada && <p className="text-xs text-acento-text">Has hecho cambios: se aprobará tu versión.</p>}
+          {datos.noches.length > 0 ? (
+            <Decision
+              propuesta={propuesta}
+              alDecidir={alDecidir}
+              datos={retocada ? datos : undefined}
+              textoAprobar={datos.noches.length === 1 ? "Aprobar y crear la noche" : `Aprobar y crear ${datos.noches.length} noches`}
+            />
+          ) : (
+            <Decision propuesta={propuesta} alDecidir={alDecidir} textoAprobar="Aprobar" />
+          )}
+        </div>
       )}
     </div>
   );
@@ -293,8 +501,14 @@ export function PropuestasIa() {
                       {soles(p.costeCentimos)} · {p.tokens} tokens
                     </span>
                   </div>
-                  <Contenido valor={p.datos} />
-                  {p.estado === "PENDIENTE" && <Decision propuesta={p} alDecidir={recargar} />}
+                  {p.tipo === "EVENTO" ? (
+                    <PropuestaDeNochesVista propuesta={p} alDecidir={recargar} />
+                  ) : (
+                    <>
+                      <Contenido valor={p.datos} />
+                      {p.estado === "PENDIENTE" && <Decision propuesta={p} alDecidir={recargar} />}
+                    </>
+                  )}
                 </div>
               </article>
             ))}

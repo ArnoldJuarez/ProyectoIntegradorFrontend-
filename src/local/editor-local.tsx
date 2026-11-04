@@ -3,12 +3,14 @@ import { toast } from "sonner";
 import { ErrorDeApi, guardarLocal } from "../api";
 import { Plano2D } from "./plano-2d";
 import {
-  formatearTiempo,
-  simularEvacuacion,
+  NOMBRE_DE_ELEMENTO,
+  type ElementoPlano,
   type PuertaPlano,
+  type TipoDeElemento,
   type TipoZona,
   type ZonaPlano,
 } from "./evacuacion";
+import { SimuladorDeEvacuacion } from "./simulador/SimuladorDeEvacuacion";
 
 /**
  * El motor 3D, cargado aparte.
@@ -34,9 +36,16 @@ export type SalaEditable = {
   planoFondo: number;
   zonas: ZonaPlano[];
   puertas: PuertaPlano[];
+  elementos: ElementoPlano[];
 };
 
 type Vista = "plano" | "3d";
+
+const NOMBRE_DE_PLANTA: Record<number, string> = { 0: "Planta baja", 1: "Planta alta" };
+
+function nombreDePlanta(piso: number): string {
+  return NOMBRE_DE_PLANTA[piso] ?? `Planta ${piso}`;
+}
 
 export function EditorLocal({
   salas,
@@ -47,7 +56,10 @@ export function EditorLocal({
   alGuardar: () => void;
 }) {
   const [salaId, setSalaId] = useState(salas[0]?.id ?? "");
-  const [vista, setVista] = useState<Vista>("plano");
+  const [vista, setVista] = useState<Vista>("3d");
+  // El plano 2D se dibuja planta a planta: superpuestas, el balcón taparía la
+  // pista que tiene debajo y no se podría editar ninguna de las dos.
+  const [planta, setPlanta] = useState(0);
   const [seleccion, setSeleccion] = useState<string | null>(null);
   const [guardando, setGuardando] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -57,11 +69,14 @@ export function EditorLocal({
   const [borrador, setBorrador] = useState<SalaEditable[]>(salas);
   const sala = borrador.find((s) => s.id === salaId) ?? borrador[0];
 
-  const [ocupacion, setOcupacion] = useState(sala?.aforo ?? 0);
-
-  const evacuacion = useMemo(
-    () => (sala ? simularEvacuacion(sala.zonas, sala.puertas, ocupacion) : null),
-    [sala, ocupacion],
+  // El plano que recibe el simulador: estable mientras no cambie la sala, para
+  // no recalcular la evacuación en cada render.
+  const plano = useMemo(
+    () =>
+      sala
+        ? { ancho: sala.planoAncho, fondo: sala.planoFondo, zonas: sala.zonas, puertas: sala.puertas, elementos: sala.elementos }
+        : null,
+    [sala],
   );
 
   if (!sala) {
@@ -84,6 +99,29 @@ export function EditorLocal({
     actualizarSala({ puertas: sala.puertas.map((p) => (p.id === id ? { ...p, ...cambios } : p)) });
   }
 
+  // Los elementos nuevos no tienen id hasta guardarlos: se identifican por su posición en la lista.
+  function actualizarElemento(i: number, cambios: Partial<ElementoPlano>) {
+    actualizarSala({ elementos: sala.elementos.map((e, k) => (k === i ? { ...e, ...cambios } : e)) });
+  }
+
+  function anadirElemento(tipo: TipoDeElemento) {
+    const fuera = tipo === "PUNTO_REUNION";
+    actualizarSala({
+      elementos: [
+        ...sala.elementos,
+        {
+          id: "",
+          tipo,
+          nombre: NOMBRE_DE_ELEMENTO[tipo],
+          piso: fuera ? 0 : planta,
+          x: Math.round(sala.planoAncho / 2),
+          // El punto de reunión nace en la calle, a seis metros de la fachada.
+          y: fuera ? sala.planoFondo + 6 : Math.round(sala.planoFondo / 2),
+        },
+      ],
+    });
+  }
+
   async function guardar() {
     setGuardando(true);
     setError(null);
@@ -94,6 +132,7 @@ export function EditorLocal({
         planoFondo: sala.planoFondo,
         zonas: sala.zonas,
         puertas: sala.puertas,
+        elementos: sala.elementos,
       });
       toast.success(`Plano de ${sala.nombre} guardado`);
       alGuardar();
@@ -105,6 +144,9 @@ export function EditorLocal({
   }
 
   const zonaActiva = sala.zonas.find((z) => z.id === seleccion) ?? null;
+  const plantas = [...new Set([0, ...sala.zonas.map((z) => z.piso ?? 0), ...sala.puertas.map((p) => p.piso ?? 0)])].sort();
+  const zonasDeLaPlanta = sala.zonas.filter((z) => (z.piso ?? 0) === planta);
+  const puertasDeLaPlanta = sala.puertas.filter((p) => (p.piso ?? 0) === planta);
   const cambiado = JSON.stringify(sala) !== JSON.stringify(salas.find((s) => s.id === sala.id));
 
   return (
@@ -116,8 +158,6 @@ export function EditorLocal({
           onChange={(e) => {
             setSalaId(e.target.value);
             setSeleccion(null);
-            const nueva = borrador.find((s) => s.id === e.target.value);
-            if (nueva) setOcupacion(nueva.aforo);
           }}
           className="h-10 rounded-lg border border-line bg-surface px-3 text-sm font-medium"
         >
@@ -166,17 +206,34 @@ export function EditorLocal({
       <div className="grid gap-5 xl:grid-cols-[1fr_20rem]">
         <div className="min-h-[26rem]">
           {vista === "plano" ? (
-            <Plano2D
-              planoAncho={sala.planoAncho}
-              planoFondo={sala.planoFondo}
-              zonas={sala.zonas}
-              puertas={sala.puertas}
-              seleccion={seleccion}
-              onSelectZona={setSeleccion}
-              evacuacion={evacuacion}
-            />
+            <div className="flex flex-col gap-3">
+              {plantas.length > 1 && (
+                <div className="flex w-fit rounded-xl border border-line bg-ground p-1">
+                  {plantas.map((p) => (
+                    <button
+                      key={p}
+                      type="button"
+                      onClick={() => setPlanta(p)}
+                      className={`rounded-lg px-4 py-1.5 text-sm font-medium transition-colors duration-150 ${
+                        planta === p ? "bg-raised text-ink shadow-sm" : "text-muted hover:text-ink-soft"
+                      }`}
+                    >
+                      {nombreDePlanta(p)}
+                    </button>
+                  ))}
+                </div>
+              )}
+              <Plano2D
+                planoAncho={sala.planoAncho}
+                planoFondo={sala.planoFondo}
+                zonas={zonasDeLaPlanta}
+                puertas={puertasDeLaPlanta}
+                seleccion={seleccion}
+                onSelectZona={setSeleccion}
+              />
+            </div>
           ) : (
-            <div className="h-[34rem]">
+            <div className="h-[44rem]">
               <Suspense fallback={<Cargando3D />}>
                 <Escena3D
                   datos={{
@@ -185,6 +242,8 @@ export function EditorLocal({
                     planoFondo: sala.planoFondo,
                     zonas: sala.zonas,
                     puertas: sala.puertas,
+                    elementos: sala.elementos,
+                    aforo: sala.aforo,
                   }}
                   zonaSeleccionada={seleccion}
                   onSelectZona={setSeleccion}
@@ -225,6 +284,21 @@ export function EditorLocal({
                   * en el plano. Antes se deducía del nombre, así que renombrar
                   * una zona la cambiaba de aspecto sin avisar.
                   */}
+                <label className="flex flex-col gap-1">
+                  <span className="text-xs text-muted">Planta</span>
+                  <select
+                    value={zonaActiva.piso ?? 0}
+                    onChange={(e) => {
+                      actualizarZona(zonaActiva.id, { piso: Number(e.target.value) });
+                      setPlanta(Number(e.target.value));
+                    }}
+                    className="h-9 rounded-lg border border-line bg-ground px-2 text-sm text-ink outline-none transition-colors duration-150 focus:border-acento-text"
+                  >
+                    <option value={0}>Planta baja</option>
+                    <option value={1}>Planta alta</option>
+                  </select>
+                </label>
+
                 <label className="flex flex-col gap-1">
                   <span className="text-xs text-muted">Tipo de zona</span>
                   <select
@@ -290,11 +364,17 @@ export function EditorLocal({
               </div>
             ) : (
               <ul className="flex flex-col gap-1">
-                {sala.zonas.map((z) => (
+                {[...sala.zonas].sort((a, b) => (a.piso ?? 0) - (b.piso ?? 0)).map((z, i, todas) => (
                   <li key={z.id}>
+                    {(i === 0 || (todas[i - 1].piso ?? 0) !== (z.piso ?? 0)) && (
+                      <p className="eyebrow mt-2 mb-1 px-2.5 text-muted">{nombreDePlanta(z.piso ?? 0)}</p>
+                    )}
                     <button
                       type="button"
-                      onClick={() => setSeleccion(z.id)}
+                      onClick={() => {
+                        setSeleccion(z.id);
+                        setPlanta(z.piso ?? 0);
+                      }}
                       className="flex w-full items-baseline justify-between gap-2 rounded-lg px-2.5 py-2 text-left text-sm transition-colors duration-150 hover:bg-raised"
                     >
                       <span>{z.nombre}</span>
@@ -314,7 +394,10 @@ export function EditorLocal({
               {sala.puertas.map((p) => (
                 <li key={p.id} className="border-b border-line pb-3 last:border-0 last:pb-0">
                   <div className="mb-2 flex items-center justify-between gap-2">
-                    <span className="text-sm">{p.nombre}</span>
+                    <span className="text-sm">
+                      {p.nombre}
+                      <span className="text-xs text-muted"> · {nombreDePlanta(p.piso ?? 0)}</span>
+                    </span>
                     <label className="flex items-center gap-1.5 text-xs text-muted">
                       <input
                         type="checkbox"
@@ -354,82 +437,95 @@ export function EditorLocal({
               ))}
             </ul>
           </section>
+
+          <section className="rounded-2xl border border-line bg-surface p-4">
+            <h3 className="eyebrow mb-3 text-acento-text">Seguridad ({sala.elementos.length})</h3>
+            <p className="mb-3 text-xs text-muted">
+              Extintores, botiquín, luces, alarmas, zonas seguras y punto de reunión. El punto de reunión va fuera: su Y
+              puede pasar del fondo de la sala (la calle).
+            </p>
+            <select
+              value=""
+              onChange={(e) => e.target.value && anadirElemento(e.target.value as TipoDeElemento)}
+              className="mb-3 h-9 w-full rounded-lg border border-line bg-ground px-2 text-sm text-ink"
+              aria-label="Añadir un elemento de seguridad"
+            >
+              <option value="">+ Añadir en la {planta === 0 ? "planta baja" : "planta alta"}…</option>
+              {(Object.keys(NOMBRE_DE_ELEMENTO) as TipoDeElemento[]).map((t) => (
+                <option key={t} value={t}>
+                  {NOMBRE_DE_ELEMENTO[t]}
+                </option>
+              ))}
+            </select>
+            <ul className="flex max-h-[28rem] flex-col gap-3 overflow-y-auto pr-1">
+              {sala.elementos.map((el, i) => (
+                <li key={el.id || `nuevo-${i}`} className="border-b border-line pb-3 last:border-0 last:pb-0">
+                  <div className="mb-2 flex items-center gap-2">
+                    <input
+                      value={el.nombre}
+                      onChange={(e) => actualizarElemento(i, { nombre: e.target.value })}
+                      maxLength={80}
+                      className="h-8 min-w-0 flex-1 rounded-lg border border-line bg-ground px-2 text-sm"
+                      aria-label="Nombre del elemento"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => actualizarSala({ elementos: sala.elementos.filter((_, k) => k !== i) })}
+                      className="text-xs text-bad hover:brightness-110"
+                    >
+                      Quitar
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-4 gap-2">
+                    <label className="col-span-2 flex flex-col gap-1">
+                      <span className="text-xs text-muted">Tipo</span>
+                      <select
+                        value={el.tipo}
+                        onChange={(e) => actualizarElemento(i, { tipo: e.target.value as TipoDeElemento })}
+                        className="h-9 rounded-lg border border-line bg-ground px-1 text-xs text-ink"
+                      >
+                        {(Object.keys(NOMBRE_DE_ELEMENTO) as TipoDeElemento[]).map((t) => (
+                          <option key={t} value={t}>
+                            {NOMBRE_DE_ELEMENTO[t]}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <label className="col-span-2 flex flex-col gap-1">
+                      <span className="text-xs text-muted">Planta</span>
+                      <select
+                        value={el.piso}
+                        onChange={(e) => actualizarElemento(i, { piso: Number(e.target.value) })}
+                        className="h-9 rounded-lg border border-line bg-ground px-1 text-xs text-ink"
+                      >
+                        <option value={0}>Baja</option>
+                        <option value={1}>Alta</option>
+                      </select>
+                    </label>
+                    <div className="col-span-2">
+                      <Campo etiqueta="X (m)" valor={el.x} onChange={(v) => actualizarElemento(i, { x: v })} />
+                    </div>
+                    <div className="col-span-2">
+                      <Campo etiqueta="Y (m)" valor={el.y} onChange={(v) => actualizarElemento(i, { y: v })} />
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </section>
         </aside>
       </div>
 
       {/* ---- simulación ---- */}
       <section className="overflow-hidden rounded-2xl border border-line bg-surface">
         <div className="flex flex-wrap items-center justify-between gap-4 border-b border-line px-5 py-3.5">
-          <h2 className="text-xl">Simulación de evacuación</h2>
-          <label className="flex items-center gap-3 text-sm">
-            <span className="eyebrow text-muted">Personas dentro</span>
-            <input
-              type="range"
-              min={0}
-              max={Math.max(sala.aforo, 100)}
-              step={10}
-              value={ocupacion}
-              onChange={(e) => setOcupacion(Number(e.target.value))}
-              className="w-40 accent-[color:var(--color-acento)]"
-            />
-            <span className="tnum w-12 text-right font-semibold">{ocupacion}</span>
-          </label>
+          <h2 className="text-xl">Simulador de evacuación</h2>
+          <p className="text-sm text-muted">
+            Rutas reales (rodean paredes y bajan por la escalera), colas en cada salida e incendios. Usa el plano tal y
+            como está en pantalla, aunque no lo hayas guardado.
+          </p>
         </div>
-
-        {evacuacion && Number.isFinite(evacuacion.segundos) ? (
-          <div className="p-5">
-            <div className="mb-5 flex flex-wrap items-end gap-6">
-              <div>
-                <p className="eyebrow text-muted">Tiempo de evacuación</p>
-                <p className="tnum mt-1 text-5xl leading-none font-semibold tracking-tight text-ink">
-                  {formatearTiempo(evacuacion.segundos)}
-                </p>
-              </div>
-              <p className="max-w-md text-sm text-ink-soft">
-                Lo marca la salida que más tarda en vaciar su cola. Cambia el ancho o el caudal de
-                esa puerta y verás bajar el número.
-              </p>
-            </div>
-
-            <div className="grid gap-3 sm:grid-cols-2">
-              {evacuacion.porPuerta.map((p) => {
-                const critica = p.segundos === evacuacion.segundos;
-                return (
-                  <div
-                    key={p.puerta.id}
-                    className={`rounded-xl border p-4 ${critica ? "border-alarma-dim bg-bad-wash" : "border-line bg-raised"}`}
-                  >
-                    <div className="flex items-baseline justify-between gap-2">
-                      <span className="text-sm font-semibold">{p.puerta.nombre}</span>
-                      {critica && (
-                        <span className="text-xs font-semibold text-bad">cuello de botella</span>
-                      )}
-                    </div>
-                    <p className="tnum mt-1 text-sm text-ink-soft">
-                      {p.personas} personas · {p.caudal}/min · {formatearTiempo(p.segundos)}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
-
-            {evacuacion.avisos.length > 0 && (
-              <ul className="mt-4 flex flex-col gap-1.5">
-                {evacuacion.avisos.map((aviso) => (
-                  <li key={aviso} className="text-sm text-muted">
-                    · {aviso}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        ) : (
-          <div className="m-5 rounded-xl border border-dashed border-line-strong p-6">
-            <p className="text-sm text-ink-soft">
-              {evacuacion?.avisos[0] ?? "No se puede calcular la evacuación todavía."}
-            </p>
-          </div>
-        )}
+        <div className="p-5">{plano && <SimuladorDeEvacuacion plano={plano} aforo={sala.aforo} modo="panel" />}</div>
       </section>
     </div>
   );

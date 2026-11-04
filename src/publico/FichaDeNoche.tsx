@@ -3,7 +3,7 @@ import { Link, useLocation, useParams } from "react-router-dom";
 import { Comprar } from "./Comprar";
 import { Reservados } from "./Reservados";
 import { AvisoDeError } from "../Aviso";
-import { horaDeSala, imagen, soles, verNoche } from "../api";
+import { comoVideo, horaDeSala, imagen, soles, verNoche } from "../api";
 import { CLUB } from "../config";
 import { useCarga } from "../datos";
 
@@ -34,6 +34,7 @@ export function FichaDeNoche() {
   }
 
   const n = carga.datos;
+  const video = n.video ? comoVideo(n.video) : null;
   const agotada = n.estado === "AGOTADO";
 
   const dia = horaDeSala(n.puertasA, { weekday: "short" }).replace(".", "");
@@ -76,6 +77,33 @@ export function FichaDeNoche() {
       <div className="ficha">
         <div className="ficha__principal">
           {n.descripcion && <p className="descripcion">{n.descripcion}</p>}
+
+          {video && (
+            <>
+              <h2 className="seccion__titulo">El ambiente</h2>
+              {video.tipo === "youtube" ? (
+                <iframe
+                  className="ficha__video"
+                  src={`https://www.youtube-nocookie.com/embed/${video.id}`}
+                  title={`Video de ${n.titulo}`}
+                  allow="encrypted-media; picture-in-picture"
+                  allowFullScreen
+                  loading="lazy"
+                />
+              ) : (
+                /* Sin autoplay: en el móvil de alguien con datos, un video que
+                   arranca solo se come la mitad de su plan. Se ve si se pulsa. */
+                <video
+                  className="ficha__video"
+                  src={video.src}
+                  poster={n.portada ? imagen(n.portada) : undefined}
+                  controls
+                  playsInline
+                  preload="metadata"
+                />
+              )}
+            </>
+          )}
 
           {n.cartel.length > 0 && (
             <>

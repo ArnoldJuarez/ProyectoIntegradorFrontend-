@@ -1,14 +1,26 @@
 import { useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { toast } from "sonner";
 import { TablaDeListas } from "./Promotores";
 import { TiposDeEntrada } from "./TiposDeEntrada";
 import { AvisoDeError } from "../Aviso";
-import { estadoVisible, horaDeSala, listasDeLaNoche, soles, verEvento } from "../api";
+import {
+  ErrorDeApi,
+  borrarNoche,
+  comoVideo,
+  estadoVisible,
+  horaDeSala,
+  imagen,
+  listasDeLaNoche,
+  soles,
+  verEvento,
+} from "../api";
 import { useCarga } from "../datos";
 
-/** La ficha de una noche: horario, condiciones y cómo va la venta por tipo. */
+/** La ficha de una noche: horario, cartel, flyer y video, y cómo va la venta por tipo. */
 export function EventoDetalle() {
   const { slug = "" } = useParams();
+  const navegar = useNavigate();
 
   /*
    * Un contador para volver a pedir la ficha.
@@ -22,6 +34,7 @@ export function EventoDetalle() {
   const [version, setVersion] = useState(0);
   const carga = useCarga(() => verEvento(slug), [slug, version]);
   const listas = useCarga(() => listasDeLaNoche(slug), [slug]);
+  const [borrando, setBorrando] = useState(false);
 
   if (carga.fase === "cargando") return <p className="aviso">Cargando la noche…</p>;
   if (carga.fase === "error") {
@@ -29,6 +42,23 @@ export function EventoDetalle() {
   }
 
   const e = carga.datos;
+  // Solo se ofrece borrar lo que el backend podría borrar; si aun así tiene
+  // historia (pedidos, gastos…), el mensaje de vuelta dice cuál.
+  const borrable = e.estado === "BORRADOR" || e.estado === "CANCELADO";
+  const video = e.video ? comoVideo(e.video) : null;
+
+  async function borrar() {
+    if (!window.confirm(`¿Borrar «${e.titulo}»? Se pierden sus entradas, su cartel y su flyer.`)) return;
+    setBorrando(true);
+    try {
+      await borrarNoche(e.slug);
+      toast.success("Noche borrada");
+      navegar("/panel/eventos");
+    } catch (err) {
+      toast.error(err instanceof ErrorDeApi ? err.message : "No se pudo borrar la noche.");
+      setBorrando(false);
+    }
+  }
 
   return (
     <section>
@@ -44,11 +74,31 @@ export function EventoDetalle() {
           <span className={estadoVisible(e.estado, e.empiezaA).clase}>
             {estadoVisible(e.estado, e.empiezaA).texto}
           </span>
+          <Link to={`/panel/eventos/${e.slug}/noche`} className="boton">
+            {new Date(e.empiezaA) < new Date() ? "Cómo fue la noche" : "Cómo va la venta"}
+          </Link>
           <Link to={`/panel/eventos/${e.slug}/editar`} className="boton-secundario">
             Editar
           </Link>
+          {e.estado !== "BORRADOR" && (
+            <Link to={`/evento/${e.slug}`} className="boton-fantasma">
+              Ver en la web
+            </Link>
+          )}
+          {borrable && (
+            <button type="button" className="boton-fantasma boton--peligro" onClick={() => void borrar()} disabled={borrando}>
+              {borrando ? "Borrando…" : "Borrar"}
+            </button>
+          )}
         </div>
       </header>
+
+      {e.estado === "BORRADOR" && (
+        <p className="aviso">
+          Está en borrador: no sale en la web. Revisa el cartel y las entradas, sube el flyer y cámbiala a
+          «Publicado» desde «Editar» cuando esté lista.
+        </p>
+      )}
 
       {e.descripcion && <p className="descripcion">{e.descripcion}</p>}
 
@@ -85,7 +135,41 @@ export function EventoDetalle() {
             <dd>{e.vestimenta}</dd>
           </div>
         )}
+        <div>
+          <dt>Cartel</dt>
+          <dd>
+            {e.cartel.length === 0 ? (
+              <span className="sutil">Sin confirmar</span>
+            ) : (
+              e.cartel.map((a, i) => (
+                <span key={a.id}>
+                  {i > 0 && " · "}
+                  {a.cabezaDeCartel ? <strong>{a.nombre}</strong> : a.nombre}
+                </span>
+              ))
+            )}
+          </dd>
+        </div>
       </dl>
+
+      {(e.portada || video) && (
+        <div className="medios">
+          {e.portada && <img src={imagen(e.portada)} alt="Flyer de la noche" className="medios__flyer" />}
+          {video?.tipo === "archivo" && (
+            <video src={video.src} className="medios__video" controls muted playsInline preload="metadata" />
+          )}
+          {video?.tipo === "youtube" && (
+            <iframe
+              className="medios__video"
+              src={`https://www.youtube-nocookie.com/embed/${video.id}`}
+              title={`Video de ${e.titulo}`}
+              allow="encrypted-media; picture-in-picture"
+              allowFullScreen
+              loading="lazy"
+            />
+          )}
+        </div>
+      )}
 
       <TiposDeEntrada
         slug={e.slug}
@@ -97,7 +181,12 @@ export function EventoDetalle() {
       {/* Las listas no bloquean la ficha: si fallan, la noche se sigue viendo. */}
       {listas.fase === "listo" && (
         <div className="apartado">
-          <h3 className="subtitulo">Listas de invitados</h3>
+          <div className="apartado__cabecera">
+            <h3 className="subtitulo">Listas de invitados</h3>
+            <Link to={`/panel/promotores?noche=${e.slug}`} className="boton-secundario">
+              Abrir una lista
+            </Link>
+          </div>
           {listas.datos.length === 0 ? (
             <p className="sutil">Ningún promotor ha abierto lista para esta noche.</p>
           ) : (

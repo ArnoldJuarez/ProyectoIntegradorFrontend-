@@ -161,7 +161,7 @@ function Tpv({ alSalir }: { alSalir: () => Promise<void> }) {
   if (!pantalla) return <p className="tpv__aviso">Cargando la barra…</p>;
 
   if (!pantalla.turno) {
-    return <Apertura alAbrir={cargar} fallo={fallo} setFallo={setFallo} alSalir={alSalir} />;
+    return <Apertura barras={pantalla.barras} alAbrir={cargar} fallo={fallo} setFallo={setFallo} alSalir={alSalir} />;
   }
 
   return (
@@ -173,7 +173,7 @@ function Tpv({ alSalir }: { alSalir: () => Promise<void> }) {
           </p>
           <h1>{pantalla.noche ?? "Sin evento"}</h1>
           <p className="tpv__sala">
-            {pantalla.turno.sala} · {pantalla.turno.responsable}
+            {pantalla.turno.barra ?? pantalla.turno.sala} · {pantalla.turno.responsable}
           </p>
         </div>
 
@@ -291,17 +291,23 @@ function Tpv({ alSalir }: { alSalir: () => Promise<void> }) {
 
 /** Sin caja abierta no se cobra: primero se cuenta el fondo. */
 function Apertura({
+  barras,
   alAbrir,
   fallo,
   setFallo,
   alSalir,
 }: {
+  /** Dónde se puede abrir turno. Con una sola no se pregunta. */
+  barras: { id: string; nombre: string }[];
   alAbrir: () => Promise<void>;
   fallo: string | null;
   setFallo: (m: string | null) => void;
   alSalir: () => Promise<void>;
 }) {
   const [fondo, setFondo] = useState("200");
+  // Con varias barras no se elige ninguna de antemano: abrir en la equivocada
+  // reparte mal las ventas de toda la noche, y mejor que se elija a propósito.
+  const [barraId, setBarraId] = useState(barras.length === 1 ? barras[0].id : "");
   const [abriendo, setAbriendo] = useState(false);
 
   async function abrir(evento: React.FormEvent) {
@@ -314,7 +320,7 @@ function Apertura({
     try {
       // El fondo se teclea en soles y viaja en céntimos: el dinero es entero de
       // punta a punta, y solo se divide al pintarlo.
-      await abrirTurno(Math.round(Number(fondo) * 100));
+      await abrirTurno(Math.round(Number(fondo) * 100), barraId || null);
       await alAbrir();
     } catch (e) {
       setFallo(e instanceof ErrorDeApi ? e.message : "No se pudo abrir la caja.");
@@ -336,6 +342,21 @@ function Apertura({
       {fallo && <p className="tpv__aviso tpv__aviso--mal">{fallo}</p>}
 
       <form onSubmit={(e) => void abrir(e)} className="apertura">
+        {barras.length > 1 && (
+          <label>
+            ¿En qué barra estás?
+            <select value={barraId} onChange={(e) => setBarraId(e.target.value)} required>
+              <option value="" disabled>
+                Elige la barra
+              </option>
+              {barras.map((b) => (
+                <option key={b.id} value={b.id}>
+                  {b.nombre}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
         <label>
           Fondo de caja (S/)
           <input

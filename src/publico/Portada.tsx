@@ -9,6 +9,7 @@ import { ElLocal } from "./portada/el-local";
 import { EventCard } from "./portada/event-card";
 import { Marquesina } from "./portada/marquesina";
 import { PortadaMedia } from "./portada/portada-media";
+import { Revelar } from "./portada/revelar";
 import { Encabezado } from "./portada/seccion";
 import { horaDeSala, imagen, soles, verAgenda, verExtrasDePortada, type NocheEnCartelera } from "../api";
 import { CLUB, pendiente } from "../config";
@@ -236,12 +237,14 @@ export function Portada() {
 
       {resto.length > 0 && (
         <section id="fechas" className="mx-auto max-w-6xl px-5 py-20">
+          <Revelar>
           <Encabezado rotulo="Agenda" titulo="Próximas noches" accion="Ver todas" href="/agenda" />
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {resto.map((n, i) => (
               <EventCard key={n.slug} noche={n} indice={i} />
             ))}
           </div>
+          </Revelar>
         </section>
       )}
 
@@ -282,6 +285,7 @@ export function Portada() {
         <section id="reservados" className="relative overflow-hidden border-y border-line bg-surface">
           <div aria-hidden className="reticula absolute inset-0 opacity-60" />
           <div className="relative mx-auto max-w-6xl px-5 py-20">
+            <Revelar>
             <Encabezado rotulo="Boxes" titulo="Reserva tu box" />
 
             <div className="mb-10 grid gap-10 lg:grid-cols-[1.2fr_1fr]">
@@ -349,6 +353,7 @@ export function Portada() {
                 </a>
               )}
             </div>
+            </Revelar>
           </div>
         </section>
       )}
@@ -356,14 +361,17 @@ export function Portada() {
       {/* El local: cuánta gente cabe y cómo está repartida. Datos de la base. */}
       {x && x.salas.length > 0 && (
         <section id="local" className="mx-auto max-w-6xl px-5 py-20">
+          <Revelar>
           <Encabezado rotulo="El espacio" titulo="El local" />
           <ElLocal salas={x.salas} />
+          </Revelar>
         </section>
       )}
 
       {/* Los artistas son el producto. */}
       {x && x.artistas.length > 0 && (
         <section id="artistas" className="mx-auto max-w-6xl px-5 py-20">
+          <Revelar>
           <Encabezado rotulo={`Cartel ${new Date().getFullYear()}`} titulo="Artistas" />
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {x.artistas.map((a, i) => (
@@ -380,6 +388,7 @@ export function Portada() {
               </div>
             ))}
           </div>
+          </Revelar>
         </section>
       )}
 
@@ -388,6 +397,7 @@ export function Portada() {
       {/* Lo que ya pasó. Un local con historia se nota. */}
       {x && x.pasadas.length > 0 && (
         <section className="mx-auto max-w-6xl px-5 py-20">
+          <Revelar>
           <Encabezado
             rotulo="Noches pasadas"
             titulo="Galería"
@@ -423,11 +433,13 @@ export function Portada() {
               </div>
             ))}
           </div>
+          </Revelar>
         </section>
       )}
 
       {/* En acordeón: son cinco respuestas largas, y desplegadas no las lee nadie. */}
       <section className="mx-auto max-w-6xl px-5 py-20">
+          <Revelar>
         <Encabezado rotulo="Info práctica" titulo="Antes de venir" />
         <Acordeon
           apartados={[
@@ -445,6 +457,7 @@ export function Portada() {
             { titulo: "Devoluciones", texto: CLUB.reembolso },
           ]}
         />
+          </Revelar>
       </section>
 
       {/* La razón para volver cuando hoy no se compra. */}

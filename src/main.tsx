@@ -6,19 +6,29 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import App from "./App.tsx";
 import { Barra } from "./barra/Barra.tsx";
 import { ArqueoDetalle } from "./paginas/ArqueoDetalle.tsx";
+import { Artistas } from "./paginas/Artistas.tsx";
 import { Caja } from "./paginas/Caja.tsx";
 import { ClienteDetalle } from "./paginas/ClienteDetalle.tsx";
 import { Clientes } from "./paginas/Clientes.tsx";
+import { Compras } from "./paginas/Compras.tsx";
 import { EventoDetalle } from "./paginas/EventoDetalle.tsx";
 import { EventoForm } from "./paginas/EventoForm.tsx";
 import { Eventos } from "./paginas/Eventos.tsx";
+import { Gastos } from "./paginas/Gastos.tsx";
 import { Inventario } from "./paginas/Inventario.tsx";
+import { ListaDetalle } from "./paginas/ListaDetalle.tsx";
 import { Local } from "./paginas/Local.tsx";
+import { Expediente } from "./paginas/Expediente.tsx";
 import { MetricasIa } from "./paginas/MetricasIa.tsx";
+import { MiPromotor } from "./paginas/MiPromotor.tsx";
+import { Noches } from "./paginas/Noches.tsx";
 import { PedidoDetalle } from "./paginas/PedidoDetalle.tsx";
 import { Pedidos } from "./paginas/Pedidos.tsx";
+import { Personal } from "./paginas/Personal.tsx";
+import { PromotorDetalle } from "./paginas/PromotorDetalle.tsx";
 import { Promotores } from "./paginas/Promotores.tsx";
 import { PropuestasIa } from "./paginas/PropuestasIa.tsx";
+import { Reservas } from "./paginas/Reservas.tsx";
 import { Segmentos } from "./paginas/Segmentos.tsx";
 import { Resumen } from "./panel/Resumen.tsx";
 import { Torre } from "./panel/Torre.tsx";
@@ -26,6 +36,7 @@ import { Agenda } from "./publico/Agenda.tsx";
 import { FichaDeNoche } from "./publico/FichaDeNoche.tsx";
 import { MisEntradas } from "./publico/MisEntradas.tsx";
 import { Portada } from "./publico/Portada.tsx";
+import { Seguridad } from "./publico/Seguridad.tsx";
 import { SitioPublico } from "./publico/SitioPublico.tsx";
 import { Puerta } from "./puerta/Puerta.tsx";
 import { ProveedorDeSesion } from "./sesion.tsx";
@@ -49,6 +60,7 @@ createRoot(document.getElementById("root")!).render(
           <Route element={<SitioPublico />}>
             <Route index element={<Portada />} />
             <Route path="agenda" element={<Agenda />} />
+            <Route path="seguridad" element={<Seguridad />} />
             <Route path="evento/:slug" element={<FichaDeNoche />} />
             {/*
               «Tus entradas». Va en la zona pública y sin sesión: quien compró
@@ -76,15 +88,24 @@ createRoot(document.getElementById("root")!).render(
             <Route path="eventos/nueva" element={<EventoForm />} />
             <Route path="eventos/:slug/editar" element={<EventoForm />} />
             <Route path="eventos/:slug" element={<EventoDetalle />} />
+            <Route path="eventos/:slug/noche" element={<Expediente />} />
+            <Route path="noches" element={<Noches />} />
+            <Route path="artistas" element={<Artistas />} />
+            <Route path="reservas" element={<Reservas />} />
             <Route path="clientes" element={<Clientes />} />
             <Route path="clientes/:id" element={<ClienteDetalle />} />
             <Route path="crm" element={<Segmentos />} />
             <Route path="pedidos" element={<Pedidos />} />
             <Route path="promotores" element={<Promotores />} />
+            <Route path="promotores/listas/:id" element={<ListaDetalle />} />
+            <Route path="promotores/:id" element={<PromotorDetalle />} />
             <Route path="pedidos/:codigo" element={<PedidoDetalle />} />
             <Route path="caja" element={<Caja />} />
             <Route path="caja/:id" element={<ArqueoDetalle />} />
             <Route path="inventario" element={<Inventario />} />
+            <Route path="compras" element={<Compras />} />
+            <Route path="gastos" element={<Gastos />} />
+            <Route path="personal" element={<Personal />} />
             <Route path="local" element={<Local />} />
             <Route path="propuestas" element={<PropuestasIa />} />
             <Route path="ia" element={<MetricasIa />} />
@@ -102,6 +123,12 @@ createRoot(document.getElementById("root")!).render(
             una pantalla que se usa de pie con una tablet.
           */}
           <Route path="barra" element={<Barra />} />
+
+          {/*
+            La pantalla del propio promotor: lo que ha vendido, lo que se le debe
+            y sus listas. Suelta como la barra, porque no ve nada del panel.
+          */}
+          <Route path="promotor" element={<MiPromotor />} />
 
           {/*
             Cualquier otra dirección va a la portada. `replace` para no dejarla

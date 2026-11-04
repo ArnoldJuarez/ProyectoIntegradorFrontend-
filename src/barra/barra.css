@@ -162,6 +162,7 @@
 }
 
 .apertura input,
+.apertura select,
 .cierre input {
   min-height: 3.25rem;
   padding: 0 0.9rem;
@@ -176,6 +177,7 @@
 }
 
 .apertura input:focus,
+.apertura select:focus,
 .cierre input:focus {
   outline: none;
   border-color: var(--magenta);

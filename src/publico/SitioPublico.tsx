@@ -1,4 +1,6 @@
-import { Link, NavLink, Outlet } from "react-router-dom";
+import { useEffect } from "react";
+import { Link, NavLink, Outlet, useLocation, useSearchParams } from "react-router-dom";
+import { recordarPromo } from "../api";
 import { CLUB, pendiente } from "../config";
 // App.css trae los avisos y las fichas, que comparten las dos zonas.
 import "../App.css";
@@ -16,11 +18,21 @@ import { ChatConserje } from "./ChatConserje";
  * WhatsApp, que es como de verdad reserva la gente.
  */
 export function SitioPublico() {
+  // El enlace de un promotor (`?promo=PIERO`) puede abrir cualquier página de la
+  // web. Se recuerda unos días para que la compra le cuente aunque no sea ahora.
+  const [parametros] = useSearchParams();
+  const { pathname } = useLocation();
+  const promo = parametros.get("promo");
+  useEffect(() => {
+    if (promo) recordarPromo(promo);
+  }, [promo]);
+
   const hayWhatsapp = CLUB.whatsapp.length > 0 && !pendiente(CLUB.whatsapp);
   const instagram = CLUB.instagram && !pendiente(CLUB.instagram) ? CLUB.instagram : null;
 
   return (
     <div className="sitio">
+      <div className="progreso-scroll" aria-hidden="true" />
       <header className="barra">
         <div className="barra__dentro">
           <Link to="/" className="barra__marca">
@@ -29,6 +41,7 @@ export function SitioPublico() {
 
           <nav className="barra__nav" aria-label="Secciones">
             <NavLink to="/agenda">Agenda</NavLink>
+            <NavLink to="/seguridad">Seguridad</NavLink>
             <Link to="/#reservados" className="barra__secundario">
               Boxes
             </Link>
@@ -49,7 +62,7 @@ export function SitioPublico() {
         </div>
       </header>
 
-      <main>
+      <main key={pathname} className="aparecer">
         <Outlet />
       </main>
 

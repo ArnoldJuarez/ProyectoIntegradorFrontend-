@@ -168,3 +168,12 @@ la API de Spring Boot.
 
 Lo único que no se trajo es el **tema claro**: el sistema anterior tenía un
 conmutador día/noche, y aquí la web es solo oscura.
+
+Después de migrar se añadió la **gestión a mano** de todo lo que la IA puede
+proponer: video de la noche (en el formulario y en la ficha pública), artistas,
+compras a proveedor, reservas de box, gastos, listas de invitados y personal
+(solo dirección). En **Propuestas IA**, las noches del programador se leen como
+noches y se pueden editar antes de aprobarlas; al aprobar, la bandeja enlaza a
+cada noche creada.
+
+La documentación completa está en `../documentacion` (vault de Obsidian).

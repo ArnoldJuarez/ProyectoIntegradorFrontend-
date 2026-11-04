@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import {
   ErrorDeApi,
   comprarEntradas,
+  promoRecordada,
   soles,
   type EntradaALaVenta,
 } from "../api";
@@ -83,6 +84,8 @@ export function Comprar({ slug, entradas }: { slug: string; entradas: EntradaALa
           tipoDeEntradaId,
           cantidad,
         })),
+        // Si llegó por el enlace de un promotor, la venta le cuenta a él.
+        promo: promoRecordada(),
       });
 
       // A la página de sus entradas: allí se paga y allí quedan los QR. El

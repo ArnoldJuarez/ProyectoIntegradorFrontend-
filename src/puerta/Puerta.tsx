@@ -11,6 +11,7 @@ import {
 } from "../api";
 import { Login } from "../Login";
 import { useSesion } from "../sesion";
+import { LectorDeCamara } from "./LectorDeCamara";
 import "./puerta.css";
 
 /**
@@ -84,6 +85,26 @@ function Escaner({ portero, alSalir }: { portero: string; alSalir: () => Promise
   const [codigo, setCodigo] = useState("");
   const [comprobando, setComprobando] = useState(false);
   const [resultado, setResultado] = useState<ResultadoDeEscaneo | null>(null);
+  // La cámara se recuerda en este dispositivo: el móvil de la puerta la quiere
+  // siempre encendida y el ordenador con pistola, nunca.
+  const [conCamara, setConCamara] = useState(() => {
+    try {
+      return localStorage.getItem("ssiomama.puerta.camara") === "1";
+    } catch {
+      return false;
+    }
+  });
+
+  function alternarCamara() {
+    setConCamara((antes) => {
+      try {
+        localStorage.setItem("ssiomama.puerta.camara", antes ? "0" : "1");
+      } catch {
+        // Sin almacenamiento solo se pierde el recuerdo.
+      }
+      return !antes;
+    });
+  }
 
   /*
    * El lector de QR de una puerta no es una cámara: es un aparato que se
@@ -126,6 +147,12 @@ function Escaner({ portero, alSalir }: { portero: string; alSalir: () => Promise
     // Se vacía antes de la petición, no después: el siguiente de la cola ya
     // está pasando su móvil y el campo tiene que estar listo.
     setCodigo("");
+    await comprobar(leido);
+  }
+
+  /** Lo mismo venga del lector, del teclado o de la cámara. */
+  async function comprobar(leido: string) {
+    if (comprobando) return;
     setComprobando(true);
 
     try {
@@ -137,7 +164,8 @@ function Escaner({ portero, alSalir }: { portero: string; alSalir: () => Promise
       setFallo(e instanceof ErrorDeApi ? e.message : "No se pudo comprobar la entrada.");
     } finally {
       setComprobando(false);
-      campo.current?.focus();
+      // Con la cámara no: en el móvil, el foco abre el teclado encima de la imagen.
+      if (!conCamara) campo.current?.focus();
     }
   }
 
@@ -169,10 +197,18 @@ function Escaner({ portero, alSalir }: { portero: string; alSalir: () => Promise
 
       {noche?.hayNoche && noche.enCurso && <Aforo noche={noche} />}
 
+      <div className="puerta__modo">
+        <button type="button" className={conCamara ? "activo" : ""} onClick={alternarCamara} aria-pressed={conCamara}>
+          {conCamara ? "Apagar cámara" : "Escanear con la cámara"}
+        </button>
+      </div>
+
+      {conCamara && <LectorDeCamara ocupado={comprobando} alLeer={(c) => void comprobar(c)} />}
+
       <form className="puerta__lector" onSubmit={(e) => void leer(e)}>
         <input
           ref={campo}
-          autoFocus
+          autoFocus={!conCamara}
           value={codigo}
           onChange={(e) => setCodigo(e.target.value)}
           placeholder="Escanea o teclea el código"

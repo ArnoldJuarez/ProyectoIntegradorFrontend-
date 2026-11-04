@@ -1,4 +1,4 @@
-import type { PuertaPlano, ResultadoEvacuacion, ZonaPlano } from "./evacuacion";
+import type { PuertaPlano, ZonaPlano } from "./evacuacion";
 import { tonoDeZona } from "./evacuacion";
 
 /**
@@ -25,7 +25,6 @@ export function Plano2D({
   puertas,
   seleccion,
   onSelectZona,
-  evacuacion,
 }: {
   planoAncho: number;
   planoFondo: number;
@@ -34,7 +33,6 @@ export function Plano2D({
   seleccion?: string | null;
   onSelectZona?: (id: string) => void;
   /** Si viene, se dibuja hacia dónde evacúa cada zona. */
-  evacuacion?: ResultadoEvacuacion | null;
 }) {
   if (planoAncho <= 0 || planoFondo <= 0) {
     return (
@@ -157,21 +155,6 @@ export function Plano2D({
         );
       })}
 
-      {/* Rutas de evacuación: de cada zona a la salida que le toca. */}
-      {evacuacion?.asignaciones.map((a) => (
-        <line
-          key={a.zona.id}
-          x1={off + m(a.zona.x + a.zona.ancho / 2)}
-          y1={off + m(a.zona.y + a.zona.fondo / 2)}
-          x2={off + m(a.puerta.x)}
-          y2={off + m(a.puerta.y)}
-          strokeWidth="2"
-          strokeDasharray="6 4"
-          style={{ stroke: "var(--color-acento)" }}
-          markerEnd="url(#flecha)"
-          opacity="0.8"
-        />
-      ))}
 
       {puertas
         .filter((p) => p.activo)

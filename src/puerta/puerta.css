@@ -259,6 +259,73 @@
   cursor: default;
 }
 
+/* ── La cámara ────────────────────────────────────────────────── */
+
+.puerta__modo {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.puerta__modo button {
+  min-height: 2.5rem;
+  padding: 0 1rem;
+  border: 1px solid var(--borde-2);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--texto-2);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.puerta__modo button.activo {
+  border-color: var(--magenta-borde);
+  background: var(--magenta-suave);
+  color: var(--texto);
+}
+
+.camara {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  max-height: 46vh;
+  border: 1px solid var(--borde-2);
+  border-radius: var(--radio-l);
+  background: #000;
+  transition: box-shadow 200ms ease;
+}
+
+.camara--leido {
+  box-shadow: 0 0 0 4px var(--verde);
+}
+
+.camara__video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* El recuadro donde poner el QR: es la zona que se lee de verdad. */
+.camara__marco {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: min(62%, 16rem);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border: 3px solid rgb(255 255 255 / 0.85);
+  border-radius: var(--radio);
+  box-shadow: 0 0 0 100vmax rgb(0 0 0 / 0.38);
+}
+
+.camara__pista {
+  position: absolute;
+  inset: auto 0 0.75rem;
+  margin: 0;
+  color: #fff;
+  font-weight: 600;
+  text-align: center;
+  text-shadow: 0 1px 4px #000;
+}
+
 /* ── El veredicto ─────────────────────────────────────────────── */
 /*
  * Aparece con un fundido y una escala corta (desde 0.97, nunca desde cero). Cada

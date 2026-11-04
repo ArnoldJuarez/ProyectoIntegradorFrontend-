@@ -99,7 +99,7 @@ export function PortadaMedia({
 function Capa({ children }: { children: React.ReactNode }) {
   return (
     <div aria-hidden className="absolute inset-0 overflow-hidden">
-      {children}
+      <div className="paralaje absolute inset-0">{children}</div>
     </div>
   );
 }

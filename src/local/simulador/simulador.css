@@ -1,0 +1,366 @@
+/*
+ * El simulador de evacuación. Va en el panel y en la web pública, así que solo
+ * usa los tokens del sistema (estilos/sistema.css), que cargan las dos.
+ */
+
+.simulador {
+  display: grid;
+  gap: 1rem;
+  color: var(--texto);
+}
+
+.simulador__controles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  align-items: center;
+}
+
+.simulador__grupo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.simulador button {
+  min-height: 2.4rem;
+  padding: 0 0.95rem;
+  border: 1px solid var(--borde-2);
+  border-radius: 999px;
+  background: var(--superficie);
+  color: var(--texto-2);
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease,
+    border-color 150ms ease,
+    transform 120ms var(--ease-out);
+}
+
+.simulador button:active {
+  transform: scale(0.97);
+}
+
+.simulador button.activo {
+  border-color: var(--magenta-borde);
+  background: var(--magenta-suave);
+  color: var(--texto);
+}
+
+.simulador button.activo.peligro {
+  border-color: var(--rojo);
+  background: var(--rojo-suave);
+}
+
+.simulador button.principal {
+  border-color: transparent;
+  background: var(--magenta-boton);
+  color: #fff;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .simulador button:hover {
+    color: var(--texto);
+    border-color: var(--magenta-borde);
+  }
+}
+
+.simulador__velocidad {
+  display: inline-flex;
+  gap: 0.2rem;
+  margin-left: 0.25rem;
+}
+
+.simulador__velocidad button {
+  min-width: 2.6rem;
+  padding: 0 0.6rem;
+}
+
+.simulador__personas {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.86rem;
+  color: var(--texto-2);
+}
+
+.simulador__personas strong {
+  min-width: 2.5rem;
+  color: var(--texto);
+  font-variant-numeric: tabular-nums;
+}
+
+.simulador__personas input {
+  width: 9rem;
+  accent-color: var(--magenta);
+}
+
+.simulador__casilla {
+  display: inline-flex;
+  gap: 0.35rem;
+  align-items: center;
+  font-size: 0.82rem;
+  color: var(--texto-2);
+}
+
+.mapa-evacuacion canvas {
+  border-radius: var(--radio-l);
+}
+
+.simulador__tu-ruta {
+  margin: 0;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--magenta-borde);
+  border-radius: var(--radio);
+  background: var(--magenta-suave);
+  font-size: 0.92rem;
+}
+
+.simulador__leyenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.8rem;
+  color: var(--texto-2);
+}
+
+.simulador__leyenda li {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.simulador__leyenda i {
+  display: inline-block;
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 3px;
+}
+
+.leyenda__salida { background: #3ee6a0; }
+.leyenda__ruta { height: 3px !important; border-radius: 2px; background: repeating-linear-gradient(90deg, #3ee6a0 0 5px, transparent 5px 8px); }
+.leyenda__segura { border-radius: 50% !important; background: #3ee6a0; }
+.leyenda__reunion { border-radius: 50% !important; background: #3ee6a0; box-shadow: 0 0 0 2px #04140d inset; }
+.leyenda__extintor { background: #ff4d5e; }
+.leyenda__botiquin { background: #0f5a3d; box-shadow: inset 0 0 0 3px #0f5a3d, inset 0 0 0 5px #fff; }
+.leyenda__luz { transform: rotate(45deg) scale(0.75); background: #fff7c2; }
+.leyenda__alarma { border-radius: 50% !important; background: #ff4d5e; }
+.leyenda__persona { border-radius: 50% !important; background: #7fe7ff; }
+.leyenda__cola { border-radius: 50% !important; background: #ffbe55; }
+
+.simulador__cifras {
+  display: grid;
+  gap: 0.6rem;
+  grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+}
+
+.simulador__cifra {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  background: var(--superficie);
+}
+
+.simulador__cifra span {
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--texto-3);
+}
+
+.simulador__cifra strong {
+  font-size: 1.55rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.simulador__cifra small {
+  font-size: 0.78rem;
+  color: var(--texto-2);
+}
+
+.simulador__cifra--mal {
+  border-color: var(--rojo);
+  background: var(--rojo-suave);
+}
+
+.simulador__dos {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+}
+
+.simulador h4 {
+  margin: 0 0 0.6rem;
+  font-size: 0.9rem;
+}
+
+.simulador__salidas {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.simulador__salidas li {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-s);
+  font-size: 0.86rem;
+}
+
+.simulador__salidas li small {
+  color: var(--texto-2);
+}
+
+.simulador__salidas li em {
+  margin-left: 0.5rem;
+  font-size: 0.72rem;
+  font-style: normal;
+  font-weight: 700;
+  color: var(--ambar);
+  text-transform: uppercase;
+}
+
+.simulador__salidas li.critica {
+  border-color: var(--ambar);
+}
+
+.simulador__salidas li.perdida {
+  border-color: var(--rojo);
+  opacity: 0.8;
+}
+
+.simulador__salidas li.perdida em {
+  color: var(--rojo);
+}
+
+.simulador__salidas .barra {
+  display: block;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--borde);
+  overflow: hidden;
+}
+
+.simulador__salidas .barra span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #3ee6a0;
+}
+
+.simulador__curva {
+  width: 100%;
+  height: auto;
+}
+
+.simulador__curva .relleno {
+  fill: rgb(255 61 154 / 0.14);
+  stroke: none;
+}
+
+.simulador__curva .linea {
+  fill: none;
+  stroke: var(--magenta);
+  stroke-width: 2;
+}
+
+.simulador__curva .ahora {
+  stroke: #7fe7ff;
+  stroke-width: 1.5;
+}
+
+.simulador__curva text {
+  fill: var(--texto-3);
+  font-size: 10px;
+}
+
+.simulador__objetivo {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-top: 0.5rem;
+  font-size: 0.82rem;
+  color: var(--texto-2);
+}
+
+.simulador__objetivo input {
+  width: 5rem;
+  padding: 0.3rem 0.5rem;
+  border: 1px solid var(--borde-2);
+  border-radius: var(--radio-s);
+  background: var(--fondo);
+  color: var(--texto);
+}
+
+.simulador__normativa ul {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.simulador__normativa li {
+  display: grid;
+  grid-template-columns: 1.8rem 1fr;
+  gap: 0.6rem;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-s);
+  background: var(--superficie);
+}
+
+.simulador__normativa li p {
+  margin: 0.15rem 0;
+  font-size: 0.86rem;
+  color: var(--texto-2);
+}
+
+.simulador__normativa li small {
+  font-size: 0.72rem;
+  color: var(--texto-3);
+}
+
+.simulador__normativa .veredicto {
+  display: grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  font-weight: 800;
+}
+
+.veredicto--cumple .veredicto { background: var(--verde-suave); color: var(--verde); }
+.veredicto--revisar .veredicto { background: var(--ambar-suave); color: var(--ambar); }
+.veredicto--no_cumple { border-color: var(--rojo) !important; }
+.veredicto--no_cumple .veredicto { background: var(--rojo-suave); color: var(--rojo); }
+
+.simulador__aviso {
+  margin: 0.75rem 0 0;
+  font-size: 0.8rem;
+  color: var(--texto-3);
+}
+
+@media (max-width: 640px) {
+  .simulador__personas input {
+    width: 100%;
+  }
+  .simulador__personas {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+}

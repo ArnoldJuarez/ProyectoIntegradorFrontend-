@@ -5,25 +5,31 @@ import {
   CalendarDays,
   Contact,
   Gauge,
+  IdCard,
   LayoutDashboard,
   LogOut,
   Map as Plano,
   Megaphone,
+  Mic2,
+  Receipt,
   ScanLine,
+  Sofa,
   Sparkles,
   Ticket,
+  Truck,
   Users,
   Wallet,
   Wine,
   Globe,
   type LucideIcon,
+  History,
 } from "lucide-react";
-import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
+import { Link, NavLink, Navigate, Outlet, useLocation } from "react-router-dom";
 import { Login } from "./Login";
 import { useSesion } from "./sesion";
 import "./App.css";
 
-type Seccion = { a: string; texto: string; icono: LucideIcon; exacta?: boolean };
+type Seccion = { a: string; texto: string; icono: LucideIcon; exacta?: boolean; soloDireccion?: boolean };
 
 /**
  * Las secciones del panel, agrupadas por lo que se está haciendo.
@@ -34,6 +40,9 @@ type Seccion = { a: string; texto: string; icono: LucideIcon; exacta?: boolean }
  *
  * `exacta` es para las rutas que son prefijo de otras. Sin ella, «Resumen»
  * (`/panel`) se quedaría encendido en todas las secciones.
+ *
+ * `soloDireccion` esconde lo que el backend solo deja ver a dirección. Es una
+ * comodidad, no la seguridad: quien manda es el 403 del servidor.
  */
 const GRUPOS: { titulo: string; secciones: Seccion[] }[] = [
   {
@@ -44,11 +53,19 @@ const GRUPOS: { titulo: string; secciones: Seccion[] }[] = [
     ],
   },
   {
-    titulo: "Ventas",
+    titulo: "Programación",
     secciones: [
       { a: "/panel/eventos", texto: "Eventos", icono: CalendarDays },
+      { a: "/panel/noches", texto: "Noches celebradas", icono: History },
+      { a: "/panel/artistas", texto: "Artistas", icono: Mic2 },
+    ],
+  },
+  {
+    titulo: "Ventas",
+    secciones: [
       { a: "/panel/pedidos", texto: "Pedidos", icono: Ticket },
-      { a: "/panel/promotores", texto: "Promotores", icono: Megaphone },
+      { a: "/panel/reservas", texto: "Reservas de box", icono: Sofa },
+      { a: "/panel/promotores", texto: "Promotores y listas", icono: Megaphone },
     ],
   },
   {
@@ -63,7 +80,10 @@ const GRUPOS: { titulo: string; secciones: Seccion[] }[] = [
     secciones: [
       { a: "/panel/caja", texto: "Caja", icono: Wallet },
       { a: "/panel/inventario", texto: "Inventario", icono: Boxes },
+      { a: "/panel/compras", texto: "Compras", icono: Truck },
+      { a: "/panel/gastos", texto: "Gastos", icono: Receipt },
       { a: "/panel/local", texto: "El local", icono: Plano },
+      { a: "/panel/personal", texto: "Personal", icono: IdCard, soloDireccion: true },
     ],
   },
   {
@@ -149,6 +169,12 @@ export default function App() {
     );
   }
 
+  // Un promotor no tiene nada que hacer en el panel: todo le respondería 403.
+  // Su pantalla es la suya.
+  if (estado.usuario.rol === "PROMOTOR") {
+    return <Navigate to="/promotor" replace />;
+  }
+
   return (
     <div className="armazon">
       <aside className="lateral">
@@ -162,7 +188,9 @@ export default function App() {
             {GRUPOS.map((g) => (
               <div key={g.titulo} className="menu__grupo">
                 <p className="menu__titulo">{g.titulo}</p>
-                {g.secciones.map((s) => (
+                {g.secciones
+                  .filter((s) => !s.soloDireccion || estado.usuario.rol === "DIRECCION")
+                  .map((s) => (
                   <NavLink key={s.a} to={s.a} end={s.exacta}>
                     <s.icono aria-hidden="true" />
                     {s.texto}
