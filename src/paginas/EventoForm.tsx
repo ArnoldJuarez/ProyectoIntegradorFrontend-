@@ -51,7 +51,8 @@ export function EventoForm() {
 
   const [titulo, setTitulo] = useState("");
   const [descripcion, setDescripcion] = useState("");
-  const [salaId, setSalaId] = useState("");
+  // 0 = ninguna elegida todavía.
+  const [salaId, setSalaId] = useState(0);
   const [puertasA, setPuertasA] = useState("");
   const [terminaA, setTerminaA] = useState("");
   const [edadMinima, setEdadMinima] = useState(18);
@@ -59,7 +60,7 @@ export function EventoForm() {
   const [estado, setEstado] = useState<EstadoDeEvento>("BORRADOR");
   const [portada, setPortada] = useState("");
   const [video, setVideo] = useState("");
-  const [artistaIds, setArtistaIds] = useState<string[]>([]);
+  const [artistaIds, setArtistaIds] = useState<number[]>([]);
   /** Los que se dan de alta desde aquí, para que aparezcan sin recargar las opciones. */
   const [nuevos, setNuevos] = useState<ArtistaParaElegir[]>([]);
 
@@ -287,7 +288,7 @@ export function EventoForm() {
 
         <label className="campo">
           Sala
-          <select value={salaId} onChange={(e) => setSalaId(e.target.value)} required>
+          <select value={salaId} onChange={(e) => setSalaId(Number(e.target.value))} required>
             {salas.map((s: SalaParaElegir) => (
               <option key={s.id} value={s.id}>
                 {s.nombre} · {s.aforo} de aforo

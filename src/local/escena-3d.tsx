@@ -73,7 +73,7 @@ function ZonaEsquema({
   zona: ZonaPlano;
   centro: Centro;
   resaltada: boolean;
-  onSelect?: (id: string) => void;
+  onSelect?: (id: number) => void;
 }) {
   const [encima, setEncima] = useState(false);
   const c = useMemo(() => caja(zona, centro), [zona, centro]);
@@ -300,8 +300,8 @@ export function Escena3D({
   conEvacuacion = false,
 }: {
   datos: DatosEscena;
-  zonaSeleccionada?: string | null;
-  onSelectZona?: (id: string) => void;
+  zonaSeleccionada?: number | null;
+  onSelectZona?: (id: number | null) => void;
   /** Arrancar con la capa de evacuación visible (la web pública). */
   conEvacuacion?: boolean;
 }) {
@@ -522,7 +522,7 @@ export function Escena3D({
             ? { position: [diagonal * 0.55, diagonal * 0.62, diagonal * 0.75], fov: 45, near: 0.1, far: 600 }
             : { position: [0, 1.7 + pisoCaminando * ALTURA_DE_PLANTA, centro.z - 3], fov: 72, near: 0.05, far: 300 }
         }
-        onPointerMissed={() => onSelectZona?.("")}
+        onPointerMissed={() => onSelectZona?.(null)}
       >
         <color attach="background" args={[COLOR.noche]} />
         {vista === "ambiente" ? (

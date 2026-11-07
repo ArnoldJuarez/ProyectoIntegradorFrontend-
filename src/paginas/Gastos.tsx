@@ -48,7 +48,7 @@ export function Gastos() {
   const [version, setVersion] = useState(0);
   const carga = useCarga(() => verGastos(mes), [mes, version]);
   const opciones = useCarga(verOpcionesDeGasto, [version]);
-  const [abierto, setAbierto] = useState<string | null>(null);
+  const [abierto, setAbierto] = useState<number | "nuevo" | null>(null);
   const recargar = () => setVersion((v) => v + 1);
 
   return (
@@ -246,7 +246,7 @@ function FichaDeGasto({
       <div className="tipo-form__campos">
         <label>
           Categoría
-          <select value={categoriaId} onChange={(e) => setCategoriaId(e.target.value)} required>
+          <select value={categoriaId} onChange={(e) => setCategoriaId(Number(e.target.value))} required>
             {categorias.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.nombre}

@@ -75,7 +75,7 @@ export function Compras() {
 function Pedidos() {
   const [version, setVersion] = useState(0);
   const ordenes = useCarga(verOrdenes, [version]);
-  const [abierta, setAbierta] = useState<string | null>(null);
+  const [abierta, setAbierta] = useState<number | null>(null);
   const [creando, setCreando] = useState(false);
   const recargar = () => setVersion((v) => v + 1);
 
@@ -173,12 +173,13 @@ function Pedidos() {
 }
 
 /** La ficha de un pedido con lo que se puede hacer según su estado. */
-function DetalleDeOrden({ id, alCambiar }: { id: string; alCambiar: () => void }) {
+function DetalleDeOrden({ id, alCambiar }: { id: number; alCambiar: () => void }) {
   const [version, setVersion] = useState(0);
   const orden = useCarga(() => verOrden(id), [id, version]);
   const opciones = useCarga(verOpcionesDeAlmacen, []);
   const [editando, setEditando] = useState(false);
-  const [salaId, setSalaId] = useState("");
+  // 0 = la primera sala.
+  const [salaId, setSalaId] = useState(0);
   const [ocupado, setOcupado] = useState(false);
 
   if (orden.fase === "cargando") return <p className="aviso">Cargando el pedido…</p>;
@@ -214,7 +215,7 @@ function DetalleDeOrden({ id, alCambiar }: { id: string; alCambiar: () => void }
   }
 
   const salas = opciones.fase === "listo" ? opciones.datos.salas : [];
-  const sala = salaId || salas[0]?.id || "";
+  const sala = salaId || salas[0]?.id || 0;
 
   return (
     <div className="apartado detalle-orden">
@@ -301,7 +302,7 @@ function DetalleDeOrden({ id, alCambiar }: { id: string; alCambiar: () => void }
           </p>
           <div className="portada-acciones">
             {salas.length > 1 && (
-              <select value={sala} onChange={(e) => setSalaId(e.target.value)} aria-label="Sala donde entra">
+              <select value={sala} onChange={(e) => setSalaId(Number(e.target.value))} aria-label="Sala donde entra">
                 {salas.map((s) => (
                   <option key={s.id} value={s.id}>
                     {s.nombre}
@@ -324,7 +325,7 @@ function DetalleDeOrden({ id, alCambiar }: { id: string; alCambiar: () => void }
   );
 }
 
-type LineaEditable = { productoId: string; cantidad: string; coste: string };
+type LineaEditable = { productoId: number; cantidad: string; coste: string };
 
 /** Crear o editar un borrador: proveedor, fecha prevista y líneas. */
 function EditorDeOrden({
@@ -333,19 +334,20 @@ function EditorDeOrden({
   alCancelar,
 }: {
   inicial?: FichaDeOrden;
-  alGuardar: (id: string) => void;
+  alGuardar: (id: number) => void;
   alCancelar: () => void;
 }) {
   const proveedores = useCarga(listarProveedores, []);
   const stock = useCarga(verStock, []);
-  const [proveedorId, setProveedorId] = useState(inicial?.proveedorId ?? "");
+  // 0 = el primero del catálogo.
+  const [proveedorId, setProveedorId] = useState(inicial?.proveedorId ?? 0);
   const [esperado, setEsperado] = useState(inicial?.esperadoEn ? inicial.esperadoEn.slice(0, 10) : "");
   const [lineas, setLineas] = useState<LineaEditable[]>(
     inicial?.lineas.map((l) => ({
       productoId: l.productoId,
       cantidad: String(l.cantidad),
       coste: String(l.costeUnitarioCentimos / 100),
-    })) ?? [{ productoId: "", cantidad: "", coste: "" }],
+    })) ?? [{ productoId: 0, cantidad: "", coste: "" }],
   );
   const [guardando, setGuardando] = useState(false);
   const [fallo, setFallo] = useState<string | null>(null);
@@ -355,7 +357,7 @@ function EditorDeOrden({
   if (stock.fase === "error") return <p className="aviso aviso--error">{stock.mensaje}</p>;
 
   const productos: LineaDeStock[] = stock.datos.lineas;
-  const elegido = proveedorId || proveedores.datos[0]?.id || "";
+  const elegido = proveedorId || proveedores.datos[0]?.id || 0;
   const total = lineas.reduce(
     (t, l) => t + (Number(l.cantidad) || 0) * Math.round((Number(l.coste) || 0) * 100),
     0,
@@ -407,7 +409,7 @@ function EditorDeOrden({
       <div className="tipo-form__campos">
         <label>
           Proveedor
-          <select value={elegido} onChange={(e) => setProveedorId(e.target.value)} required>
+          <select value={elegido} onChange={(e) => setProveedorId(Number(e.target.value))} required>
             {proveedores.datos.map((p) => (
               <option key={p.id} value={p.id}>
                 {p.nombre}
@@ -426,7 +428,7 @@ function EditorDeOrden({
           <div key={i} className="lineas-de-pedido__fila">
             <select
               value={l.productoId}
-              onChange={(e) => cambiarLinea(i, { productoId: e.target.value })}
+              onChange={(e) => cambiarLinea(i, { productoId: Number(e.target.value) })}
               aria-label="Producto"
               required={i === 0}
             >
@@ -470,7 +472,7 @@ function EditorDeOrden({
         <button
           type="button"
           className="boton-secundario"
-          onClick={() => setLineas((previas) => [...previas, { productoId: "", cantidad: "", coste: "" }])}
+          onClick={() => setLineas((previas) => [...previas, { productoId: 0, cantidad: "", coste: "" }])}
         >
           Añadir línea
         </button>
@@ -497,7 +499,7 @@ function EditorDeOrden({
 function Proveedores() {
   const [version, setVersion] = useState(0);
   const carga = useCarga(listarProveedores, [version]);
-  const [abierto, setAbierto] = useState<string | null>(null);
+  const [abierto, setAbierto] = useState<number | "nuevo" | null>(null);
   const recargar = () => setVersion((v) => v + 1);
 
   if (carga.fase === "cargando") return <p className="aviso">Cargando…</p>;

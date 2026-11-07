@@ -80,7 +80,7 @@ function Stock() {
   const opciones = useCarga(verOpcionesDeAlmacen, []);
 
   /** Qué formulario está abierto: "nuevo", el id de un producto, o nada. */
-  const [abierto, setAbierto] = useState<string | null>(null);
+  const [abierto, setAbierto] = useState<number | string | null>(null);
   const [aviso, setAviso] = useState<string | null>(null);
 
   if (carga.fase === "cargando") return <p className="aviso">Cargando el stock…</p>;

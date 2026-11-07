@@ -16,7 +16,7 @@ import { useCarga } from "../datos";
  * cliente son cuatro contadores sin contexto.
  */
 export function ClienteDetalle() {
-  const { id = "" } = useParams();
+  const id = Number(useParams().id);
   const carga = useCarga(() => verCliente(id), [id]);
 
   if (carga.fase === "cargando") return <p className="aviso">Cargando la ficha…</p>;

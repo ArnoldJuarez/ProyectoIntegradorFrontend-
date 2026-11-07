@@ -260,7 +260,8 @@ function ApuntarReserva({ alGuardar, alCancelar }: { alGuardar: () => void; alCa
   const opciones = useCarga(verOpcionesDeReserva, []);
   const [datos, setDatos] = useState<NuevaReserva>({
     slug: "",
-    mesaId: "",
+    // 0 = ninguna elegida todavía.
+    mesaId: 0,
     personas: 4,
     notas: "",
     nombre: "",
@@ -282,7 +283,7 @@ function ApuntarReserva({ alGuardar, alCancelar }: { alGuardar: () => void; alCa
   }
 
   const mesasLibres = libres.fase === "listo" ? libres.datos.filter((m) => m.libre) : [];
-  const mesaId = datos.mesaId && mesasLibres.some((m) => m.id === datos.mesaId) ? datos.mesaId : mesasLibres[0]?.id ?? "";
+  const mesaId = datos.mesaId && mesasLibres.some((m) => m.id === datos.mesaId) ? datos.mesaId : mesasLibres[0]?.id ?? 0;
   const cambiar = (cambio: Partial<NuevaReserva>) => setDatos((d) => ({ ...d, ...cambio }));
 
   async function enviar(e: React.FormEvent) {
@@ -305,7 +306,7 @@ function ApuntarReserva({ alGuardar, alCancelar }: { alGuardar: () => void; alCa
       <div className="tipo-form__campos">
         <label>
           Noche
-          <select value={slug} onChange={(e) => cambiar({ slug: e.target.value, mesaId: "" })}>
+          <select value={slug} onChange={(e) => cambiar({ slug: e.target.value, mesaId: 0 })}>
             {opciones.datos.noches.map((n) => (
               <option key={n.slug} value={n.slug}>
                 {horaDeSala(n.empiezaA, { dateStyle: "medium" })} · {n.titulo}
@@ -315,7 +316,7 @@ function ApuntarReserva({ alGuardar, alCancelar }: { alGuardar: () => void; alCa
         </label>
         <label>
           Box
-          <select value={mesaId} onChange={(e) => cambiar({ mesaId: e.target.value })} required>
+          <select value={mesaId} onChange={(e) => cambiar({ mesaId: Number(e.target.value) })} required>
             {mesasLibres.length === 0 && <option value="">No queda ningún box libre</option>}
             {mesasLibres.map((m) => (
               <option key={m.id} value={m.id}>

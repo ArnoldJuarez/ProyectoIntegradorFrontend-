@@ -29,7 +29,7 @@ function Cargando3D() {
 }
 
 export type SalaEditable = {
-  id: string;
+  id: number;
   nombre: string;
   aforo: number;
   planoAncho: number;
@@ -60,7 +60,7 @@ export function EditorLocal({
   // El plano 2D se dibuja planta a planta: superpuestas, el balcón taparía la
   // pista que tiene debajo y no se podría editar ninguna de las dos.
   const [planta, setPlanta] = useState(0);
-  const [seleccion, setSeleccion] = useState<string | null>(null);
+  const [seleccion, setSeleccion] = useState<number | null>(null);
   const [guardando, setGuardando] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -91,11 +91,11 @@ export function EditorLocal({
     setBorrador((prev) => prev.map((s) => (s.id === sala.id ? { ...s, ...cambios } : s)));
   }
 
-  function actualizarZona(id: string, cambios: Partial<ZonaPlano>) {
+  function actualizarZona(id: number, cambios: Partial<ZonaPlano>) {
     actualizarSala({ zonas: sala.zonas.map((z) => (z.id === id ? { ...z, ...cambios } : z)) });
   }
 
-  function actualizarPuerta(id: string, cambios: Partial<PuertaPlano>) {
+  function actualizarPuerta(id: number, cambios: Partial<PuertaPlano>) {
     actualizarSala({ puertas: sala.puertas.map((p) => (p.id === id ? { ...p, ...cambios } : p)) });
   }
 
@@ -110,7 +110,7 @@ export function EditorLocal({
       elementos: [
         ...sala.elementos,
         {
-          id: "",
+          id: null,
           tipo,
           nombre: NOMBRE_DE_ELEMENTO[tipo],
           piso: fuera ? 0 : planta,
@@ -156,7 +156,7 @@ export function EditorLocal({
         <select
           value={salaId}
           onChange={(e) => {
-            setSalaId(e.target.value);
+            setSalaId(Number(e.target.value));
             setSeleccion(null);
           }}
           className="h-10 rounded-lg border border-line bg-surface px-3 text-sm font-medium"
@@ -459,7 +459,7 @@ export function EditorLocal({
             </select>
             <ul className="flex max-h-[28rem] flex-col gap-3 overflow-y-auto pr-1">
               {sala.elementos.map((el, i) => (
-                <li key={el.id || `nuevo-${i}`} className="border-b border-line pb-3 last:border-0 last:pb-0">
+                <li key={el.id ?? `nuevo-${i}`} className="border-b border-line pb-3 last:border-0 last:pb-0">
                   <div className="mb-2 flex items-center gap-2">
                     <input
                       value={el.nombre}

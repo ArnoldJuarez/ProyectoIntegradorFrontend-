@@ -96,7 +96,7 @@ function Tpv({ alSalir }: { alSalir: () => Promise<void> }) {
 
   /** Todos los productos en un mapa, para poder mirar precios sin recorrer. */
   const porId = useMemo(() => {
-    const mapa = new Map<string, BotonDeProducto>();
+    const mapa = new Map<number, BotonDeProducto>();
     for (const grupo of pantalla?.catalogo ?? []) {
       for (const p of grupo.productos) mapa.set(p.id, p);
     }
@@ -107,7 +107,7 @@ function Tpv({ alSalir }: { alSalir: () => Promise<void> }) {
     let unidades = 0;
     let total = 0;
     for (const [id, cuantas] of Object.entries(carrito)) {
-      const producto = porId.get(id);
+      const producto = porId.get(Number(id));
       if (!producto) continue;
       unidades += cuantas;
       total += cuantas * producto.precioCentimos;
@@ -120,7 +120,7 @@ function Tpv({ alSalir }: { alSalir: () => Promise<void> }) {
     setCarrito((previo) => ({ ...previo, [producto.id]: (previo[producto.id] ?? 0) + 1 }));
   }
 
-  function quitar(id: string) {
+  function quitar(id: number) {
     setCarrito((previo) => {
       const quedan = (previo[id] ?? 0) - 1;
       const siguiente = { ...previo };
@@ -141,7 +141,7 @@ function Tpv({ alSalir }: { alSalir: () => Promise<void> }) {
         pantalla.turno.id,
         metodo,
         pantalla.nocheSlug,
-        Object.entries(carrito).map(([productoId, cantidad]) => ({ productoId, cantidad })),
+        Object.entries(carrito).map(([productoId, cantidad]) => ({ productoId: Number(productoId), cantidad })),
       );
 
       // El carrito se vacía en cuanto se cobra: el siguiente ya está pidiendo.
@@ -227,14 +227,14 @@ function Tpv({ alSalir }: { alSalir: () => Promise<void> }) {
           ) : (
             <ul className="ticket__lineas">
               {Object.entries(carrito).map(([id, cuantas]) => {
-                const p = porId.get(id);
+                const p = porId.get(Number(id));
                 if (!p) return null;
                 return (
                   <li key={id}>
                     <button
                       type="button"
                       className="ticket__quitar"
-                      onClick={() => quitar(id)}
+                      onClick={() => quitar(Number(id))}
                       aria-label={`Quitar un ${p.nombre}`}
                     >
                       −
@@ -298,7 +298,7 @@ function Apertura({
   alSalir,
 }: {
   /** Dónde se puede abrir turno. Con una sola no se pregunta. */
-  barras: { id: string; nombre: string }[];
+  barras: { id: number; nombre: string }[];
   alAbrir: () => Promise<void>;
   fallo: string | null;
   setFallo: (m: string | null) => void;
@@ -307,7 +307,7 @@ function Apertura({
   const [fondo, setFondo] = useState("200");
   // Con varias barras no se elige ninguna de antemano: abrir en la equivocada
   // reparte mal las ventas de toda la noche, y mejor que se elija a propósito.
-  const [barraId, setBarraId] = useState(barras.length === 1 ? barras[0].id : "");
+  const [barraId, setBarraId] = useState<number | "">(barras.length === 1 ? barras[0].id : "");
   const [abriendo, setAbriendo] = useState(false);
 
   async function abrir(evento: React.FormEvent) {
@@ -320,7 +320,7 @@ function Apertura({
     try {
       // El fondo se teclea en soles y viaja en céntimos: el dinero es entero de
       // punta a punta, y solo se divide al pintarlo.
-      await abrirTurno(Math.round(Number(fondo) * 100), barraId || null);
+      await abrirTurno(Math.round(Number(fondo) * 100), barraId === "" ? null : barraId);
       await alAbrir();
     } catch (e) {
       setFallo(e instanceof ErrorDeApi ? e.message : "No se pudo abrir la caja.");
@@ -345,7 +345,7 @@ function Apertura({
         {barras.length > 1 && (
           <label>
             ¿En qué barra estás?
-            <select value={barraId} onChange={(e) => setBarraId(e.target.value)} required>
+            <select value={barraId} onChange={(e) => setBarraId(e.target.value ? Number(e.target.value) : "")} required>
               <option value="" disabled>
                 Elige la barra
               </option>
@@ -388,7 +388,7 @@ function CerrarCaja({
   alCerrar,
   setFallo,
 }: {
-  arqueoId: string;
+  arqueoId: number;
   esperadoCentimos: number;
   alCerrar: (c: TurnoCerrado) => void;
   setFallo: (m: string | null) => void;

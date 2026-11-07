@@ -62,7 +62,7 @@ export function MiPromotor() {
 function Contenido() {
   const [version, setVersion] = useState(0);
   const carga = useCarga(verMiPanelDePromotor, [version]);
-  const [abierta, setAbierta] = useState<string | null>(null);
+  const [abierta, setAbierta] = useState<number | null>(null);
 
   if (carga.fase === "cargando") return <p className="aviso">Cargando lo tuyo…</p>;
   if (carga.fase === "error") {
@@ -130,7 +130,7 @@ function Contenido() {
   );
 }
 
-function NuevaLista({ noches, alAbrir }: { noches: MiPanelDePromotor["noches"]; alAbrir: (id: string) => void }) {
+function NuevaLista({ noches, alAbrir }: { noches: MiPanelDePromotor["noches"]; alAbrir: (id: number) => void }) {
   const [slug, setSlug] = useState("");
   const [nombre, setNombre] = useState("");
   const [maximo, setMaximo] = useState("20");
@@ -184,7 +184,7 @@ function NuevaLista({ noches, alAbrir }: { noches: MiPanelDePromotor["noches"]; 
   );
 }
 
-function MiLista({ id, alCambiar }: { id: string; alCambiar: () => void }) {
+function MiLista({ id, alCambiar }: { id: number; alCambiar: () => void }) {
   const [version, setVersion] = useState(0);
   const carga = useCarga(() => verMiLista(id), [id, version]);
   const [nombre, setNombre] = useState("");
@@ -211,7 +211,7 @@ function MiLista({ id, alCambiar }: { id: string; alCambiar: () => void }) {
     }
   }
 
-  async function quitar(invitadoId: string) {
+  async function quitar(invitadoId: number) {
     try {
       await quitarDeMiLista(invitadoId);
       cambiar();

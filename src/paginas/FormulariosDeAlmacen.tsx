@@ -111,7 +111,7 @@ export function FichaDeProducto({
           Categoría
           <select
             value={categoriaId}
-            onChange={(e) => setCategoriaId(e.target.value)}
+            onChange={(e) => setCategoriaId(Number(e.target.value))}
             required
           >
             {opciones.categorias.map((c) => (
@@ -268,7 +268,7 @@ export function MovimientoDeStock({
 
         <label>
           Sala
-          <select value={salaId} onChange={(e) => setSalaId(e.target.value)} required>
+          <select value={salaId} onChange={(e) => setSalaId(Number(e.target.value))} required>
             {opciones.salas.map((s) => (
               <option key={s.id} value={s.id}>
                 {s.nombre}

@@ -92,7 +92,7 @@ async function pedir<T>(ruta: string, opciones: RequestInit = {}): Promise<T> {
 export type Rol = "DIRECCION" | "GERENCIA" | "PROMOTOR" | "PUERTA" | "BARRA" | "PERSONAL";
 
 export type Sesion = {
-  id: string;
+  id: number;
   nombre: string;
   email: string;
   rol: Rol;
@@ -131,7 +131,7 @@ export type UnidadDeProducto = "UNIDAD" | "BOTELLA" | "CAJA" | "LITRO";
 
 /** Espejo de ProductoController.ProductoResumen en el backend. */
 export type Producto = {
-  id: string;
+  id: number;
   sku: string;
   nombre: string;
   categoria: string;
@@ -156,7 +156,7 @@ export function listarProductos(): Promise<Producto[]> {
 // sala salieron.
 
 export type LineaDeStock = {
-  productoId: string;
+  productoId: number;
   sku: string;
   producto: string;
   categoria: string;
@@ -185,7 +185,7 @@ export type StockConResumen = {
 export type TipoDeMovimiento = "COMPRA" | "VENTA" | "MERMA" | "AJUSTE" | "TRANSFERENCIA";
 
 export type LineaDeMovimiento = {
-  id: string;
+  id: number;
   producto: string;
   sku: string;
   sala: string;
@@ -203,7 +203,7 @@ export type LineaDeMovimiento = {
 };
 
 export type Proveedor = {
-  id: string;
+  id: number;
   nombre: string;
   personaDeContacto: string | null;
   email: string | null;
@@ -289,7 +289,7 @@ export function verPedido(codigo: string): Promise<FichaDePedido> {
 export type MetodoDePago = "EFECTIVO" | "TARJETA" | "YAPE" | "PLIN" | "TRANSFERENCIA";
 
 export type ArqueoEnLista = {
-  id: string;
+  id: number;
   sala: string;
   /** En qué barra se trabajó. Nula en turnos viejos sin barra atribuida. */
   barra: string | null;
@@ -322,7 +322,7 @@ export type TotalPorMetodo = {
 };
 
 export type CobroEnLista = {
-  id: string;
+  id: number;
   metodo: MetodoDePago;
   metodoEtiqueta: string;
   totalCentimos: number;
@@ -344,7 +344,7 @@ export function listarArqueos(): Promise<ArqueoEnLista[]> {
   return pedir<ArqueoEnLista[]>("/api/caja/arqueos");
 }
 
-export function verArqueo(id: string): Promise<FichaDeArqueo> {
+export function verArqueo(id: number): Promise<FichaDeArqueo> {
   return pedir<FichaDeArqueo>(`/api/caja/arqueos/${encodeURIComponent(id)}`);
 }
 
@@ -358,7 +358,7 @@ export type EstadoDeEvento = "BORRADOR" | "PUBLICADO" | "AGOTADO" | "CANCELADO" 
  * zona y en qué idioma se enseña. Ver `horaDeSala`.
  */
 export type Evento = {
-  id: string;
+  id: number;
   slug: string;
   titulo: string;
   sala: string;
@@ -371,7 +371,7 @@ export type Evento = {
 };
 
 export type TipoDeEntrada = {
-  id: string;
+  id: number;
   nombre: string;
   descripcion: string | null;
   precioCentimos: number;
@@ -384,17 +384,17 @@ export type TipoDeEntrada = {
 };
 
 /** Un artista del cartel en la ficha del panel, con su id para poder editarlo. */
-export type ArtistaDelCartel = { id: string; nombre: string; genero: string | null; cabezaDeCartel: boolean };
+export type ArtistaDelCartel = { id: number; nombre: string; genero: string | null; cabezaDeCartel: boolean };
 
 export type EventoDetalle = {
-  id: string;
+  id: number;
   slug: string;
   titulo: string;
   descripcion: string | null;
   portada: string | null;
   /** Un archivo subido (`/api/publico/videos/...`), un MP4 externo o un enlace de YouTube. */
   video: string | null;
-  salaId: string;
+  salaId: number;
   sala: string;
   aforoDeSala: number;
   puertasA: string;
@@ -436,7 +436,7 @@ export type CanalDeInteraccion =
   | "EN_PERSONA";
 
 export type ClienteEnLista = {
-  id: string;
+  id: number;
   nombre: string;
   email: string;
   telefono: string | null;
@@ -447,7 +447,7 @@ export type ClienteEnLista = {
 };
 
 export type LineaDeHistorial = {
-  id: string;
+  id: number;
   tipo: TipoDeInteraccion;
   canal: CanalDeInteraccion | null;
   resumen: string;
@@ -455,7 +455,7 @@ export type LineaDeHistorial = {
 };
 
 export type FichaDeCliente = {
-  id: string;
+  id: number;
   nombre: string;
   email: string;
   telefono: string | null;
@@ -476,7 +476,7 @@ export function listarClientes(buscar = ""): Promise<ClienteEnLista[]> {
   return pedir<ClienteEnLista[]>(`/api/clientes${query}`);
 }
 
-export function verCliente(id: string): Promise<FichaDeCliente> {
+export function verCliente(id: number): Promise<FichaDeCliente> {
   return pedir<FichaDeCliente>(`/api/clientes/${encodeURIComponent(id)}`);
 }
 
@@ -535,7 +535,7 @@ export type NocheEnCartelera = {
 };
 
 export type EntradaALaVenta = {
-  id: string;
+  id: number;
   nombre: string;
   descripcion: string | null;
   precioCentimos: number;
@@ -586,7 +586,7 @@ export function apuntarseAlBoletin(nombre: string, email: string): Promise<{ men
 // ─────────────────────────── Reservados ───────────────────────────
 
 export type MesaDisponible = {
-  id: string;
+  id: number;
   nombre: string;
   zona: string | null;
   plazas: number;
@@ -596,7 +596,7 @@ export type MesaDisponible = {
 
 export type SolicitudDeReserva = {
   slug: string;
-  mesaId: string;
+  mesaId: number;
   personas: number;
   notas: string;
   nombre: string;
@@ -613,8 +613,8 @@ export function verReservados(slug: string): Promise<MesaDisponible[]> {
  * Pide un reservado. **No lo aparta**: deja una solicitud que alguien del local
  * llama para confirmar y acordar el depósito. El mensaje de vuelta lo dice.
  */
-export function pedirReserva(solicitud: SolicitudDeReserva): Promise<{ id: string; mensaje: string }> {
-  return pedir<{ id: string; mensaje: string }>("/api/publico/reservas", {
+export function pedirReserva(solicitud: SolicitudDeReserva): Promise<{ id: number; mensaje: string }> {
+  return pedir<{ id: number; mensaje: string }>("/api/publico/reservas", {
     method: "POST",
     body: JSON.stringify(solicitud),
   });
@@ -769,7 +769,7 @@ export const NOMBRE_DE_RECHAZO: Record<MotivoDeRechazo, string> = {
 // total que viaja desde aquí es un total que se puede editar con las
 // herramientas del navegador.
 
-export type LineaPedida = { tipoDeEntradaId: string; cantidad: number };
+export type LineaPedida = { tipoDeEntradaId: number; cantidad: number };
 
 export type SolicitudDeCompra = {
   slug: string;
@@ -857,7 +857,7 @@ export function verMisEntradas(codigo: string): Promise<MisEntradas> {
 // /panel/caja, que es donde se sienta quien cuadra al cerrar.
 
 export type BotonDeProducto = {
-  id: string;
+  id: number;
   nombre: string;
   sku: string;
   unidad: UnidadDeProducto;
@@ -869,7 +869,7 @@ export type BotonDeProducto = {
 export type GrupoDeCatalogo = { categoria: string; productos: BotonDeProducto[] };
 
 export type TurnoAbierto = {
-  id: string;
+  id: number;
   sala: string;
   barra: string | null;
   responsable: string;
@@ -888,19 +888,19 @@ export type PantallaDeBarra = {
   noche: string | null;
   nocheSlug: string | null;
   /** Dónde se puede abrir turno. Con una sola no hay nada que preguntar. */
-  barras: { id: string; nombre: string }[];
+  barras: { id: number; nombre: string }[];
   catalogo: GrupoDeCatalogo[];
 };
 
 export type VentaHecha = {
-  id: string;
+  id: number;
   totalCentimos: number;
   unidades: number;
   esperadoEnCajon: number;
 };
 
 export type TurnoCerrado = {
-  id: string;
+  id: number;
   fondoCentimos: number;
   esperadoCentimos: number;
   contadoCentimos: number;
@@ -920,7 +920,7 @@ export function verBarra(): Promise<PantallaDeBarra> {
  * pestaña y volver abriría una segunda caja y las ventas se repartirían entre
  * las dos.
  */
-export function abrirTurno(fondoCentimos: number, barraId: string | null = null): Promise<TurnoAbierto> {
+export function abrirTurno(fondoCentimos: number, barraId: number | null = null): Promise<TurnoAbierto> {
   return pedir<TurnoAbierto>("/api/barra/turno", {
     method: "POST",
     body: JSON.stringify({ fondoCentimos, barraId }),
@@ -928,10 +928,10 @@ export function abrirTurno(fondoCentimos: number, barraId: string | null = null)
 }
 
 export function cobrarEnBarra(
-  arqueoId: string,
+  arqueoId: number,
   metodoDePago: MetodoDePago,
   eventoSlug: string | null,
-  lineas: { productoId: string; cantidad: number }[],
+  lineas: { productoId: number; cantidad: number }[],
 ): Promise<VentaHecha> {
   return pedir<VentaHecha>("/api/barra/ventas", {
     method: "POST",
@@ -939,7 +939,7 @@ export function cobrarEnBarra(
   });
 }
 
-export function cerrarTurno(arqueoId: string, contadoCentimos: number): Promise<TurnoCerrado> {
+export function cerrarTurno(arqueoId: number, contadoCentimos: number): Promise<TurnoCerrado> {
   return pedir<TurnoCerrado>("/api/barra/cierre", {
     method: "POST",
     body: JSON.stringify({ arqueoId, contadoCentimos }),
@@ -961,8 +961,8 @@ export const NOMBRE_DE_PAGO: Record<MetodoDePago, string> = {
 // el listado, porque es la misma sección vista por la misma gente: lo que cambia
 // es el verbo.
 
-export type SalaParaElegir = { id: string; nombre: string; aforo: number };
-export type ArtistaParaElegir = { id: string; nombre: string; genero: string | null };
+export type SalaParaElegir = { id: number; nombre: string; aforo: number };
+export type ArtistaParaElegir = { id: number; nombre: string; genero: string | null };
 
 export type OpcionesDeProgramacion = {
   salas: SalaParaElegir[];
@@ -979,7 +979,7 @@ export type OpcionesDeProgramacion = {
 export type FormularioDeNoche = {
   titulo: string;
   descripcion: string;
-  salaId: string;
+  salaId: number;
   puertasA: string;
   terminaA: string;
   edadMinima: number;
@@ -988,7 +988,7 @@ export type FormularioDeNoche = {
   portada: string;
   video: string;
   /** En orden. El primero es cabeza de cartel. */
-  artistaIds: string[];
+  artistaIds: number[];
 };
 
 export type FormularioDeTipo = {
@@ -1001,8 +1001,8 @@ export type FormularioDeTipo = {
   activo: boolean;
 };
 
-export type NocheGuardada = { id: string; slug: string; titulo: string };
-export type TipoGuardado = { id: string; nombre: string; cantidad: number; activo: boolean };
+export type NocheGuardada = { id: number; slug: string; titulo: string };
+export type TipoGuardado = { id: number; nombre: string; cantidad: number; activo: boolean };
 export type TipoQuitado = { retirado: boolean; mensaje: string };
 
 export function verOpcionesDeProgramacion(): Promise<OpcionesDeProgramacion> {
@@ -1031,7 +1031,7 @@ export function anadirTipoDeEntrada(slug: string, datos: FormularioDeTipo): Prom
   });
 }
 
-export function editarTipoDeEntrada(id: string, datos: FormularioDeTipo): Promise<TipoGuardado> {
+export function editarTipoDeEntrada(id: number, datos: FormularioDeTipo): Promise<TipoGuardado> {
   return pedir<TipoGuardado>(`/api/eventos/entradas/${encodeURIComponent(id)}`, {
     method: "PUT",
     body: JSON.stringify(datos),
@@ -1044,7 +1044,7 @@ export function editarTipoDeEntrada(id: string, datos: FormularioDeTipo): Promis
  * Si tiene ventas **no se borra**: se retira de la venta, y la respuesta lo dice
  * en `retirado`. Hay que enseñarlo, o parecerá que el botón no funcionó.
  */
-export function quitarTipoDeEntrada(id: string): Promise<TipoQuitado> {
+export function quitarTipoDeEntrada(id: number): Promise<TipoQuitado> {
   return pedir<TipoQuitado>(`/api/eventos/entradas/${encodeURIComponent(id)}`, {
     method: "DELETE",
   });
@@ -1094,8 +1094,8 @@ export function aHoraDeSala(iso: string): string {
 // nada lo subía: sin esto, a la tercera noche el inventario está en negativo y
 // deja de servir para decidir qué pedir.
 
-export type CategoriaParaElegir = { id: string; nombre: string };
-export type SalaParaElegirEnAlmacen = { id: string; nombre: string };
+export type CategoriaParaElegir = { id: number; nombre: string };
+export type SalaParaElegirEnAlmacen = { id: number; nombre: string };
 
 export type OpcionesDeAlmacen = {
   categorias: CategoriaParaElegir[];
@@ -1114,7 +1114,7 @@ export type OpcionesDeAlmacen = {
  */
 export type FormularioDeProducto = {
   nombre: string;
-  categoriaId: string;
+  categoriaId: number;
   unidad: UnidadDeProducto;
   costeCentimos: number;
   precioCentimos: number;
@@ -1132,7 +1132,7 @@ export type FormularioDeProducto = {
  */
 export type FormularioDeMovimiento = {
   tipo: TipoDeMovimiento;
-  salaId: string;
+  salaId: number;
   unidades: number;
   /** Lo pagado por unidad, en céntimos. Solo significa algo en una compra. */
   costeUnitarioCentimos: number | null;
@@ -1140,7 +1140,7 @@ export type FormularioDeMovimiento = {
 };
 
 export type ProductoGuardado = {
-  id: string;
+  id: number;
   sku: string;
   nombre: string;
   precioCentimos: number;
@@ -1148,7 +1148,7 @@ export type ProductoGuardado = {
 };
 
 export type MovimientoHecho = {
-  movimientoId: string;
+  movimientoId: number;
   producto: string;
   cantidad: number;
   stockResultante: number;
@@ -1166,7 +1166,7 @@ export function crearProducto(datos: FormularioDeProducto): Promise<ProductoGuar
 }
 
 export function editarProducto(
-  id: string,
+  id: number,
   datos: FormularioDeProducto,
 ): Promise<ProductoGuardado> {
   return pedir<ProductoGuardado>(`/api/inventario/productos/${encodeURIComponent(id)}`, {
@@ -1176,7 +1176,7 @@ export function editarProducto(
 }
 
 export function moverStock(
-  productoId: string,
+  productoId: number,
   datos: FormularioDeMovimiento,
 ): Promise<MovimientoHecho> {
   return pedir<MovimientoHecho>(
@@ -1209,7 +1209,7 @@ export const NOMBRE_DE_MOVIMIENTO: Record<TipoDeMovimiento, string> = {
 // nada que actualizar, la lista se deduce de la regla cada vez que se pregunta.
 
 export type SegmentoEnLista = {
-  id: string;
+  id: number;
   nombre: string;
   descripcion: string | null;
   /** La condición en castellano, generada al vuelo desde la regla guardada. */
@@ -1229,7 +1229,7 @@ export type SegmentoEnLista = {
 };
 
 export type MiembroDeSegmento = {
-  id: string;
+  id: number;
   nombre: string;
   email: string;
   aceptaMarketing: boolean;
@@ -1247,12 +1247,12 @@ export type CanalDeCampania = "CORREO" | "SMS" | "WHATSAPP" | "PUSH";
 export type EstadoDeCampania = "BORRADOR" | "PROGRAMADO" | "ENVIADO" | "CANCELADO";
 
 export type CampaniaEnLista = {
-  id: string;
+  id: number;
   nombre: string;
   canal: CanalDeCampania;
   canalEtiqueta: string;
   segmento: string;
-  segmentoId: string;
+  segmentoId: number;
   asunto: string | null;
   cuerpo: string;
   estado: EstadoDeCampania;
@@ -1265,7 +1265,7 @@ export type CampaniaEnLista = {
 export type FormularioDeCampania = {
   nombre: string;
   canal: CanalDeCampania;
-  segmentoId: string;
+  segmentoId: number;
   asunto: string;
   cuerpo: string;
 };
@@ -1274,7 +1274,7 @@ export function verSegmentos(): Promise<SegmentoEnLista[]> {
   return pedir<SegmentoEnLista[]>("/api/clientes/segmentos");
 }
 
-export function verSegmento(id: string): Promise<FichaDeSegmento> {
+export function verSegmento(id: number): Promise<FichaDeSegmento> {
   return pedir<FichaDeSegmento>(`/api/clientes/segmentos/${encodeURIComponent(id)}`);
 }
 
@@ -1296,7 +1296,7 @@ export function redactarCampania(datos: FormularioDeCampania): Promise<CampaniaE
 }
 
 export function reescribirCampania(
-  id: string,
+  id: number,
   datos: FormularioDeCampania,
 ): Promise<CampaniaEnLista> {
   return pedir<CampaniaEnLista>(`/api/clientes/campanias/${encodeURIComponent(id)}`, {
@@ -1306,7 +1306,7 @@ export function reescribirCampania(
 }
 
 /** La descarta. Se marca como cancelada, no se borra. */
-export function cancelarCampania(id: string): Promise<CampaniaEnLista> {
+export function cancelarCampania(id: number): Promise<CampaniaEnLista> {
   return pedir<CampaniaEnLista>(`/api/clientes/campanias/${encodeURIComponent(id)}`, {
     method: "DELETE",
   });
@@ -1353,7 +1353,7 @@ export type NocheEnPortada = {
 };
 
 export type ArqueoEnPortada = {
-  id: string;
+  id: number;
   sala: string;
   responsable: string;
   /** Nulo mientras la caja sigue abierta: nadie ha contado todavía. */
@@ -1363,7 +1363,7 @@ export type ArqueoEnPortada = {
 };
 
 export type ReposicionEnPortada = {
-  productoId: string;
+  productoId: number;
   producto: string;
   quedan: number;
   umbral: number;
@@ -1460,7 +1460,7 @@ export const NOMBRE_DE_ESTADO_DE_RESERVA: Record<EstadoDeReserva, string> = {
 // tiene, un fijo por cada invitado de sus listas que entra.
 
 export type ListaDeInvitados = {
-  id: string;
+  id: number;
   nombre: string;
   noche: string;
   nocheSlug: string;
@@ -1475,7 +1475,7 @@ export type ListaDeInvitados = {
 };
 
 export type Promotor = {
-  id: string;
+  id: number;
   nombre: string;
   rol: Rol;
   email: string | null;
@@ -1539,7 +1539,7 @@ export type PendienteDePromotor = {
 };
 
 export type Liquidacion = {
-  id: string;
+  id: number;
   pagadaEn: string;
   hasta: string;
   pedidos: number;
@@ -1575,18 +1575,18 @@ export type Pago = {
   ajusteCentimos: number;
 };
 
-export function verPromotor(id: string): Promise<FichaDePromotor> {
+export function verPromotor(id: number): Promise<FichaDePromotor> {
   return pedir<FichaDePromotor>(`/api/promotores/${encodeURIComponent(id)}`);
 }
 
-export function liquidarPromotor(id: string, pago: Pago): Promise<Liquidacion> {
+export function liquidarPromotor(id: number, pago: Pago): Promise<Liquidacion> {
   return pedir<Liquidacion>(`/api/promotores/${encodeURIComponent(id)}/liquidaciones`, {
     method: "POST",
     body: JSON.stringify(pago),
   });
 }
 
-export function anularLiquidacion(id: string): Promise<void> {
+export function anularLiquidacion(id: number): Promise<void> {
   return pedir<void>(`/api/promotores/liquidaciones/${encodeURIComponent(id)}`, { method: "DELETE" });
 }
 
@@ -1606,7 +1606,7 @@ export function verMiPanelDePromotor(): Promise<MiPanelDePromotor> {
   return pedir<MiPanelDePromotor>("/api/mi-promotor");
 }
 
-export function verMiLista(id: string): Promise<FichaDeLista> {
+export function verMiLista(id: number): Promise<FichaDeLista> {
   return pedir<FichaDeLista>(`/api/mi-promotor/listas/${encodeURIComponent(id)}`);
 }
 
@@ -1614,14 +1614,14 @@ export function abrirMiLista(datos: { slug: string; nombre: string; maxInvitados
   return pedir<FichaDeLista>("/api/mi-promotor/listas", { method: "POST", body: JSON.stringify(datos) });
 }
 
-export function apuntarEnMiLista(listaId: string, nombreCompleto: string, personas: number): Promise<InvitadoEnFicha> {
+export function apuntarEnMiLista(listaId: number, nombreCompleto: string, personas: number): Promise<InvitadoEnFicha> {
   return pedir<InvitadoEnFicha>(`/api/mi-promotor/listas/${encodeURIComponent(listaId)}/invitados`, {
     method: "POST",
     body: JSON.stringify({ nombreCompleto, personas }),
   });
 }
 
-export function quitarDeMiLista(invitadoId: string): Promise<void> {
+export function quitarDeMiLista(invitadoId: number): Promise<void> {
   return pedir<void>(`/api/mi-promotor/invitados/${encodeURIComponent(invitadoId)}`, { method: "DELETE" });
 }
 
@@ -1661,7 +1661,7 @@ export type { ElementoPlano, PuertaPlano, TipoZona, ZonaPlano } from "./local/ev
 import type { ElementoPlano, PuertaPlano, ZonaPlano } from "./local/evacuacion";
 
 export type SalaDelLocal = {
-  id: string;
+  id: number;
   nombre: string;
   aforo: number;
   planoAncho: number;
@@ -1672,7 +1672,7 @@ export type SalaDelLocal = {
 };
 
 export type GeometriaDeSala = {
-  salaId: string;
+  salaId: number;
   planoAncho: number;
   planoFondo: number;
   zonas: ZonaPlano[];
@@ -1707,12 +1707,12 @@ export type AgenteDeIa = {
   modelo: string;
 };
 
-export type EjecucionLanzada = { ejecucionId: string; propuestaId: string; mensaje: string };
+export type EjecucionLanzada = { ejecucionId: number; propuestaId: number; mensaje: string };
 
 export type EstadoDePropuesta = "PENDIENTE" | "APROBADA" | "RECHAZADA";
 
 export type PropuestaDeIa = {
-  id: string;
+  id: number;
   tipo: string;
   tipoNombre: string;
   agente: string;
@@ -1757,7 +1757,7 @@ export type MetricasDeIa = {
   porAgente: { agente: string; veces: number; exitoPorcentaje: number; mediana: string; tokensMedios: string }[];
   bancoDePruebas: { modelo: string; corridas: number; exitoPorcentaje: number; mediana: string; intentosMedios: string }[];
   ultimas: {
-    id: string;
+    id: number;
     agente: string;
     modelo: string | null;
     lanzadaPor: string;
@@ -1789,7 +1789,7 @@ export function verBandejaDeIa(): Promise<BandejaDeIa> {
  *     esquema que le exigió al modelo.
  */
 export function decidirPropuesta(
-  id: string,
+  id: number,
   decision: "APROBAR" | "DESCARTAR",
   datos?: unknown,
 ): Promise<Desenlace> {
@@ -1832,8 +1832,8 @@ export type TurnoDeChat = { rol: "usuario" | "asistente"; contenido: string };
 export function preguntarAlConserje(
   mensaje: string,
   historial: TurnoDeChat[],
-  sesionId: string | null,
-): Promise<{ sesionId: string; respuesta: string }> {
+  sesionId: number | null,
+): Promise<{ sesionId: number; respuesta: string }> {
   return pedir("/api/publico/chat", {
     method: "POST",
     body: JSON.stringify({ mensaje, historial, sesionId }),
@@ -1908,7 +1908,7 @@ export function comoVideo(url: string): { tipo: "youtube"; id: string } | { tipo
 // ─────────────────────── Artistas ───────────────────────
 
 export type ArtistaEnCatalogo = {
-  id: string;
+  id: number;
   nombre: string;
   genero: string | null;
   imagen: string | null;
@@ -1929,24 +1929,24 @@ export function crearArtista(datos: FormularioDeArtista): Promise<ArtistaEnCatal
   return pedir<ArtistaEnCatalogo>("/api/artistas", { method: "POST", body: JSON.stringify(datos) });
 }
 
-export function editarArtista(id: string, datos: FormularioDeArtista): Promise<ArtistaEnCatalogo> {
+export function editarArtista(id: number, datos: FormularioDeArtista): Promise<ArtistaEnCatalogo> {
   return pedir<ArtistaEnCatalogo>(`/api/artistas/${encodeURIComponent(id)}`, {
     method: "PUT",
     body: JSON.stringify(datos),
   });
 }
 
-export function borrarArtista(id: string): Promise<void> {
+export function borrarArtista(id: number): Promise<void> {
   return pedir<void>(`/api/artistas/${encodeURIComponent(id)}`, { method: "DELETE" });
 }
 
-export function subirFotoDeArtista(id: string, archivo: File): Promise<{ imagen: string; pesoKb: number }> {
+export function subirFotoDeArtista(id: number, archivo: File): Promise<{ imagen: string; pesoKb: number }> {
   const formulario = new FormData();
   formulario.append("archivo", archivo);
   return pedir(`/api/artistas/${encodeURIComponent(id)}/foto`, { method: "POST", body: formulario });
 }
 
-export function quitarFotoDeArtista(id: string): Promise<void> {
+export function quitarFotoDeArtista(id: number): Promise<void> {
   return pedir<void>(`/api/artistas/${encodeURIComponent(id)}/foto`, { method: "DELETE" });
 }
 
@@ -1962,7 +1962,7 @@ export const NOMBRE_DE_ESTADO_DE_ORDEN: Record<EstadoDeOrden, string> = {
 };
 
 export type OrdenEnLista = {
-  id: string;
+  id: number;
   codigo: string;
   proveedor: string;
   estado: EstadoDeOrden;
@@ -1974,7 +1974,7 @@ export type OrdenEnLista = {
 };
 
 export type LineaDeOrden = {
-  productoId: string;
+  productoId: number;
   sku: string;
   producto: string;
   cantidad: number;
@@ -1982,19 +1982,19 @@ export type LineaDeOrden = {
   importeCentimos: number;
 };
 
-export type FichaDeOrden = Omit<OrdenEnLista, "lineas"> & { proveedorId: string; lineas: LineaDeOrden[] };
+export type FichaDeOrden = Omit<OrdenEnLista, "lineas"> & { proveedorId: number; lineas: LineaDeOrden[] };
 
 export type FormularioDeOrden = {
-  proveedorId: string;
+  proveedorId: number;
   esperadoEn: string | null;
-  lineas: { productoId: string; cantidad: number; costeUnitarioCentimos: number }[];
+  lineas: { productoId: number; cantidad: number; costeUnitarioCentimos: number }[];
 };
 
 export function verOrdenes(): Promise<OrdenEnLista[]> {
   return pedir<OrdenEnLista[]>("/api/inventario/ordenes");
 }
 
-export function verOrden(id: string): Promise<FichaDeOrden> {
+export function verOrden(id: number): Promise<FichaDeOrden> {
   return pedir<FichaDeOrden>(`/api/inventario/ordenes/${encodeURIComponent(id)}`);
 }
 
@@ -2002,26 +2002,26 @@ export function crearOrden(datos: FormularioDeOrden): Promise<FichaDeOrden> {
   return pedir<FichaDeOrden>("/api/inventario/ordenes", { method: "POST", body: JSON.stringify(datos) });
 }
 
-export function editarOrden(id: string, datos: FormularioDeOrden): Promise<FichaDeOrden> {
+export function editarOrden(id: number, datos: FormularioDeOrden): Promise<FichaDeOrden> {
   return pedir<FichaDeOrden>(`/api/inventario/ordenes/${encodeURIComponent(id)}`, {
     method: "PUT",
     body: JSON.stringify(datos),
   });
 }
 
-export function enviarOrden(id: string): Promise<FichaDeOrden> {
+export function enviarOrden(id: number): Promise<FichaDeOrden> {
   return pedir<FichaDeOrden>(`/api/inventario/ordenes/${encodeURIComponent(id)}/enviar`, { method: "POST" });
 }
 
 /** La mercancía llegó: entra en el almacén, línea a línea, como compras. */
-export function recibirOrden(id: string, salaId: string): Promise<FichaDeOrden> {
+export function recibirOrden(id: number, salaId: number): Promise<FichaDeOrden> {
   return pedir<FichaDeOrden>(`/api/inventario/ordenes/${encodeURIComponent(id)}/recibir`, {
     method: "POST",
     body: JSON.stringify({ salaId }),
   });
 }
 
-export function cancelarOrden(id: string): Promise<FichaDeOrden> {
+export function cancelarOrden(id: number): Promise<FichaDeOrden> {
   return pedir<FichaDeOrden>(`/api/inventario/ordenes/${encodeURIComponent(id)}/cancelar`, { method: "POST" });
 }
 
@@ -2031,7 +2031,7 @@ export function crearProveedor(datos: FormularioDeProveedor): Promise<Proveedor>
   return pedir<Proveedor>("/api/inventario/proveedores", { method: "POST", body: JSON.stringify(datos) });
 }
 
-export function editarProveedor(id: string, datos: FormularioDeProveedor): Promise<Proveedor> {
+export function editarProveedor(id: number, datos: FormularioDeProveedor): Promise<Proveedor> {
   return pedir<Proveedor>(`/api/inventario/proveedores/${encodeURIComponent(id)}`, {
     method: "PUT",
     body: JSON.stringify(datos),
@@ -2041,7 +2041,7 @@ export function editarProveedor(id: string, datos: FormularioDeProveedor): Promi
 // ─────────────────────── Reservas de box ───────────────────────
 
 export type ReservaEnLista = {
-  id: string;
+  id: number;
   noche: string;
   nocheSlug: string;
   empiezaA: string;
@@ -2050,7 +2050,7 @@ export type ReservaEnLista = {
   plazas: number;
   consumoMinimoCentimos: number;
   cliente: string;
-  clienteId: string;
+  clienteId: number;
   telefono: string | null;
   email: string;
   personas: number;
@@ -2062,12 +2062,12 @@ export type ReservaEnLista = {
 
 export type OpcionesDeReserva = {
   noches: { slug: string; titulo: string; empiezaA: string }[];
-  boxes: { id: string; nombre: string; zona: string | null; plazas: number; consumoMinimoCentimos: number }[];
+  boxes: { id: number; nombre: string; zona: string | null; plazas: number; consumoMinimoCentimos: number }[];
 };
 
 export type NuevaReserva = {
   slug: string;
-  mesaId: string;
+  mesaId: number;
   personas: number;
   notas: string;
   nombre: string;
@@ -2102,7 +2102,7 @@ export function apuntarReserva(datos: NuevaReserva): Promise<ReservaEnLista> {
 }
 
 export function cambiarReserva(
-  id: string,
+  id: number,
   datos: { estado: EstadoDeReserva; depositoCentimos: number; notas: string },
 ): Promise<ReservaEnLista> {
   return pedir<ReservaEnLista>(`/api/reservas/${encodeURIComponent(id)}`, {
@@ -2114,9 +2114,9 @@ export function cambiarReserva(
 // ─────────────────────── Gastos ───────────────────────
 
 export type GastoEnLista = {
-  id: string;
+  id: number;
   fecha: string;
-  categoriaId: string;
+  categoriaId: number;
   categoria: string;
   importeCentimos: number;
   descripcion: string | null;
@@ -2133,12 +2133,12 @@ export type GastosDelMes = {
 };
 
 export type OpcionesDeGasto = {
-  categorias: { id: string; nombre: string; activa: boolean }[];
+  categorias: { id: number; nombre: string; activa: boolean }[];
   noches: { slug: string; titulo: string; empiezaA: string }[];
 };
 
 export type FormularioDeGasto = {
-  categoriaId: string;
+  categoriaId: number;
   eventoSlug: string | null;
   importeCentimos: number;
   descripcion: string;
@@ -2157,22 +2157,22 @@ export function apuntarGasto(datos: FormularioDeGasto): Promise<GastoEnLista> {
   return pedir<GastoEnLista>("/api/gastos", { method: "POST", body: JSON.stringify(datos) });
 }
 
-export function corregirGasto(id: string, datos: FormularioDeGasto): Promise<GastoEnLista> {
+export function corregirGasto(id: number, datos: FormularioDeGasto): Promise<GastoEnLista> {
   return pedir<GastoEnLista>(`/api/gastos/${encodeURIComponent(id)}`, { method: "PUT", body: JSON.stringify(datos) });
 }
 
-export function borrarGasto(id: string): Promise<void> {
+export function borrarGasto(id: number): Promise<void> {
   return pedir<void>(`/api/gastos/${encodeURIComponent(id)}`, { method: "DELETE" });
 }
 
-export function crearCategoriaDeGasto(nombre: string): Promise<{ id: string; nombre: string; activa: boolean }> {
+export function crearCategoriaDeGasto(nombre: string): Promise<{ id: number; nombre: string; activa: boolean }> {
   return pedir("/api/gastos/categorias", { method: "POST", body: JSON.stringify({ nombre }) });
 }
 
 // ─────────────────────── Listas de invitados ───────────────────────
 
 export type InvitadoEnFicha = {
-  id: string;
+  id: number;
   nombreCompleto: string;
   personas: number;
   entro: boolean;
@@ -2180,12 +2180,12 @@ export type InvitadoEnFicha = {
 };
 
 export type FichaDeLista = {
-  id: string;
+  id: number;
   nombre: string;
   noche: string;
   nocheSlug: string;
   empiezaA: string;
-  promotorId: string;
+  promotorId: number;
   promotor: string;
   maxInvitados: number;
   apuntados: number;
@@ -2195,49 +2195,49 @@ export type FichaDeLista = {
 
 export type OpcionesDeLista = {
   noches: { slug: string; titulo: string; empiezaA: string }[];
-  promotores: { id: string; nombre: string; codigo: string }[];
+  promotores: { id: number; nombre: string; codigo: string }[];
 };
 
 export function verOpcionesDeLista(): Promise<OpcionesDeLista> {
   return pedir<OpcionesDeLista>("/api/promotores/opciones");
 }
 
-export function verLista(id: string): Promise<FichaDeLista> {
+export function verLista(id: number): Promise<FichaDeLista> {
   return pedir<FichaDeLista>(`/api/promotores/listas/${encodeURIComponent(id)}`);
 }
 
 export function abrirLista(datos: {
   slug: string;
-  promotorId: string;
+  promotorId: number;
   nombre: string;
   maxInvitados: number;
 }): Promise<FichaDeLista> {
   return pedir<FichaDeLista>("/api/promotores/listas", { method: "POST", body: JSON.stringify(datos) });
 }
 
-export function cambiarLista(id: string, datos: { nombre: string; maxInvitados: number }): Promise<FichaDeLista> {
+export function cambiarLista(id: number, datos: { nombre: string; maxInvitados: number }): Promise<FichaDeLista> {
   return pedir<FichaDeLista>(`/api/promotores/listas/${encodeURIComponent(id)}`, {
     method: "PUT",
     body: JSON.stringify(datos),
   });
 }
 
-export function cerrarLista(id: string): Promise<void> {
+export function cerrarLista(id: number): Promise<void> {
   return pedir<void>(`/api/promotores/listas/${encodeURIComponent(id)}`, { method: "DELETE" });
 }
 
-export function apuntarInvitado(listaId: string, nombreCompleto: string, personas: number): Promise<InvitadoEnFicha> {
+export function apuntarInvitado(listaId: number, nombreCompleto: string, personas: number): Promise<InvitadoEnFicha> {
   return pedir<InvitadoEnFicha>(`/api/promotores/listas/${encodeURIComponent(listaId)}/invitados`, {
     method: "POST",
     body: JSON.stringify({ nombreCompleto, personas }),
   });
 }
 
-export function quitarInvitado(id: string): Promise<void> {
+export function quitarInvitado(id: number): Promise<void> {
   return pedir<void>(`/api/promotores/invitados/${encodeURIComponent(id)}`, { method: "DELETE" });
 }
 
-export function marcarEntradaDeInvitado(id: string, entro: boolean): Promise<InvitadoEnFicha> {
+export function marcarEntradaDeInvitado(id: number, entro: boolean): Promise<InvitadoEnFicha> {
   return pedir<InvitadoEnFicha>(`/api/promotores/invitados/${encodeURIComponent(id)}/entrada`, {
     method: "PUT",
     body: JSON.stringify({ entro }),
@@ -2247,14 +2247,14 @@ export function marcarEntradaDeInvitado(id: string, entro: boolean): Promise<Inv
 // ─────────────────────── Personal ───────────────────────
 
 export type PersonaDelEquipo = {
-  id: string;
+  id: number;
   nombre: string;
   email: string | null;
   rol: Rol;
   activo: boolean;
   /** Si puede iniciar sesión: tiene correo y contraseña y está activa. */
   conAcceso: boolean;
-  puestoId: string | null;
+  puestoId: number | null;
   puesto: string | null;
   fechaDeAlta: string | null;
   sueldoPorHoraCentimos: number;
@@ -2268,7 +2268,7 @@ export type FormularioDePersona = {
   email: string;
   rol: Rol;
   activo: boolean;
-  puestoId: string | null;
+  puestoId: number | null;
   sueldoPorHoraCentimos: number;
   codigoDePromotor: string;
   comisionPorcentaje: number | null;
@@ -2291,7 +2291,7 @@ export function verEquipo(): Promise<PersonaDelEquipo[]> {
   return pedir<PersonaDelEquipo[]>("/api/personal");
 }
 
-export function verOpcionesDePersonal(): Promise<{ roles: Rol[]; puestos: { id: string; nombre: string }[] }> {
+export function verOpcionesDePersonal(): Promise<{ roles: Rol[]; puestos: { id: number; nombre: string }[] }> {
   return pedir("/api/personal/opciones");
 }
 
@@ -2299,14 +2299,14 @@ export function darDeAlta(datos: FormularioDePersona): Promise<PersonaDelEquipo>
   return pedir<PersonaDelEquipo>("/api/personal", { method: "POST", body: JSON.stringify(datos) });
 }
 
-export function editarPersona(id: string, datos: FormularioDePersona): Promise<PersonaDelEquipo> {
+export function editarPersona(id: number, datos: FormularioDePersona): Promise<PersonaDelEquipo> {
   return pedir<PersonaDelEquipo>(`/api/personal/${encodeURIComponent(id)}`, {
     method: "PUT",
     body: JSON.stringify(datos),
   });
 }
 
-export function cambiarClave(id: string, clave: string): Promise<void> {
+export function cambiarClave(id: number, clave: string): Promise<void> {
   return pedir<void>(`/api/personal/${encodeURIComponent(id)}/clave`, {
     method: "PUT",
     body: JSON.stringify({ clave }),
@@ -2330,7 +2330,7 @@ export type PorMetodoDePago = { metodo: string; operaciones: number; centimos: n
 export type ExpedienteDeNoche = {
   generadoEn: string;
   noche: {
-    id: string;
+    id: number;
     slug: string;
     titulo: string;
     estado: EstadoDeEvento;
@@ -2384,7 +2384,7 @@ export type ExpedienteDeNoche = {
     margenCentimos: number;
     porBarra: { barra: string; cajas: number; tickets: number; unidades: number; centimos: number }[];
     cajas: {
-      id: string;
+      id: number;
       barra: string;
       responsable: string;
       abiertaEn: string;
@@ -2406,7 +2406,7 @@ export type ExpedienteDeNoche = {
     }[];
   };
   promotores: {
-    id: string;
+    id: number;
     nombre: string;
     codigo: string;
     pedidos: number;
@@ -2490,7 +2490,7 @@ export const NOMBRE_DE_INCIDENCIA: Record<TipoDeIncidencia, string> = {
 };
 
 export type IncidenciaDeNoche = {
-  id: string;
+  id: number;
   tipo: TipoDeIncidencia;
   descripcion: string;
   ocurrioEn: string;
@@ -2523,7 +2523,7 @@ export function apuntarIncidencia(
   });
 }
 
-export function quitarIncidencia(slug: string, id: string): Promise<void> {
+export function quitarIncidencia(slug: string, id: number): Promise<void> {
   return pedir<void>(`/api/eventos/${encodeURIComponent(slug)}/incidencias/${encodeURIComponent(id)}`, {
     method: "DELETE",
   });
@@ -2558,7 +2558,7 @@ export function verNochesCelebradas(limite = 60): Promise<NocheEnHistorico[]> {
 
 // ─────────────────────── Las barras del local ───────────────────────
 
-export type BarraDelLocal = { id: string; nombre: string; activa: boolean };
+export type BarraDelLocal = { id: number; nombre: string; activa: boolean };
 
 export function verBarrasDelLocal(): Promise<BarraDelLocal[]> {
   return pedir<BarraDelLocal[]>("/api/caja/barras");
@@ -2568,7 +2568,7 @@ export function crearBarra(nombre: string): Promise<BarraDelLocal> {
   return pedir<BarraDelLocal>("/api/caja/barras", { method: "POST", body: JSON.stringify({ nombre }) });
 }
 
-export function cambiarBarra(id: string, activa: boolean): Promise<BarraDelLocal> {
+export function cambiarBarra(id: number, activa: boolean): Promise<BarraDelLocal> {
   return pedir<BarraDelLocal>(`/api/caja/barras/${encodeURIComponent(id)}`, {
     method: "PUT",
     body: JSON.stringify({ activa }),

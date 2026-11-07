@@ -12,7 +12,7 @@
 export type TipoZona = "PISTA" | "VIP" | "BARRA" | "OTRA";
 
 export type ZonaPlano = {
-  id: string;
+  id: number;
   nombre: string;
   tipo: TipoZona;
   aforo: number;
@@ -27,7 +27,7 @@ export type ZonaPlano = {
 };
 
 export type PuertaPlano = {
-  id: string;
+  id: number;
   nombre: string;
   esSalidaEmergencia: boolean;
   caudalPorMinuto: number;
@@ -43,8 +43,8 @@ export type PuertaPlano = {
 export type TipoDeElemento = "EXTINTOR" | "BOTIQUIN" | "LUZ_EMERGENCIA" | "ALARMA" | "ZONA_SEGURA" | "PUNTO_REUNION";
 
 export type ElementoPlano = {
-  /** Vacío en uno recién añadido que todavía no se ha guardado. */
-  id: string;
+  /** Nulo en uno recién añadido que todavía no se ha guardado. */
+  id: number | null;
   tipo: TipoDeElemento;
   nombre: string;
   piso: number;

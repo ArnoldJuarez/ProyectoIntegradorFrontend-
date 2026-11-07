@@ -374,7 +374,7 @@ function Pista({ zona, c, animar, conGente }: PropsDeAmbiente) {
       <BolaDeEspejos posicion={[c.cx, truss - 1.2, c.cz]} animar={animar} />
       <pointLight position={[c.cx - c.w * 0.25, c.y0 + 4, c.cz]} color={COLOR.magenta} intensity={70} distance={20} decay={1.5} />
       <pointLight position={[c.cx + c.w * 0.25, c.y0 + 4, c.cz]} color={COLOR.violeta} intensity={70} distance={20} decay={1.5} />
-      {conGente && <Publico c={c} personas={personasDe(zona, c, 0.7, 150)} semilla={zona.id} baila animar={animar} />}
+      {conGente && <Publico c={c} personas={personasDe(zona, c, 0.7, 150)} semilla={String(zona.id)} baila animar={animar} />}
     </group>
   );
 }
@@ -423,7 +423,7 @@ function Cueva({ zona, c, animar, conGente, recortar, todas, centro }: PropsDeAm
       <CabezalMovil posicion={[c.cx - c.w * 0.25, c.y0 + c.h - 0.3, c.cz]} color="#ff4a1c" largo={c.h - 0.4} fase={0.4} animar={animar} />
       <CabezalMovil posicion={[c.cx + c.w * 0.25, c.y0 + c.h - 0.3, c.cz]} color="#ffb000" largo={c.h - 0.4} fase={2.2} animar={animar} />
       <Luz c={c} color="#ff3a14" intensidad={55} />
-      {conGente && <Publico c={pista} personas={personasDe(zona, c, 0.7)} semilla={zona.id} baila animar={animar} color="#2b1a1a" />}
+      {conGente && <Publico c={pista} personas={personasDe(zona, c, 0.7)} semilla={String(zona.id)} baila animar={animar} color="#2b1a1a" />}
     </group>
   );
 }
@@ -491,7 +491,7 @@ function Boxes({ zona, c, conGente, animar }: PropsDeAmbiente) {
       <FilaDeReservados c={c} color={COLOR.terciopelo} brillo={COLOR.violeta} />
       <MarcoDeNeon c={c} y={c.y0 + Math.min(c.h, 4) - 0.15} color={COLOR.violeta} margen={0.2} />
       <Luz c={c} color={LUZ_DE.boxes} intensidad={25} />
-      {conGente && <Publico c={c} personas={personasDe(zona, c, 0.5, 30)} semilla={zona.id} baila={false} animar={animar} color="#251a30" />}
+      {conGente && <Publico c={c} personas={personasDe(zona, c, 0.5, 30)} semilla={String(zona.id)} baila={false} animar={animar} color="#251a30" />}
     </group>
   );
 }
@@ -542,7 +542,7 @@ function Lounge({ zona, c, conGente, animar }: PropsDeAmbiente) {
       <MarcoDeNeon c={c} y={c.y0 + c.h - 0.12} color={COLOR.dorado} margen={0.15} />
       <Luz c={c} color={LUZ_DE.lounge} intensidad={40} />
       <pointLight position={[c.cx, c.y0 + c.h - 1, c.cz]} color="#ffd27a" intensity={18} distance={9} decay={1.6} />
-      {conGente && <Publico c={c} personas={personasDe(zona, c, 0.5, 40)} semilla={zona.id} baila={false} animar={animar} color="#2a1d36" />}
+      {conGente && <Publico c={c} personas={personasDe(zona, c, 0.5, 40)} semilla={String(zona.id)} baila={false} animar={animar} color="#2a1d36" />}
     </group>
   );
 }
@@ -592,7 +592,7 @@ function MontarBarra({
           <meshStandardMaterial color="#2a2530" metalness={0.5} roughness={0.3} />
         </mesh>
       ))}
-      <Botellas x0={-largoBarra / 2 + 0.2} x1={largoBarra / 2 - 0.2} z={zContra + 0.12} y={1.23} baldas={4} semilla={zona.id} />
+      <Botellas x0={-largoBarra / 2 + 0.2} x1={largoBarra / 2 - 0.2} z={zContra + 0.12} y={1.23} baldas={4} semilla={String(zona.id)} />
       <mesh position={[0, 0.45, zContra + 0.3]}>
         <boxGeometry args={[largoBarra, 0.9, 0.5]} />
         <meshStandardMaterial color={madera} roughness={0.6} />
@@ -670,7 +670,7 @@ function PublicoDeBarra({ p, c }: { p: PropsDeAmbiente; c: Caja }) {
       : signo > 0
         ? { ...c, x0: c.x1 - Math.min(3, c.w / 2), w: Math.min(3, c.w / 2) }
         : { ...c, x1: c.x0 + Math.min(3, c.w / 2), w: Math.min(3, c.w / 2) };
-  return <Publico c={franja} personas={personasDe(p.zona, c, 0.45, 40)} semilla={p.zona.id} baila={false} animar={p.animar} />;
+  return <Publico c={franja} personas={personasDe(p.zona, c, 0.45, 40)} semilla={String(p.zona.id)} baila={false} animar={p.animar} />;
 }
 
 function BarraVip(p: PropsDeAmbiente) {
@@ -686,7 +686,7 @@ function BarraVip(p: PropsDeAmbiente) {
 
 function Cocteleria(p: PropsDeAmbiente) {
   const { c, zona, conGente, animar, recortar, todas, centro } = p;
-  const azar = useMemo(() => aleatorio(zona.id), [zona.id]);
+  const azar = useMemo(() => aleatorio(String(zona.id)), [zona.id]);
   const mesas = useMemo(() => {
     const lista: [number, number][] = [];
     for (let i = 0; i < 6; i++) lista.push([c.x0 + 1.5 + azar() * (c.w - 3), c.z0 + 1.5 + azar() * (c.d * 0.45)]);
@@ -706,7 +706,7 @@ function Cocteleria(p: PropsDeAmbiente) {
         </group>
       ))}
       <Luz c={c} color="#ff9a3c" intensidad={30} />
-      {conGente && <Publico c={c} personas={personasDe(zona, c, 0.5, 25)} semilla={zona.id} baila={false} animar={animar} color="#2a1f1a" />}
+      {conGente && <Publico c={c} personas={personasDe(zona, c, 0.5, 25)} semilla={String(zona.id)} baila={false} animar={animar} color="#2a1f1a" />}
     </group>
   );
 }
@@ -789,7 +789,7 @@ function Vestibulo({ zona, c, conGente, animar }: PropsDeAmbiente) {
         <Publico
           c={{ ...c, z0: zTornos + 0.8, d: c.z1 - zTornos - 0.8 }}
           personas={8}
-          semilla={zona.id}
+          semilla={String(zona.id)}
           baila={false}
           animar={animar}
           color="#1f1a26"
@@ -913,7 +913,7 @@ function Escalera({ c, todas, centro }: PropsDeAmbiente) {
 // ── Terraza ─────────────────────────────────────────────────────────
 
 function Terraza({ zona, c, conGente, animar }: PropsDeAmbiente) {
-  const azar = useMemo(() => aleatorio(zona.id), [zona.id]);
+  const azar = useMemo(() => aleatorio(String(zona.id)), [zona.id]);
   const sofas = useMemo(() => {
     const lista: { x: number; z: number; r: number }[] = [];
     const filas = Math.max(1, Math.floor(c.d / 4.5));
@@ -987,7 +987,7 @@ function Terraza({ zona, c, conGente, animar }: PropsDeAmbiente) {
       <Guirnalda desde={[postes[0][0], c.y0 + altoPoste, postes[0][1]]} hasta={[postes[1][0], c.y0 + altoPoste, postes[1][1]]} bombillas={12} caida={0.4} />
       <Guirnalda desde={[postes[3][0], c.y0 + altoPoste, postes[3][1]]} hasta={[postes[2][0], c.y0 + altoPoste, postes[2][1]]} bombillas={12} caida={0.4} />
       <Luz c={c} color={LUZ_DE.terraza} intensidad={35} alto={3} />
-      {conGente && <Publico c={c} personas={personasDe(zona, c, 0.45, 60)} semilla={zona.id} baila={false} animar={animar} color="#2a2430" />}
+      {conGente && <Publico c={c} personas={personasDe(zona, c, 0.45, 60)} semilla={String(zona.id)} baila={false} animar={animar} color="#2a2430" />}
     </group>
   );
 }
@@ -1015,7 +1015,7 @@ function Balcon({ zona, c, conGente, animar }: PropsDeAmbiente) {
       })}
       <MarcoDeNeon c={c} y={c.y0 + c.h - 0.12} color={LUZ_DE.balcon} margen={0.2} />
       <Luz c={c} color={LUZ_DE.balcon} intensidad={22} />
-      {conGente && <Publico c={c} personas={personasDe(zona, c, 0.5, 45)} semilla={zona.id} baila={false} animar={animar} color="#251c2e" />}
+      {conGente && <Publico c={c} personas={personasDe(zona, c, 0.5, 45)} semilla={String(zona.id)} baila={false} animar={animar} color="#251c2e" />}
     </group>
   );
 }

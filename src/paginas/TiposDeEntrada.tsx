@@ -31,7 +31,7 @@ export function TiposDeEntrada({
   alCambiar: () => void;
 }) {
   /** Qué se está editando: el id de un tipo, "nuevo", o nada. */
-  const [editando, setEditando] = useState<string | null>(null);
+  const [editando, setEditando] = useState<number | "nuevo" | null>(null);
   const [aviso, setAviso] = useState<string | null>(null);
   const [fallo, setFallo] = useState<string | null>(null);
 

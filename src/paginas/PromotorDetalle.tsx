@@ -327,7 +327,7 @@ function RegistrarPago({ f, alPagar, alCancelar }: { f: FichaDePromotor; alPagar
 }
 
 export function PromotorDetalle() {
-  const { id = "" } = useParams();
+  const id = Number(useParams().id);
   const [version, setVersion] = useState(0);
   const carga = useCarga(() => verPromotor(id), [id, version]);
   const [pagando, setPagando] = useState(false);

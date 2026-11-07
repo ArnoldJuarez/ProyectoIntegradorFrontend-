@@ -25,7 +25,7 @@ import { useCarga } from "../datos";
 export function Artistas() {
   const [version, setVersion] = useState(0);
   const carga = useCarga(verArtistas, [version]);
-  const [abierto, setAbierto] = useState<string | null>(null);
+  const [abierto, setAbierto] = useState<number | "nuevo" | null>(null);
   const [filtro, setFiltro] = useState("");
   const recargar = () => setVersion((v) => v + 1);
 

@@ -13,7 +13,7 @@ import { useCarga } from "../datos";
 export function Reservados({ slug }: { slug: string }) {
   const carga = useCarga(() => verReservados(slug), [slug]);
 
-  const [mesaId, setMesaId] = useState("");
+  const [mesaId, setMesaId] = useState<number | "">("");
   const [personas, setPersonas] = useState(2);
   const [nombre, setNombre] = useState("");
   const [apellido, setApellido] = useState("");
@@ -33,7 +33,7 @@ export function Reservados({ slug }: { slug: string }) {
     try {
       const { mensaje } = await pedirReserva({
         slug,
-        mesaId,
+        mesaId: Number(mesaId),
         personas,
         notas: notas.trim(),
         nombre: nombre.trim(),
@@ -110,7 +110,7 @@ export function Reservados({ slug }: { slug: string }) {
               id="mesa"
               required
               value={mesaId}
-              onChange={(e) => setMesaId(e.target.value)}
+              onChange={(e) => setMesaId(e.target.value ? Number(e.target.value) : "")}
               disabled={enviando}
             >
               <option value="">Elige uno</option>

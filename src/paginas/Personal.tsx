@@ -27,7 +27,7 @@ export function Personal() {
   const [version, setVersion] = useState(0);
   const equipo = useCarga(verEquipo, [version]);
   const opciones = useCarga(verOpcionesDePersonal, []);
-  const [abierto, setAbierto] = useState<string | null>(null);
+  const [abierto, setAbierto] = useState<number | "nuevo" | null>(null);
   const recargar = () => setVersion((v) => v + 1);
 
   if (equipo.fase === "cargando" || opciones.fase === "cargando") return <p className="aviso">Cargando el equipo…</p>;
@@ -136,7 +136,7 @@ function FichaDePersona({
   alCancelar,
 }: {
   inicial?: PersonaDelEquipo;
-  opciones: { roles: Rol[]; puestos: { id: string; nombre: string }[] };
+  opciones: { roles: Rol[]; puestos: { id: number; nombre: string }[] };
   alGuardar: () => void;
   alCancelar: () => void;
 }) {
@@ -144,7 +144,7 @@ function FichaDePersona({
   const [email, setEmail] = useState(inicial?.email ?? "");
   const [rol, setRol] = useState<Rol>(inicial?.rol ?? "PERSONAL");
   const [activo, setActivo] = useState(inicial?.activo ?? true);
-  const [puestoId, setPuestoId] = useState(inicial?.puestoId ?? "");
+  const [puestoId, setPuestoId] = useState<number | "">(inicial?.puestoId ?? "");
   const [sueldo, setSueldo] = useState(inicial ? String(inicial.sueldoPorHoraCentimos / 100) : "0");
   const [codigo, setCodigo] = useState(inicial?.codigoDePromotor ?? "");
   const [comision, setComision] = useState(inicial?.comisionPorcentaje != null ? String(inicial.comisionPorcentaje) : "");
@@ -160,7 +160,7 @@ function FichaDePersona({
       email: email.trim(),
       rol,
       activo,
-      puestoId: puestoId || null,
+      puestoId: puestoId === "" ? null : puestoId,
       sueldoPorHoraCentimos: Math.round(Number(sueldo || 0) * 100),
       codigoDePromotor: codigo.trim(),
       comisionPorcentaje: comision ? Number(comision) : null,
@@ -201,7 +201,7 @@ function FichaDePersona({
         </label>
         <label>
           Puesto
-          <select value={puestoId} onChange={(e) => setPuestoId(e.target.value)}>
+          <select value={puestoId} onChange={(e) => setPuestoId(e.target.value ? Number(e.target.value) : "")}>
             <option value="">Sin puesto</option>
             {opciones.puestos.map((p) => (
               <option key={p.id} value={p.id}>

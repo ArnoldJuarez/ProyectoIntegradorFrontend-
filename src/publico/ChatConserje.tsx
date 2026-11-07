@@ -17,7 +17,7 @@ export function ChatConserje() {
   const [turnos, setTurnos] = useState<TurnoDeChat[]>([]);
   const [borrador, setBorrador] = useState("");
   const [ocupado, setOcupado] = useState(false);
-  const sesionId = useRef<string | null>(null);
+  const sesionId = useRef<number | null>(null);
   const lista = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

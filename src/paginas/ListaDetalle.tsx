@@ -23,7 +23,7 @@ import { useCarga } from "../datos";
  * es lo que cuenta para la comisión del promotor.
  */
 export function ListaDetalle() {
-  const { id = "" } = useParams();
+  const id = Number(useParams().id);
   const [version, setVersion] = useState(0);
   const carga = useCarga(() => verLista(id), [id, version]);
   const recargar = () => setVersion((v) => v + 1);

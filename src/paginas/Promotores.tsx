@@ -114,7 +114,8 @@ function AbrirLista({ alCancelar }: { alCancelar: () => void }) {
   const navegar = useNavigate();
   const opciones = useCarga(verOpcionesDeLista, []);
   const [slug, setSlug] = useState(parametros.get("noche") ?? "");
-  const [promotorId, setPromotorId] = useState("");
+  // 0 = el primero de la lista.
+  const [promotorId, setPromotorId] = useState(0);
   const [nombre, setNombre] = useState("");
   const [maximo, setMaximo] = useState("30");
   const [guardando, setGuardando] = useState(false);
@@ -169,7 +170,7 @@ function AbrirLista({ alCancelar }: { alCancelar: () => void }) {
         </label>
         <label>
           Promotor
-          <select value={promotorId || promotores[0].id} onChange={(e) => setPromotorId(e.target.value)}>
+          <select value={promotorId || promotores[0].id} onChange={(e) => setPromotorId(Number(e.target.value))}>
             {promotores.map((p) => (
               <option key={p.id} value={p.id}>
                 {p.nombre} ({p.codigo})

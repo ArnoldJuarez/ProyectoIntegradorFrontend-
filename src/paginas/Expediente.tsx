@@ -1074,7 +1074,7 @@ function Incidencias({ x, alCambiar }: { x: ExpedienteDeNoche; alCambiar: () => 
     }
   }
 
-  async function quitar(id: string) {
+  async function quitar(id: number) {
     if (!window.confirm("¿Quitar esta incidencia?")) return;
     try {
       await quitarIncidencia(slug, id);

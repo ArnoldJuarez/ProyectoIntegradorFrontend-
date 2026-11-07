@@ -81,7 +81,7 @@ export function Comprar({ slug, entradas }: { slug: string; entradas: EntradaALa
         email: email.trim(),
         telefono: telefono.trim(),
         lineas: Object.entries(cantidades).map(([tipoDeEntradaId, cantidad]) => ({
-          tipoDeEntradaId,
+          tipoDeEntradaId: Number(tipoDeEntradaId),
           cantidad,
         })),
         // Si llegó por el enlace de un promotor, la venta le cuenta a él.

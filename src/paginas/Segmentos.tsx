@@ -67,7 +67,7 @@ export function Segmentos() {
 function ListaDeSegmentos() {
   const carga = useCarga(verSegmentos, []);
   /** Qué segmento está desplegado con su gente. */
-  const [abierto, setAbierto] = useState<string | null>(null);
+  const [abierto, setAbierto] = useState<number | null>(null);
 
   if (carga.fase === "cargando") return <p className="aviso">Calculando los segmentos…</p>;
   if (carga.fase === "error") {
@@ -165,7 +165,7 @@ function Segmento({
 }
 
 /** La gente que cae dentro ahora mismo. */
-function Miembros({ segmentoId }: { segmentoId: string }) {
+function Miembros({ segmentoId }: { segmentoId: number }) {
   const carga = useCarga(() => verSegmento(segmentoId), [segmentoId]);
 
   if (carga.fase === "cargando") return <p className="aviso">Cargando…</p>;
@@ -406,7 +406,7 @@ function FormularioDeCampania({
 
         <label>
           Dirigida a
-          <select value={segmentoId} onChange={(e) => setSegmentoId(e.target.value)} required>
+          <select value={segmentoId} onChange={(e) => setSegmentoId(Number(e.target.value))} required>
             {segmentos.map((s) => (
               <option key={s.id} value={s.id}>
                 {s.nombre} · {s.contactables} contactables

@@ -30,8 +30,8 @@ export function Plano2D({
   planoFondo: number;
   zonas: ZonaPlano[];
   puertas: PuertaPlano[];
-  seleccion?: string | null;
-  onSelectZona?: (id: string) => void;
+  seleccion?: number | null;
+  onSelectZona?: (id: number | null) => void;
   /** Si viene, se dibuja hacia dónde evacúa cada zona. */
 }) {
   if (planoAncho <= 0 || planoFondo <= 0) {

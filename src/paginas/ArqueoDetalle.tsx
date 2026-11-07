@@ -13,7 +13,7 @@ import { Resultado } from "./Caja";
  * no está en el cajón.
  */
 export function ArqueoDetalle() {
-  const { id = "" } = useParams();
+  const id = Number(useParams().id);
   const carga = useCarga(() => verArqueo(id), [id]);
 
   if (carga.fase === "cargando") return <p className="aviso">Cargando el arqueo…</p>;

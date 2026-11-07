@@ -28,7 +28,7 @@ function BarrasDelLocal() {
     }
   }
 
-  async function alternar(id: string, activa: boolean) {
+  async function alternar(id: number, activa: boolean) {
     try {
       await cambiarBarra(id, activa);
       setVersion((v) => v + 1);
